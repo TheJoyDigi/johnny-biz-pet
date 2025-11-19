@@ -27,7 +27,9 @@ export default async function handler(
 
   try {
     const {
-      city,
+      sitterName,
+      locationName,
+      serviceId,
       firstName,
       lastName,
       email,
@@ -35,14 +37,17 @@ export default async function handler(
       petName,
       petType,
       startDate,
+      startTime,
       endDate,
+      endTime,
       addons,
       notes,
     } = req.body;
 
     // Basic validation
     if (
-      !city ||
+      !sitterName ||
+      !serviceId ||
       !firstName ||
       !lastName ||
       !email ||
@@ -57,10 +62,10 @@ export default async function handler(
     }
 
     // Validate pet type (must be dog or cat)
-    if (petType !== "dog" && petType !== "cat") {
+    if (petType !== "dog" && petType !== "cat" && petType !== "other") {
       return res
         .status(400)
-        .json({ success: false, message: "Pet type must be dog or cat" });
+        .json({ success: false, message: "Invalid pet type" });
     }
 
     // Validate that end date is after start date
@@ -79,20 +84,7 @@ export default async function handler(
     // Format addons for email
     const selectedAddons = Object.entries(addons)
       .filter(([_, selected]) => selected)
-      .map(([name, _]) => {
-        switch (name) {
-          case "extraWalk":
-            return "Extra Walk (+$10/day)";
-          case "medicationAdmin":
-            return "Medication Administration (+$5/day)";
-          case "plantWatering":
-            return "Plant Watering (+$5/visit)";
-          case "houseSitting":
-            return "House Sitting (+$15/day)";
-          default:
-            return name;
-        }
-      });
+      .map(([name, _]) => name);
 
     // Format dates for email
     const formattedStartDate = new Date(startDate).toLocaleDateString("en-US", {
@@ -112,7 +104,9 @@ export default async function handler(
     // Create email content for the business
     const businessEmailContent = `
       <h2>New Booking Request</h2>
-      <p><strong>Location:</strong> ${city}</p>
+      <p><strong>Sitter:</strong> ${sitterName}</p>
+      <p><strong>Location:</strong> ${locationName}</p>
+      <p><strong>Service:</strong> ${serviceId}</p>
       <p><strong>Customer:</strong> ${firstName} ${lastName}</p>
       <p><strong>Email:</strong> ${email}</p>
       <p><strong>Phone:</strong> ${phone}</p>
@@ -120,7 +114,8 @@ export default async function handler(
       <p><strong>Pet Type:</strong> ${
         petType.charAt(0).toUpperCase() + petType.slice(1)
       }</p>
-      <p><strong>Service Period:</strong> ${formattedStartDate} to ${formattedEndDate}</p>
+      <p><strong>Drop Off:</strong> ${formattedStartDate} at ${startTime}</p>
+      <p><strong>Pick Up:</strong> ${formattedEndDate} at ${endTime}</p>
       <p><strong>Number of Nights:</strong> ${nights}</p>
       
       ${
@@ -148,17 +143,20 @@ export default async function handler(
     const customerEmailContent = `
       <h2>Booking Request Confirmation</h2>
       <p>Dear ${firstName},</p>
-      <p>Thank you for your booking request for ${petName} at the ${city} location. I have received your request and will get back to you within 24 hours to confirm your booking.</p>
+      <p>Thank you for your booking request for ${petName} with ${sitterName}. We have received your request and will get back to you within 24 hours to confirm your booking.</p>
       <p><strong>Booking Summary:</strong></p>
       <ul>
-        <li><strong>Location:</strong> ${city}</li>
+        <li><strong>Sitter:</strong> ${sitterName}</li>
+        <li><strong>Location:</strong> ${locationName}</li>
+        <li><strong>Service:</strong> ${serviceId}</li>
         <li><strong>Pet Name:</strong> ${petName}</li>
-        <li><strong>Service Period:</strong> ${formattedStartDate} to ${formattedEndDate}</li>
+        <li><strong>Drop Off:</strong> ${formattedStartDate} at ${startTime}</li>
+        <li><strong>Pick Up:</strong> ${formattedEndDate} at ${endTime}</li>
         <li><strong>Number of Nights:</strong> ${nights}</li>
       </ul>
-      <p>I look forward to meeting you and ${petName}!</p>
+      <p>We look forward to meeting you and ${petName}!</p>
       <p>Best,</p>
-      <p>Johnny</p>
+      <p>Ruh-Roh Retreat Team</p>
     `;
 
     // Setup nodemailer transporter
@@ -181,14 +179,14 @@ export default async function handler(
         process.env.EMAIL_FROM || "hello@ruhrohretreat.com"
       }>`,
       to: EMAIL_CONFIG.recipientEmail,
-      subject: `${EMAIL_CONFIG.subject} - ${city}`,
+      subject: `${EMAIL_CONFIG.subject} - ${sitterName}`,
       html: businessEmailContent,
       replyTo: email,
     });
 
     // Send confirmation email to customer
     await transporter.sendMail({
-      from: `"Johnny - Pet Sitting" <${
+      from: `"Ruh-Roh Retreat" <${
         process.env.EMAIL_FROM || "hello@ruhrohretreat.com"
       }>`,
       to: email,

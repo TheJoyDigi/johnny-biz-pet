@@ -1,10 +1,10 @@
 import { ChangeEvent, FormEvent, RefObject, useEffect, useState } from "react";
 
-import { getSitterById } from "@/data/sitters";
-import { Location } from "./types";
+import { Sitter, SitterPrimaryService } from "@/data/sitters";
 
 type BookingForm = {
-  city: string;
+  sitterId: string;
+  serviceId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -12,20 +12,23 @@ type BookingForm = {
   petName: string;
   petType: string;
   startDate: string;
+  startTime: string;
   endDate: string;
+  endTime: string;
   addons: { [key: string]: boolean };
   notes: string;
 };
 
 type BookingSectionProps = {
   sectionRef: RefObject<HTMLElement>;
-  locations: Location[];
+  sitters: Sitter[];
 };
 
-function BookingSection({ sectionRef, locations }: BookingSectionProps) {
-  const [selectedLocation, setSelectedLocation] = useState<Location>(locations[0]);
+function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
+  const [selectedSitter, setSelectedSitter] = useState<Sitter>(sitters[0]);
   const [bookingForm, setBookingForm] = useState<BookingForm>(() => ({
-    city: locations[0]?.name ?? "",
+    sitterId: sitters[0]?.id ?? "",
+    serviceId: sitters[0]?.services.primary[0]?.name ?? "",
     firstName: "",
     lastName: "",
     email: "",
@@ -33,18 +36,19 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
     petName: "",
     petType: "dog",
     startDate: "",
+    startTime: "09:00",
     endDate: "",
+    endTime: "17:00",
     addons: {},
     notes: "",
   }));
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [dateError, setDateError] = useState("");
+
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [nightsCount, setNightsCount] = useState<number | null>(null);
   const todayISO = new Date().toISOString().split("T")[0];
-  const selectedSitter = selectedLocation?.sitterId
-    ? getSitterById(selectedLocation.sitterId)
-    : undefined;
+  
   const sitterAddOns = selectedSitter?.services.addOns ?? [];
 
   useEffect(() => {
@@ -53,10 +57,14 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
       const end = new Date(bookingForm.endDate);
 
       if (end < start) {
-        setDateError("End date must be after start date");
+        setErrors((prev) => ({ ...prev, date: "End date must be after start date" }));
         setNightsCount(null);
       } else {
-        setDateError("");
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.date;
+          return newErrors;
+        });
         const diffTime = Math.abs(end.getTime() - start.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         setNightsCount(diffDays);
@@ -74,17 +82,27 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
       ...bookingForm,
       [name]: value,
     });
+
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
-  const handleLocationChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const locationId = e.target.value;
-    const newLocation = locations.find((loc) => loc.id === locationId);
-    if (!newLocation) return;
+  const handleSitterChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const sitterId = e.target.value;
+    const newSitter = sitters.find((s) => s.id === sitterId);
+    if (!newSitter) return;
 
-    setSelectedLocation(newLocation);
+    setSelectedSitter(newSitter);
     setBookingForm({
       ...bookingForm,
-      city: newLocation.name,
+      sitterId: newSitter.id,
+      serviceId: newSitter.services.primary[0]?.name ?? "",
       addons: {},
     });
   };
@@ -104,8 +122,30 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
     e.preventDefault();
     (window as any).clarity?.("event", "Request Booking Clicked");
 
-    if (dateError) {
-      alert("Please correct the date error before submitting");
+    const newErrors: { [key: string]: string } = {};
+
+    if (errors.date) {
+      newErrors.date = errors.date;
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(bookingForm.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Validate phone (US phone number format)
+    // Matches: (123) 456-7890, 123-456-7890, 123.456.7890, 1234567890, +1 123 456 7890
+    const phoneRegex = /^(\+?1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?\d{3}[-.\s]?\d{4}$/;
+    if (!phoneRegex.test(bookingForm.phone)) {
+      newErrors.phone = "Please enter a valid US phone number";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      // Scroll to the first error
+      const firstErrorField = document.querySelector(`[name="${Object.keys(newErrors)[0]}"]`);
+      firstErrorField?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -117,7 +157,11 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(bookingForm),
+        body: JSON.stringify({
+          ...bookingForm,
+          sitterName: selectedSitter.name,
+          locationName: selectedSitter.locations[0].city, // Assuming first location for now
+        }),
       });
 
       const data = await response.json();
@@ -133,7 +177,8 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
       }, 100);
 
       setBookingForm({
-        city: selectedLocation?.name ?? locations[0]?.name ?? "",
+        sitterId: selectedSitter?.id ?? sitters[0]?.id ?? "",
+        serviceId: selectedSitter?.services.primary[0]?.name ?? sitters[0]?.services.primary[0]?.name ?? "",
         firstName: "",
         lastName: "",
         email: "",
@@ -141,7 +186,9 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
         petName: "",
         petType: "dog",
         startDate: "",
+        startTime: "09:00",
         endDate: "",
+        endTime: "17:00",
         addons: {},
         notes: "",
       });
@@ -160,7 +207,7 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[#333333] mb-4">Book a Stay</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Share your trip details and preferred location. A Ruh-Roh sitter will reply within 24 hours to confirm availability.
+            Share your trip details and preferred sitter. We will reply within 24 hours to confirm availability.
           </p>
         </div>
 
@@ -196,26 +243,139 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
         ) : (
           <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 max-w-4xl mx-auto">
             <form onSubmit={handleSubmit}>
+              {/* 1. Sitter Selection */}
               <div className="mb-6">
-                <label htmlFor="city" className="block text-gray-700 font-medium mb-2">
-                  Location *
+                <label htmlFor="sitterId" className="block text-gray-700 font-medium mb-2">
+                  Select Sitter *
                 </label>
                 <select
-                  id="city"
-                  name="city"
+                  id="sitterId"
+                  name="sitterId"
                   required
-                  value={selectedLocation?.id}
-                  onChange={handleLocationChange}
+                  value={selectedSitter?.id}
+                  onChange={handleSitterChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
                 >
-                  {locations.map((loc) => (
-                    <option key={loc.id} value={loc.id}>
-                      {loc.name}
+                  {sitters.map((sitter) => (
+                    <option key={sitter.id} value={sitter.id}>
+                      {sitter.name}
                     </option>
                   ))}
                 </select>
+                {selectedSitter && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Location: {selectedSitter.locations.map(l => l.city).join(", ")}
+                  </p>
+                )}
               </div>
 
+              {/* 2. Service Selection */}
+              <div className="mb-6">
+                <label htmlFor="serviceId" className="block text-gray-700 font-medium mb-2">
+                  Service *
+                </label>
+                <select
+                  id="serviceId"
+                  name="serviceId"
+                  required
+                  value={bookingForm.serviceId}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                >
+                  {selectedSitter?.services.primary.map((service) => (
+                    <option key={service.name} value={service.name}>
+                      {service.name} {service.price ? `(${service.price})` : ""}
+                    </option>
+                  ))}
+                </select>
+                {bookingForm.serviceId && (
+                   <p className="mt-2 text-sm text-gray-600">
+                     {selectedSitter?.services.primary.find(s => s.name === bookingForm.serviceId)?.description}
+                   </p>
+                )}
+              </div>
+
+              {/* 2. Pick Up Date & Time */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">
+                    Drop Off Date *
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    required
+                    min={todayISO}
+                    value={bookingForm.startDate}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="startTime" className="block text-gray-700 font-medium mb-2">
+                    Drop Off Time *
+                  </label>
+                  <input
+                    type="time"
+                    id="startTime"
+                    name="startTime"
+                    required
+                    value={bookingForm.startTime}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                  />
+                </div>
+              </div>
+
+              {/* 3. Drop Off Date & Time */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label htmlFor="endDate" className="block text-gray-700 font-medium mb-2">
+                    Pick Up Date *
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    required
+                    min={bookingForm.startDate || todayISO}
+                    value={bookingForm.endDate}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.date ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="endTime" className="block text-gray-700 font-medium mb-2">
+                    Pick Up Time *
+                  </label>
+                  <input
+                    type="time"
+                    id="endTime"
+                    name="endTime"
+                    required
+                    value={bookingForm.endTime}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                  />
+                </div>
+              </div>
+
+              {nightsCount !== null && (
+                <div className="mb-6 text-gray-700">
+                  <p>
+                    Total nights: <span className="font-semibold">{nightsCount}</span>
+                  </p>
+                </div>
+              )}
+
+              {errors.date && <p className="text-red-500 mb-6 text-sm">{errors.date}</p>}
+
+
+
+              {/* 5. Customer Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label htmlFor="firstName" className="block text-gray-700 font-medium mb-2">
@@ -259,8 +419,11 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
                     required
                     value={bookingForm.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
+                    }`}
                   />
+                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">
@@ -273,11 +436,15 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
                     required
                     value={bookingForm.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.phone ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
+                    }`}
                   />
+                  {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                 </div>
               </div>
 
+              {/* 6. Pet Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label htmlFor="petName" className="block text-gray-700 font-medium mb-2">
@@ -312,52 +479,24 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">
-                    Start Date *
-                  </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    name="startDate"
-                    required
-                    min={todayISO}
-                    value={bookingForm.startDate}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="endDate" className="block text-gray-700 font-medium mb-2">
-                    End Date *
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    name="endDate"
-                    required
-                    min={bookingForm.startDate || todayISO}
-                    value={bookingForm.endDate}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      dateError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
-                    }`}
-                  />
-                </div>
+              {/* 7. Notes */}
+              <div className="mb-6">
+                <label htmlFor="notes" className="block text-gray-700 font-medium mb-2">
+                  Additional Notes
+                </label>
+                <textarea
+                  id="notes"
+                  name="notes"
+                  rows={4}
+                  value={bookingForm.notes}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                  placeholder="Tell us about any special requirements, your pet's routine, or other important details..."
+                ></textarea>
               </div>
 
-              {nightsCount !== null && (
-                <div className="mb-6 text-gray-700">
-                  <p>
-                    Total nights: <span className="font-semibold">{nightsCount}</span>
-                  </p>
-                </div>
-              )}
-
-              {dateError && <p className="text-red-500 mb-6">{dateError}</p>}
-
-              {selectedLocation?.showAddons && sitterAddOns.length > 0 && (
+              {/* 8. Add-ons */}
+              {sitterAddOns.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">Enhance Your Pet's Stay</h3>
                   <p className="text-gray-600 mb-4">
@@ -393,27 +532,12 @@ function BookingSection({ sectionRef, locations }: BookingSectionProps) {
                 </div>
               )}
 
-              <div className="mb-6">
-                <label htmlFor="notes" className="block text-gray-700 font-medium mb-2">
-                  Additional Notes
-                </label>
-                <textarea
-                  id="notes"
-                  name="notes"
-                  rows={4}
-                  value={bookingForm.notes}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
-                  placeholder="Tell us about any special requirements, your pet's routine, or other important details..."
-                ></textarea>
-              </div>
-
               <div className="text-center">
                 <button
                   type="submit"
-                  disabled={isSubmitting || !!dateError}
+                  disabled={isSubmitting || Object.keys(errors).length > 0}
                   className={`${
-                    isSubmitting || dateError
+                    isSubmitting || Object.keys(errors).length > 0
                       ? "bg-gray-400"
                       : "bg-[#F28C38] hover:bg-[#e07a26]"
                   } text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 relative paw-button`}

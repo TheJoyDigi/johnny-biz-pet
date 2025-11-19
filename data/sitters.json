@@ -215,8 +215,8 @@
         {
           "category": "Adventure Enhancements",
           "items": [
-            { "name": "Lakeview hike & photo report" },
-            { "name": "Post-play paw balm treatment" }
+            { "name": "Lakeview hike & photo report", "price": "$20" },
+            { "name": "Post-play paw balm treatment", "price": "$10" }
           ]
         }
       ]

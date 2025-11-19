@@ -12,6 +12,7 @@ import RatesTransparencySection from "./landing/RatesTransparencySection";
 import SafetyTrustSection from "./landing/SafetyTrustSection";
 import VacationAddOnsSection from "./landing/VacationAddOnsSection";
 import { Location } from "./landing/types";
+import { sitters } from "@/data/sitters";
 
 const locations: Location[] = [
   {
@@ -55,7 +56,7 @@ function LandingComponent() {
       <RatesTransparencySection />
       <SafetyTrustSection />
       <LegalTransparencySection />
-      <BookingSection sectionRef={bookingRef} locations={locations} />
+      <BookingSection sectionRef={bookingRef} sitters={sitters} />
       <CallToActionSection onBookNow={scrollToBooking} locations={locations} />
       <script
         type="application/ld+json"
