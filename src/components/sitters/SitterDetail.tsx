@@ -16,6 +16,7 @@ type SitterDetailProps = {
 
 const SitterDetail = ({ sitter }: SitterDetailProps) => {
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [showAllHighlighted, setShowAllHighlighted] = useState(false);
   const sitterUid = sitter.uid;
   const baseReviews = sitter.reviews ?? [];
   const highlightedReviews = getHighlightedTestimonialsForSitter(sitterUid);
@@ -26,11 +27,19 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
     (review) => !highlightedSignatures.has(signature(review))
   );
   const orderedReviews = [...highlightedReviews, ...remainingReviews];
-  const defaultVisible = highlightedReviews.length
+
+  const initiallyVisibleHighlighted = highlightedReviews.slice(0, 5);
+
+  const reviewsToDisplay = showAllReviews
+    ? orderedReviews
+    : showAllHighlighted
     ? highlightedReviews
+    : initiallyVisibleHighlighted.length > 0
+    ? initiallyVisibleHighlighted
     : orderedReviews.slice(0, 1);
-  const reviewsToDisplay = showAllReviews ? orderedReviews : defaultVisible;
-  const canToggleReviews = orderedReviews.length > defaultVisible.length;
+
+  const canShowMoreHighlighted = highlightedReviews.length > 5 && !showAllHighlighted && !showAllReviews;
+  const canShowAllReviews = orderedReviews.length > reviewsToDisplay.length && !showAllReviews;
   const galleryPhotos: Photo[] =
     sitter.gallery?.map((photo, index) => ({
       id: `${sitter.id}-gallery-${index}`,
@@ -282,16 +291,35 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                     <p className="mt-2 text-gray-700 italic">{review.text}</p>
                   </div>
                 ))}
-                {canToggleReviews && (
-                  <button
-                    onClick={() => setShowAllReviews((prev) => !prev)}
-                    className="text-[#1A9CB0] font-semibold hover:underline"
-                  >
-                    {showAllReviews
-                      ? "Hide additional reviews"
-                      : `View ${orderedReviews.length - defaultVisible.length} more reviews`}
-                  </button>
-                )}
+                <div className="flex flex-wrap gap-4">
+                  {canShowMoreHighlighted && (
+                    <button
+                      onClick={() => setShowAllHighlighted(true)}
+                      className="text-[#1A9CB0] font-semibold hover:underline"
+                    >
+                      View {highlightedReviews.length - 5} more highlighted reviews
+                    </button>
+                  )}
+                  {canShowAllReviews && (
+                    <button
+                      onClick={() => setShowAllReviews(true)}
+                      className="text-[#1A9CB0] font-semibold hover:underline"
+                    >
+                      View all {orderedReviews.length} reviews
+                    </button>
+                  )}
+                  {showAllReviews && (
+                     <button
+                      onClick={() => {
+                        setShowAllReviews(false);
+                        setShowAllHighlighted(false);
+                      }}
+                      className="text-[#1A9CB0] font-semibold hover:underline"
+                    >
+                      Show less
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
