@@ -88,25 +88,21 @@ function SittersPage() {
                               key={`${sitter.id}-${badge.key}`}
                               type="button"
                               onClick={() => setSelectedBadge({ ...badge, definition: badgeDef })}
-                              className="cursor-pointer transition-transform duration-200 hover:scale-110"
+                              className={`cursor-pointer transition-transform duration-200 hover:scale-110 ${
+                                badge.earned
+                                  ? "border-none"
+                                  : "grayscale opacity-60"
+                              }`}
                             >
-                              <div
-                                className={`flex items-center justify-center h-12 w-12 rounded-full border-2 ${
-                                  badge.earned
-                                    ? "border-[#1A9CB0]/50"
-                                    : "border-gray-200 grayscale opacity-60"
-                                }`}
-                              >
-                                {badgeDef?.imageSrc && (
-                                  <Image
-                                    src={badgeDef.imageSrc}
-                                    alt={badge.title}
-                                    width={40}
-                                    height={40}
-                                    className="object-contain rounded-full"
-                                  />
-                                )}
-                              </div>
+                              {badgeDef?.imageSrc && (
+                                <Image
+                                  src={badgeDef.imageSrc}
+                                  alt={badge.title}
+                                  width={40}
+                                  height={40}
+                                  className="object-contain rounded-full"
+                                />
+                              )}
                             </button>
                           );
                         })}
