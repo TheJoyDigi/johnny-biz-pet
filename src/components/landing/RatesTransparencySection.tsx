@@ -60,8 +60,8 @@ function RatesTransparencySection() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#1A9CB0]/10 px-4 py-2 text-sm font-semibold text-[#1A9CB0] uppercase tracking-widest shadow-sm">
-            <FaMoneyBillWave className="text-base" aria-hidden="true" />
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#1A9CB0]/10 px-4 py-2 text-sm font-semibold text-[#1A9CB0] uppercase tracking-widest">
+            <FaMoneyBillWave className="text-lg" aria-hidden="true" />
             Rates &amp; Transparency
           </span>
           <h2

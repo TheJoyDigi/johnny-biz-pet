@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { FaClipboardList } from "react-icons/fa";
 const steps = [
   {
     title: "Browse Sitters",
@@ -43,6 +44,7 @@ function HowItWorksSection() {
           viewport={{ once: true }}
         >
           <span className="inline-flex items-center gap-2 rounded-full bg-[#1A9CB0]/10 px-4 py-2 text-sm font-semibold text-[#1A9CB0] uppercase tracking-widest">
+            <FaClipboardList className="text-lg" aria-hidden="true" />
             How It Works
           </span>
           <h2
