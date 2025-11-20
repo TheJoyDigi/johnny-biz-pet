@@ -127,7 +127,7 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                       className="flex items-start gap-3"
                     >
                       <div
-                        className={`mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full overflow-hidden ${
+                        className={`mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-full overflow-hidden ${
                           badge.earned
                             ? ""
                             : "opacity-50 grayscale"
@@ -138,8 +138,8 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                           <Image
                             src={badgeDef.imageSrc}
                             alt={badge.title}
-                            width={48}
-                            height={48}
+                            width={50}
+                            height={50}
                             className="object-cover rounded-full"
                           />
                         )}

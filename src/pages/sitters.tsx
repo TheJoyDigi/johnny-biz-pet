@@ -98,8 +98,8 @@ function SittersPage() {
                                 <Image
                                   src={badgeDef.imageSrc}
                                   alt={badge.title}
-                                  width={40}
-                                  height={40}
+                                  width={50}
+                                  height={50}
                                   className="object-contain rounded-full"
                                 />
                               )}
