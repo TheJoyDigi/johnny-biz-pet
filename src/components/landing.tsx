@@ -3,6 +3,7 @@ import { RefObject, useRef } from "react";
 import AboutSection from "./landing/AboutSection";
 import BenefitsSection from "./landing/BenefitsSection";
 import BadgeSystemSection from "./landing/BadgeSystemSection";
+import FounderStorySection from "./landing/FounderStorySection";
 import BookingSection from "./landing/BookingSection";
 import CallToActionSection from "./landing/CallToActionSection";
 import HowItWorksSection from "./landing/HowItWorksSection";
@@ -53,6 +54,7 @@ function LandingComponent() {
       <VacationAddOnsSection />
       <HowItWorksSection />
       <BadgeSystemSection />
+      <FounderStorySection />
       <RatesTransparencySection />
       <SafetyTrustSection />
       <LegalTransparencySection />
