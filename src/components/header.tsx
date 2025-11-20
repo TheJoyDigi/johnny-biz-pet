@@ -24,13 +24,11 @@ export default function Header() {
             />
           </Link>
         </div>
-        <nav className="hidden md:flex space-x-8 h-[80px] items-center">
+        <nav className="hidden lg:flex space-x-8 h-[80px] items-center">
           <Link href="/" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
             Home
           </Link>
-          <Link href="/#services" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-            Services
-          </Link>
+
           <Link href="/#benefits" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
             Why Ruh-Roh
           </Link>
@@ -52,7 +50,7 @@ export default function Header() {
         </nav>
         <button
           onClick={toggleMobileMenu}
-          className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#1A9CB0]"
+          className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#1A9CB0]"
         >
           <span className="sr-only">Open menu</span>
           {!mobileMenuOpen ? (
@@ -68,7 +66,7 @@ export default function Header() {
       </div>
 
       {/* Mobile Menu */}
-      <div className={`md:hidden fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`lg:hidden fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-4 border-b">
             <Link href="/" className="text-logo">
@@ -88,13 +86,7 @@ export default function Header() {
             >
               Home
             </Link>
-            <Link
-              href="/#services"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Services
-            </Link>
+
             <Link
               href="/#benefits"
               className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
