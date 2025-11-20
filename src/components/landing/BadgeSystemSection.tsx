@@ -33,35 +33,51 @@ function BadgeSystemSection() {
         </motion.div>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-          {badges.map(({ title, description, imageSrc, accent }, index) => (
-            <motion.div
-              key={title}
-              className="relative overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-100"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-0 transition-opacity duration-500`} aria-hidden="true" />
-              <div className="relative p-8 flex flex-col h-full justify-between">
-                <div className="flex items-center gap-4">
-                  <Image
-                    src={imageSrc}
-                    alt={title}
-                    width={80}
-                    height={80}
-                    className="object-cover rounded-full"
-                  />
-                  <h3 className="text-xl font-semibold text-[#333333] transition-colors duration-300">
-                    {title}
-                  </h3>
+          {badges.map(({ key, title, description, imageSrc, accent }, index) => {
+            const isGoldStandard = key === "gold-standard";
+            return (
+              <motion.div
+                key={key}
+                className={`relative overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-100 ${
+                  isGoldStandard ? "md:col-span-2 bg-gradient-to-b from-yellow-50/50 to-white border-yellow-200" : ""
+                }`}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-0 transition-opacity duration-500`}
+                  aria-hidden="true"
+                />
+                <div className={`relative p-8 flex flex-col h-full justify-between ${isGoldStandard ? "items-center text-center" : ""}`}>
+                  <div className={`flex items-center gap-4 ${isGoldStandard ? "flex-col" : ""}`}>
+                    <Image
+                      src={imageSrc}
+                      alt={title}
+                      width={isGoldStandard ? 140 : 80}
+                      height={isGoldStandard ? 140 : 80}
+                      className="object-cover rounded-full"
+                    />
+                    <h3
+                      className={`font-semibold text-[#333333] transition-colors duration-300 ${
+                        isGoldStandard ? "text-2xl md:text-3xl mt-2" : "text-xl"
+                      }`}
+                    >
+                      {title}
+                    </h3>
+                  </div>
+                  <p
+                    className={`mt-5 text-gray-600 leading-relaxed transition-colors duration-300 ${
+                      isGoldStandard ? "text-lg max-w-2xl" : "text-base"
+                    }`}
+                  >
+                    {description}
+                  </p>
                 </div>
-                <p className="mt-5 text-gray-600 text-base leading-relaxed transition-colors duration-300">
-                  {description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         <p className="mt-12 text-center text-base text-gray-600 leading-relaxed">
@@ -69,20 +85,7 @@ function BadgeSystemSection() {
           Retreat experience.
         </p>
 
-        <motion.div
-          className="mt-16 max-w-2xl mx-auto text-center bg-[#1A9CB0]/5 border border-[#1A9CB0]/20 rounded-2xl p-8"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-[#1A9CB0] text-white text-2xl shadow-lg">
-            <GiLaurelCrown aria-hidden="true" />
-          </div>
-          <p className="mt-6 text-lg font-semibold text-[#333333]">
-            Sitters who earn all seven badges achieve the Ruh-Roh Gold Standard, representing the complete boutique-vacation experience.
-          </p>
-        </motion.div>
+
       </div>
     </section>
   );

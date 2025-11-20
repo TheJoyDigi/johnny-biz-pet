@@ -29,27 +29,27 @@
     ],
     "badges": [
       {
-        "key": "clean-cozy",
-        "title": "Clean & Cozy Environment",
+        "key": "calm-clean-environment",
+        "title": "Calm & Clean Environment",
         "description": "Hygienic, peaceful spaces for stress-free stays",
         "earned": true
       },
       {
-        "key": "structure-stability",
-        "title": "Structure & Stability",
+        "key": "structured-care",
+        "title": "Structured Care",
         "description": "Consistent routines and thoughtful introductions",
-        "earned": true
-      },
-      {
-        "key": "transparent-communication",
-        "title": "Transparent Communication",
-        "description": "Reliable photo and video updates",
         "earned": true
       },
       {
         "key": "personalized-care",
         "title": "Personalized Care",
         "description": "Fun add-ons and vacation-style enrichment",
+        "earned": true
+      },
+      {
+        "key": "transparency",
+        "title": "Transparency",
+        "description": "Reliable photo and video updates",
         "earned": true
       },
       {
@@ -66,8 +66,14 @@
       },
       {
         "key": "five-star-consistency",
-        "title": "Five-Star Consistency",
+        "title": "5-Star Consistency",
         "description": "Sitters who consistently receive excellent reviews and provide a dependable guest experience.",
+        "earned": true
+      },
+      {
+        "key": "gold-standard",
+        "title": "Ruh-Roh Retreat Gold Standard",
+        "description": "Sitters who earn all seven badges achieve the Ruh-Roh Gold Standard, representing the complete boutique-vacation experience.",
         "earned": true
       }
     ],
@@ -150,21 +156,15 @@
     ],
     "badges": [
       {
-        "key": "clean-cozy",
-        "title": "Clean & Cozy Environment",
+        "key": "calm-clean-environment",
+        "title": "Calm & Clean Environment",
         "description": "Hygienic, peaceful spaces for stress-free stays",
         "earned": true
       },
       {
-        "key": "structure-stability",
-        "title": "Structure & Stability",
+        "key": "structured-care",
+        "title": "Structured Care",
         "description": "Consistent routines and thoughtful introductions",
-        "earned": true
-      },
-      {
-        "key": "transparent-communication",
-        "title": "Transparent Communication",
-        "description": "Reliable photo and video updates",
         "earned": true
       },
       {
@@ -172,6 +172,12 @@
         "title": "Personalized Care",
         "description": "Fun add-ons and vacation-style enrichment",
         "earned": false
+      },
+      {
+        "key": "transparency",
+        "title": "Transparency",
+        "description": "Reliable photo and video updates",
+        "earned": true
       },
       {
         "key": "playbook-excellence",
@@ -187,9 +193,15 @@
       },
       {
         "key": "five-star-consistency",
-        "title": "Five-Star Consistency",
+        "title": "5-Star Consistency",
         "description": "Sitters who consistently receive excellent reviews and provide a dependable guest experience.",
         "earned": true
+      },
+      {
+        "key": "gold-standard",
+        "title": "Ruh-Roh Retreat Gold Standard",
+        "description": "Sitters who earn all seven badges achieve the Ruh-Roh Gold Standard, representing the complete boutique-vacation experience.",
+        "earned": false
       }
     ],
     "services": {

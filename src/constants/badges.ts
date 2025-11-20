@@ -7,26 +7,19 @@ export interface BadgeDefinition {
 }
 
 export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
-  "clean-cozy": {
-    key: "clean-cozy",
-    title: "Clean & Cozy Environment",
+  "calm-clean-environment": {
+    key: "calm-clean-environment",
+    title: "Calm & Clean Environment",
     description: "Hygienic, peaceful spaces for stress-free stays",
     imageSrc: "/images/badges/image0.png",
     accent: "from-[#FAD0C4] to-[#FFD1FF]",
   },
-  "structure-stability": {
-    key: "structure-stability",
-    title: "Structure & Stability",
+  "structured-care": {
+    key: "structured-care",
+    title: "Structured Care",
     description: "Consistent routines and thoughtful introductions",
     imageSrc: "/images/badges/image1.png",
     accent: "from-[#B8F2E6] to-[#AEC5EB]",
-  },
-  "transparent-communication": {
-    key: "transparent-communication",
-    title: "Transparent Communication",
-    description: "Reliable photo and video updates",
-    imageSrc: "/images/badges/image2.png",
-    accent: "from-[#FFECB3] to-[#FFCC80]",
   },
   "personalized-care": {
     key: "personalized-care",
@@ -34,6 +27,13 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     description: "Fun add-ons and vacation-style enrichment",
     imageSrc: "/images/badges/image3.png",
     accent: "from-[#FDC5F5] to-[#FF9A9E]",
+  },
+  "transparency": {
+    key: "transparency",
+    title: "Transparency",
+    description: "Reliable photo and video updates",
+    imageSrc: "/images/badges/image2.png",
+    accent: "from-[#FFECB3] to-[#FFCC80]",
   },
   "playbook-excellence": {
     key: "playbook-excellence",
@@ -53,11 +53,19 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
   },
   "five-star-consistency": {
     key: "five-star-consistency",
-    title: "Five-Star Consistency",
+    title: "5-Star Consistency",
     description:
       "Sitters who consistently receive excellent reviews and provide a dependable guest experience.",
     imageSrc: "/images/badges/image7.png",
     accent: "from-[#FFF6B7] to-[#FECF6A]",
+  },
+  "gold-standard": {
+    key: "gold-standard",
+    title: "Ruh-Roh Retreat Gold Standard",
+    description:
+      "Sitters who earn all seven badges achieve the Ruh-Roh Gold Standard, representing the complete boutique-vacation experience.",
+    imageSrc: "/images/badges/image8.png",
+    accent: "from-[#FFD700] to-[#FDB931]",
   },
 };
 
