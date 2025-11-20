@@ -44,8 +44,24 @@ function SittersPage() {
               const reviewsCount = sitter.reviews.length;
               const averageRating = getAverageRating(reviewsCount, totalStars);
 
+              const earnedBadgesCount = sitter.badges.filter((b) => b.earned).length;
+              const totalBadges = 8;
+              const isGoldStandard = earnedBadgesCount === totalBadges;
+              const goldStandardBadge = sitter.badges.find((b) => b.key === "gold-standard");
+              const goldStandardDef = goldStandardBadge ? BADGE_DEFINITIONS[goldStandardBadge.key] : undefined;
+
               return (
-                <article key={sitter.id} className="bg-white rounded-3xl shadow-lg overflow-hidden flex flex-col">
+                <article
+                  key={sitter.id}
+                  className={`bg-white rounded-3xl shadow-lg overflow-hidden flex flex-col ${
+                    isGoldStandard ? "border-4 border-[#FFD700] relative" : ""
+                  }`}
+                >
+                  {isGoldStandard && (
+                    <div className="absolute top-4 right-4 z-10 bg-[#FFD700] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                      Gold Standard
+                    </div>
+                  )}
                   <div className="relative h-56 w-full">
                     <Image src={sitter.heroImage} alt={`${sitter.name}'s home`} fill className="object-cover" sizes="(min-width: 768px) 50vw, 100vw" />
                   </div>
@@ -80,32 +96,39 @@ function SittersPage() {
 
                     <div className="mt-6">
                       <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Badges</h3>
-                      <div className="flex flex-wrap gap-3 mt-2">
-                        {sitter.badges.map((badge) => {
-                          const badgeDef = BADGE_DEFINITIONS[badge.key];
-                          return (
-                            <button
-                              key={`${sitter.id}-${badge.key}`}
-                              type="button"
-                              onClick={() => setSelectedBadge({ ...badge, definition: badgeDef })}
-                              className={`cursor-pointer transition-transform duration-200 hover:scale-110 ${
-                                badge.earned
-                                  ? "border-none"
-                                  : "grayscale opacity-60"
-                              }`}
-                            >
-                              {badgeDef?.imageSrc && (
-                                <Image
-                                  src={badgeDef.imageSrc}
-                                  alt={badge.title}
-                                  width={50}
-                                  height={50}
-                                  className="object-contain rounded-full"
-                                />
-                              )}
-                            </button>
-                          );
-                        })}
+                      <div className="mt-2">
+                        {isGoldStandard && goldStandardBadge && goldStandardDef ? (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedBadge({ ...goldStandardBadge, definition: goldStandardDef })}
+                            className="flex items-center gap-3 bg-gradient-to-r from-[#FFD700]/10 to-[#FDB931]/10 p-3 rounded-xl border border-[#FFD700]/30 w-full hover:bg-[#FFD700]/20 transition-colors text-left"
+                          >
+                            <div className="relative h-12 w-12 flex-shrink-0">
+                              <Image
+                                src={goldStandardDef.imageSrc}
+                                alt={goldStandardBadge.title}
+                                fill
+                                className="object-contain"
+                              />
+                            </div>
+                            <div>
+                              <p className="font-bold text-[#333333] text-sm">Ruh-Roh Gold Standard</p>
+                              <p className="text-xs text-gray-600">All 8 badges earned!</p>
+                            </div>
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div className="h-2 flex-1 bg-gray-200 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-[#1A9CB0] rounded-full"
+                                style={{ width: `${(earnedBadgesCount / totalBadges) * 100}%` }}
+                              />
+                            </div>
+                            <span className="text-sm font-semibold text-gray-600 whitespace-nowrap">
+                              {earnedBadgesCount}/{totalBadges} Earned
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
