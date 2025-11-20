@@ -158,18 +158,18 @@ function SittersPage() {
 
               <div className="flex justify-center mb-4">
                 <div
-                  className={`flex items-center justify-center h-24 w-24 rounded-full border-4 ${
+                  className={`flex items-center justify-center ${
                     selectedBadge.earned
-                      ? "border-[#1A9CB0]"
-                      : "border-gray-200 grayscale"
+                      ? ""
+                      : "grayscale opacity-60"
                   }`}
                 >
                   {selectedBadge.definition?.imageSrc && (
                     <Image
                       src={selectedBadge.definition.imageSrc}
                       alt={selectedBadge.title}
-                      width={80}
-                      height={80}
+                      width={120}
+                      height={120}
                       className="object-contain rounded-full"
                     />
                   )}
