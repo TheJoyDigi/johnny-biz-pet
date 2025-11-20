@@ -128,7 +128,9 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
             <div>
               <h2 className="text-xl font-semibold text-[#333333] mb-3">Ruh-Roh Badges</h2>
               <div className="space-y-3">
-                {sitter.badges.map((badge, badgeIndex) => {
+                {sitter.badges
+                  .filter((badge) => badge.earned)
+                  .map((badge, badgeIndex) => {
                   const badgeDef = BADGE_DEFINITIONS[badge.key];
                   return (
                     <div
@@ -136,11 +138,7 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                       className="flex items-start gap-3"
                     >
                       <div
-                        className={`mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-full overflow-hidden ${
-                          badge.earned
-                            ? ""
-                            : "opacity-50 grayscale"
-                        }`}
+                        className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-full overflow-hidden"
                         aria-hidden="true"
                       >
                         {badgeDef?.imageSrc && (
@@ -160,11 +158,6 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                         <p className="text-sm text-gray-600">
                           {badge.description}
                         </p>
-                        {!badge.earned && (
-                          <p className="text-xs text-gray-400 mt-1">
-                            In progress
-                          </p>
-                        )}
                       </div>
                     </div>
                   );
