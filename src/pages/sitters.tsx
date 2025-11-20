@@ -1,18 +1,25 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaTimes } from "react-icons/fa";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { sitters } from "@/data/sitters";
+import { sitters, SitterBadge } from "@/data/sitters";
+import { BADGE_DEFINITIONS, BadgeDefinition } from "@/constants/badges";
 
 function getAverageRating(reviewsLength: number, totalStars: number) {
   if (reviewsLength === 0) return null;
   return totalStars / reviewsLength;
 }
 
+type BadgeWithDef = SitterBadge & { definition: BadgeDefinition | undefined };
+
 function SittersPage() {
+  const [selectedBadge, setSelectedBadge] = useState<BadgeWithDef | null>(null);
+
   return (
     <>
       <Head>
@@ -73,17 +80,36 @@ function SittersPage() {
 
                     <div className="mt-6">
                       <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Badges</h3>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {sitter.badges.map((badge) => (
-                          <span
-                            key={`${sitter.id}-${badge.key}`}
-                            className={`text-sm px-3 py-1 rounded-full border ${
-                              badge.earned ? "bg-[#1A9CB0]/10 text-[#1A9CB0] border-[#1A9CB0]/30" : "text-gray-400 border-gray-200"
-                            }`}
-                          >
-                            {badge.title}
-                          </span>
-                        ))}
+                      <div className="flex flex-wrap gap-3 mt-2">
+                        {sitter.badges.map((badge) => {
+                          const badgeDef = BADGE_DEFINITIONS[badge.key];
+                          return (
+                            <button
+                              key={`${sitter.id}-${badge.key}`}
+                              type="button"
+                              onClick={() => setSelectedBadge({ ...badge, definition: badgeDef })}
+                              className="cursor-pointer transition-transform duration-200 hover:scale-110"
+                            >
+                              <div
+                                className={`flex items-center justify-center h-12 w-12 rounded-full border-2 ${
+                                  badge.earned
+                                    ? "border-[#1A9CB0]/50"
+                                    : "border-gray-200 grayscale opacity-60"
+                                }`}
+                              >
+                                {badgeDef?.imageSrc && (
+                                  <Image
+                                    src={badgeDef.imageSrc}
+                                    alt={badge.title}
+                                    width={40}
+                                    height={40}
+                                    className="object-contain rounded-full"
+                                  />
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -108,6 +134,63 @@ function SittersPage() {
           </div>
         </div>
       </main>
+
+      <AnimatePresence>
+        {selectedBadge && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+            onClick={() => setSelectedBadge(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white rounded-2xl shadow-xl max-w-sm w-full mx-auto p-8 text-center relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => setSelectedBadge(null)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close modal"
+              >
+                <FaTimes className="h-6 w-6" />
+              </button>
+
+              <div className="flex justify-center mb-4">
+                <div
+                  className={`flex items-center justify-center h-24 w-24 rounded-full border-4 ${
+                    selectedBadge.earned
+                      ? "border-[#1A9CB0]"
+                      : "border-gray-200 grayscale"
+                  }`}
+                >
+                  {selectedBadge.definition?.imageSrc && (
+                    <Image
+                      src={selectedBadge.definition.imageSrc}
+                      alt={selectedBadge.title}
+                      width={80}
+                      height={80}
+                      className="object-contain rounded-full"
+                    />
+                  )}
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-[#333333]">{selectedBadge.title}</h3>
+              <p className="text-gray-600 mt-2">{selectedBadge.definition?.description}</p>
+              {!selectedBadge.earned && (
+                <p className="mt-4 bg-yellow-100 text-yellow-800 font-semibold rounded-full px-4 py-1 inline-block">
+                  In Progress
+                </p>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Footer />
     </>
   );

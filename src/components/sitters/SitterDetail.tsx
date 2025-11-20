@@ -8,6 +8,7 @@ import { Sitter, SitterReview } from "@/data/sitters";
 import { getHighlightedTestimonialsForSitter } from "@/data/testimonials";
 import PhotoGallerySection from "../landing/PhotoGallerySection";
 import { Photo } from "../photo-gallery";
+import { BADGE_DEFINITIONS } from "@/constants/badges";
 
 type SitterDetailProps = {
   sitter: Sitter;
@@ -118,16 +119,47 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
             <div>
               <h2 className="text-xl font-semibold text-[#333333] mb-3">Ruh-Roh Badges</h2>
               <div className="space-y-3">
-                {sitter.badges.map((badge, badgeIndex) => (
-                  <div key={`${sitter.id}-badge-${badge.key}-${badgeIndex}`} className="flex items-start gap-3">
-                    <div className={`mt-1 h-3 w-3 rounded-full ${badge.earned ? "bg-[#1A9CB0]" : "bg-gray-300"}`} aria-hidden="true" />
-                    <div>
-                      <p className="font-semibold text-[#333333]">{badge.title}</p>
-                      <p className="text-sm text-gray-600">{badge.description}</p>
-                      {!badge.earned && <p className="text-xs text-gray-400 mt-1">In progress</p>}
+                {sitter.badges.map((badge, badgeIndex) => {
+                  const badgeDef = BADGE_DEFINITIONS[badge.key];
+                  return (
+                    <div
+                      key={`${sitter.id}-badge-${badge.key}-${badgeIndex}`}
+                      className="flex items-start gap-3"
+                    >
+                      <div
+                        className={`mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full overflow-hidden ${
+                          badge.earned
+                            ? ""
+                            : "opacity-50 grayscale"
+                        }`}
+                        aria-hidden="true"
+                      >
+                        {badgeDef?.imageSrc && (
+                          <Image
+                            src={badgeDef.imageSrc}
+                            alt={badge.title}
+                            width={48}
+                            height={48}
+                            className="object-cover rounded-full"
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-[#333333]">
+                          {badge.title}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {badge.description}
+                        </p>
+                        {!badge.earned && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            In progress
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

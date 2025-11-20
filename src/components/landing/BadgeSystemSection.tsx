@@ -1,62 +1,9 @@
 import { motion } from "framer-motion";
-import {
-  FaBroom,
-  FaClock,
-  FaCameraRetro,
-  FaHeart,
-  FaBookOpen,
-  FaHandshake,
-  FaStar,
-} from "react-icons/fa";
+import Image from "next/image";
 import { GiLaurelCrown } from "react-icons/gi";
+import { BADGES_LIST } from "@/constants/badges";
 
-const badges = [
-  {
-    title: "Clean & Cozy Environment",
-    description: "Hygienic, peaceful spaces for stress-free stays",
-    icon: FaBroom,
-    accent: "from-[#FAD0C4] to-[#FFD1FF]",
-  },
-  {
-    title: "Structure & Stability",
-    description: "Consistent routines and thoughtful introductions",
-    icon: FaClock,
-    accent: "from-[#B8F2E6] to-[#AEC5EB]",
-  },
-  {
-    title: "Transparent Communication",
-    description: "Reliable photo and video updates",
-    icon: FaCameraRetro,
-    accent: "from-[#FFECB3] to-[#FFCC80]",
-  },
-  {
-    title: "Personalized Care",
-    description: "Fun add-ons and vacation-style enrichment",
-    icon: FaHeart,
-    accent: "from-[#FDC5F5] to-[#FF9A9E]",
-  },
-  {
-    title: "Playbook Excellence",
-    description:
-      "Sitters who naturally incorporate the Ruh-Roh Playbook to deliver a calm, boutique retreat experience.",
-    icon: FaBookOpen,
-    accent: "from-[#D7FFD9] to-[#A7F0BA]",
-  },
-  {
-    title: "Client Loyalty",
-    description:
-      "Sitters with strong repeat bookings and long-term trusted client relationships.",
-    icon: FaHandshake,
-    accent: "from-[#FFE8D6] to-[#FFC3A0]",
-  },
-  {
-    title: "Five-Star Consistency",
-    description:
-      "Sitters who consistently receive excellent reviews and provide a dependable guest experience.",
-    icon: FaStar,
-    accent: "from-[#FFF6B7] to-[#FECF6A]",
-  },
-];
+const badges = BADGES_LIST;
 
 function BadgeSystemSection() {
   return (
@@ -86,27 +33,30 @@ function BadgeSystemSection() {
         </motion.div>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-          {badges.map(({ title, description, icon: Icon, accent }, index) => (
+          {badges.map(({ title, description, imageSrc, accent }, index) => (
             <motion.div
               key={title}
-              className="group relative overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-100"
+              className="relative overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-100"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              whileHover={{ translateY: -8 }}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-0 transition-opacity duration-500 group-hover:opacity-90`} aria-hidden="true" />
+              <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-0 transition-opacity duration-500`} aria-hidden="true" />
               <div className="relative p-8 flex flex-col h-full justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 rounded-full bg-[#F4F4F9] flex items-center justify-center text-2xl text-[#1A9CB0] shadow-inner">
-                    <Icon aria-hidden="true" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-[#333333] group-hover:text-white transition-colors duration-300">
+                  <Image
+                    src={imageSrc}
+                    alt={title}
+                    width={80}
+                    height={80}
+                    className="object-cover rounded-full"
+                  />
+                  <h3 className="text-xl font-semibold text-[#333333] transition-colors duration-300">
                     {title}
                   </h3>
                 </div>
-                <p className="mt-5 text-gray-600 text-base leading-relaxed group-hover:text-white transition-colors duration-300">
+                <p className="mt-5 text-gray-600 text-base leading-relaxed transition-colors duration-300">
                   {description}
                 </p>
               </div>
