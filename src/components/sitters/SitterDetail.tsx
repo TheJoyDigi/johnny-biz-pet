@@ -73,8 +73,8 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
   };
 
   return (
-    <section className="bg-white rounded-3xl shadow-xl overflow-hidden max-w-5xl mx-auto">
-      <div className="relative w-full h-72 md:h-96">
+    <section className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden max-w-5xl mx-auto">
+      <div className="relative w-full h-52 sm:h-72 md:h-96">
         <Image
           src={sitter.heroImage}
           alt={`${sitter.name}'s home environment`}
@@ -83,11 +83,11 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
           className="object-cover"
         />
       </div>
-      <div className="p-8 lg:p-12 space-y-10">
+      <div className="p-6 sm:p-8 lg:p-12 space-y-8 sm:space-y-10">
         <div>
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
             <div className="flex items-center gap-4">
-              <div className="relative h-20 w-20 md:h-24 md:w-24 rounded-full ring-4 ring-white shadow-lg overflow-hidden">
+              <div className="relative h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 rounded-full ring-4 ring-white shadow-lg overflow-hidden">
                 <Image
                   src={sitter.avatar || sitter.heroImage}
                   alt={`${sitter.name} avatar`}
@@ -97,12 +97,12 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                 />
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-[#333333]">{sitter.name}</h1>
-                <p className="text-base md:text-lg text-gray-600 mt-1">{sitter.tagline}</p>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#333333]">{sitter.name}</h1>
+                <p className="text-sm sm:text-base md:text-lg text-gray-600 mt-1">{sitter.tagline}</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-3">
-              <span className="inline-flex items-center px-4 py-2 rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] text-sm font-semibold">
+              <span className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] text-xs sm:text-sm font-semibold">
                 {sitter.locations.map((location) => `${location.city}, ${location.state}`).join(" • ")}
               </span>
             </div>
@@ -317,9 +317,9 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-4 items-center">
-            <span className="text-sm text-gray-500">{sitter.availabilityNotes}</span>
-            <div className="ml-auto flex flex-wrap gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center">
+            <span className="text-sm text-gray-500 text-center sm:text-left">{sitter.availabilityNotes}</span>
+            <div className="sm:ml-auto flex flex-wrap gap-3 w-full sm:w-auto justify-center sm:justify-end">
               <Link
                 href="/#booking"
                 className="inline-flex items-center px-6 py-3 rounded-full bg-[#F28C38] text-white font-semibold hover:bg-[#e07a26] transition-colors"

@@ -21,15 +21,26 @@ const SitterPage = ({ sitter }: SitterPageProps) => {
         <meta name="description" content={`Meet ${sitter.name}, a Ruh-Roh Retreat sitter serving ${sitter.locations[0]?.city ?? "Southern California"}.`} />
       </Head>
       <Header />
-      <main className="bg-[#F4F4F9] min-h-screen py-16">
+      <main className="bg-[#F4F4F9] min-h-screen py-10 sm:py-16">
         <div className="container mx-auto px-4 space-y-8">
           <div className="max-w-5xl mx-auto flex items-center justify-between flex-wrap gap-4">
             <p className="uppercase tracking-widest text-sm font-semibold text-[#1A9CB0]">Sitter Profile</p>
-            <Link href="/sitters" className="inline-flex items-center px-6 py-3 rounded-full bg-white text-[#1A9CB0] font-semibold shadow hover:shadow-md transition">
+            <Link
+              href="/sitters"
+              className="inline-flex items-center px-4 py-2 text-sm sm:text-base rounded-full bg-white text-[#1A9CB0] font-semibold shadow hover:shadow-md transition"
+            >
               ← Back to all sitters
             </Link>
           </div>
           <SitterDetail sitter={sitter} />
+          <div className="max-w-5xl mx-auto flex justify-center">
+            <Link
+              href="/sitters"
+              className="inline-flex items-center px-5 py-3 text-sm sm:text-base rounded-full bg-white text-[#1A9CB0] font-semibold shadow hover:shadow-md transition"
+            >
+              ← Back to all sitters
+            </Link>
+          </div>
         </div>
       </main>
       <Footer />
