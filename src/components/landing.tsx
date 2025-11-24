@@ -13,6 +13,7 @@ import RatesTransparencySection from "./landing/RatesTransparencySection";
 import SafetyTrustSection from "./landing/SafetyTrustSection";
 import VacationAddOnsSection from "./landing/VacationAddOnsSection";
 import { Location } from "./landing/types";
+import { LOCAL_BUSINESS_SCHEMA } from "./meta-data";
 import { sitters } from "@/data/sitters";
 
 const locations: Location[] = [
@@ -63,47 +64,7 @@ function LandingComponent() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            name: "Ruh-Roh Retreat",
-            image: "https://www.ruhrohretreat.com",
-            url: "https://www.ruhrohretreat.com",
-            telephone: "+17143294534",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "13212 Telmo",
-              addressLocality: "Irvine",
-              addressRegion: "CA",
-              postalCode: "92618",
-              addressCountry: "US",
-            },
-            priceRange: "$$",
-            openingHoursSpecification: [
-              {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: [
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                ],
-                opens: "08:00",
-                closes: "18:00",
-              },
-              {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: ["Saturday"],
-                opens: "09:00",
-                closes: "17:00",
-              },
-            ],
-            sameAs: [
-              "https://www.facebook.com/ruhrohretreat",
-              "https://www.instagram.com/ruhrohretreat",
-            ],
-          }),
+          __html: JSON.stringify(LOCAL_BUSINESS_SCHEMA),
         }}
       />
     </div>
