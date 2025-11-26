@@ -49,48 +49,54 @@ function SafetyTrustSection() {
           </div>
 
           <h2 className="mt-6 text-3xl font-bold text-[#333333] md:text-4xl">
-            Your dog is cared for by people we know and trust
+            Safety & Trust at Ruh-Roh Retreat
           </h2>
 
           <p className="mt-4 text-lg leading-relaxed text-gray-600">
-            Every sitter in our network is hand-selected for their compassion, professionalism, and love for dogs.
+            At Ruh-Roh Retreat, your dog’s safety and comfort come first.
           </p>
           <p className="mt-3 text-base text-gray-600">
-            We look for calm homes, transparent communication, and sitters who follow the Ruh-Roh Playbook.
+            We’ve built a boutique, high-standard network where every sitter is carefully vetted, background checked, and committed to providing a calm, structured, and caring environment.
           </p>
         </motion.div>
 
-        <motion.div
-          className="mt-12 max-w-3xl mx-auto text-center bg-white/80 border border-[#1A9CB0]/15 rounded-2xl p-8 shadow-lg backdrop-blur"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          viewport={{ once: true }}
-        >
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#1A9CB0]/10 text-2xl text-[#1A9CB0]">
-            <FaClipboardCheck aria-hidden="true" />
-          </div>
-          <p className="mt-4 text-lg font-semibold text-[#333333]">
-            We highlight sitters who:
-          </p>
-          <ul className="mt-5 space-y-4 text-base text-gray-600 text-left">
-            {highlights.map(({ title, description, icon: Icon }) => (
-              <li key={title} className="flex items-start gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0]">
-                  <Icon aria-hidden="true" className="text-lg" />
-                </div>
-                <div>
-                  <p className="font-medium text-[#333333]">{title}</p>
-                  <p>{description}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <motion.div
+            className="bg-white/80 border border-[#1A9CB0]/15 rounded-2xl p-8 shadow-lg backdrop-blur"
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] mb-6">
+              <FaClipboardCheck aria-hidden="true" className="text-xl" />
+            </div>
+            <h3 className="text-xl font-bold text-[#333333] mb-3">
+              Background-Checked Sitters
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              All independent sitters complete a professional background check before joining the platform. This helps ensure every family is connected with trustworthy, dependable caregivers.
+            </p>
+          </motion.div>
 
-        <p className="mt-12 text-center text-base font-medium text-[#1A9CB0]">
-          Your dog’s safety and happiness always come first.
-        </p>
+          <motion.div
+            className="bg-white/80 border border-[#1A9CB0]/15 rounded-2xl p-8 shadow-lg backdrop-blur"
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] mb-6">
+              <FaShieldAlt aria-hidden="true" className="text-xl" />
+            </div>
+            <h3 className="text-xl font-bold text-[#333333] mb-3">
+              Platform-Provided Incident Protection
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              Every booking includes platform-level incident protection to help cover unexpected costs from rare accidents, injuries, or property damage that may occur during a stay. This protection is automatically included with your booking, offering added peace of mind.
+            </p>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

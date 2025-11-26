@@ -62,43 +62,18 @@ function RatesTransparencySection() {
         >
           <span className="inline-flex items-center gap-2 rounded-full bg-[#1A9CB0]/10 px-4 py-2 text-sm font-semibold text-[#1A9CB0] uppercase tracking-widest">
             <FaMoneyBillWave className="text-lg" aria-hidden="true" />
-            Rates &amp; Transparency
+            Rates
           </span>
           <h2
             id="rates-transparency-heading"
             className="mt-6 text-3xl md:text-4xl font-bold text-[#333333]"
           >
-            Premium Care, Fair & Transparent Rates
+            How Pricing Works
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
-            Pricing, services, and availability are set directly by each independent sitter, keeping every booking clear and collaborative.
+            All pricing, availability, and services are set independently by each sitter. Ruh-Roh Retreat simply provides the platform tools that allow sitters to display their rates clearly and pet parents to compare options easily.
           </p>
         </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {highlights.map(({ title, description, icon: Icon, accent }, index) => (
-            <motion.article
-              key={title}
-              className="group relative bg-white rounded-2xl border border-gray-100 shadow-lg p-8 overflow-hidden"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10, boxShadow: "0 20px 35px -15px rgba(26, 156, 176, 0.35)" }}
-            >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white via-white/95 to-white" />
-              <div className="relative flex items-center mb-6">
-                <div
-                  className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${accent} text-white shadow-lg shadow-[#1A9CB0]/20`}
-                >
-                  <Icon aria-hidden="true" className="text-2xl" />
-                </div>
-                <h3 className="ml-4 text-xl font-semibold text-[#333333]">{title}</h3>
-              </div>
-              <p className="relative text-base text-gray-600 leading-relaxed">{description}</p>
-            </motion.article>
-          ))}
-        </div>
 
         <motion.div
           className="relative max-w-3xl mx-auto rounded-2xl border border-dashed border-[#1A9CB0]/30 bg-white/80 backdrop-blur p-8 shadow-xl"
@@ -121,9 +96,6 @@ function RatesTransparencySection() {
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-sm text-gray-500 text-center">
-            Pricing, services, and availability are set by each sitter.
-          </p>
         </motion.div>
       </div>
     </section>
