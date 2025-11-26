@@ -11,7 +11,7 @@ const HERO_FADE_EASE = cubicBezier(0.4, 0, 0.2, 1);
 
 function HeroSection({ onBookNow }: HeroSectionProps) {
   return (
-    <section className="relative h-[80vh] flex items-center">
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
       <div className="absolute inset-0 z-0">
         <motion.div
           initial={{ opacity: 0 }}
@@ -24,96 +24,89 @@ function HeroSection({ onBookNow }: HeroSectionProps) {
         >
           <Image
             src="/hero/landing-hero.png"
-            alt="Pet sitter playing with dogs"
+            alt="Happy dog in a boutique home environment"
             layout="fill"
             objectFit="cover"
             quality={100}
             priority
           />
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
-            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.3 }}
-            className="absolute inset-0 bg-black"
-          />
+          {/* Gradient Overlay: Darker on left for text readability, transparent on right to show the dog */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10 text-white flex flex-col justify-center items-center text-center pb-48">
+      <div className="container mx-auto px-6 relative z-10 pt-20 pb-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.5 }}
-          className="max-w-2xl"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, ease: HERO_FADE_EASE }}
+          className="max-w-3xl"
         >
-          <motion.h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white drop-shadow-lg"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.6 }}
-          >
-            Boutique In-Home Dog Sitting — Structured Care, Happy Tails
-          </motion.h1>
-          <motion.p
-            className="text-xl md:text-2xl mb-8 text-white/90"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.7 }}
-          >
-            Your dog deserves more than just care — they deserve a vacation.
-          </motion.p>
-          <motion.p
-            className="text-lg md:text-xl mb-4 text-white/90"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.75 }}
-          >
-            Ruh-Roh Retreat connects pet parents with badge-verified sitters who share our boutique philosophy of structure,
-            comfort, and personalized attention.
-          </motion.p>
-          <motion.p
-            className="text-base md:text-lg mb-2 text-white/80 font-semibold"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.8 }}
-          >
-            ⭐⭐⭐⭐⭐ Founded by sitters with 95+ five-star reviews
-          </motion.p>
-          <motion.p
-            className="text-base md:text-lg mb-8 text-white/80"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.85 }}
-          >
-            20+ reviews on Google & Yelp as Ruh-Roh Retreat
-          </motion.p>
-        </motion.div>
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/50 to-transparent pt-8 pb-4">
-        <div className="container mx-auto px-4">
+          {/* Trust Badge */}
           <motion.div
-            className="flex flex-wrap gap-4 justify-center mb-8"
-            initial={{ opacity: 0, y: 80 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.8 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium mb-8"
+          >
+            <span className="text-[#F28C38]">★★★★★</span>
+            <span>Founded by sitters with 95+ five-star reviews</span>
+          </motion.div>
+
+          {/* Main Headline */}
+          <motion.h1
+            className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 drop-shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            Boutique In-Home <br />
+            <span className="text-[#F28C38]">Dog Sitting</span>
+          </motion.h1>
+
+          {/* Subhead & Description */}
+          <motion.p
+            className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-2xl drop-shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            Structured care, happy tails. Your dog deserves more than just a sitter — they deserve a vacation.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            className="flex flex-wrap gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
           >
             <Link
               href="/sitters"
-              className="bg-[#F28C38] hover:bg-[#e07a26] text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 inline-flex items-center gap-2"
+              className="bg-[#F28C38] hover:bg-[#e07a26] text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 inline-flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <FaPaw className="h-5 w-5" aria-hidden="true" />
               Find a Sitter
             </Link>
             <button
               onClick={onBookNow}
-              className="bg-transparent hover:bg-white/20 text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 border-2 border-white/60 inline-flex items-center gap-2"
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 border border-white/30 inline-flex items-center gap-2"
             >
               <FaEnvelope className="h-5 w-5" aria-hidden="true" />
               Submit a Request
             </button>
           </motion.div>
-        </div>
+
+          {/* Additional Trust Signal */}
+          <motion.p
+            className="mt-8 text-white/60 text-sm font-medium"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 1 }}
+          >
+            Trusted by local pet parents • Verified Reviews on Google & Yelp
+          </motion.p>
+        </motion.div>
       </div>
     </section>
   );

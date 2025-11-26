@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaEnvelope, FaPaw } from "react-icons/fa";
 
 import MultiLocationMap from "../MultiLocationMap";
 import { Location } from "./types";
@@ -19,14 +20,16 @@ function CallToActionSection({ onBookNow, locations }: CallToActionSectionProps)
         <div className="mb-8 flex flex-wrap gap-4 justify-center">
           <Link
             href="/sitters"
-            className="bg-white text-[#1A9CB0] font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 hover:bg-white/90"
+            className="bg-[#F28C38] hover:bg-[#e07a26] text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 inline-flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
+            <FaPaw className="h-5 w-5" aria-hidden="true" />
             Find a Sitter
           </Link>
           <button
             onClick={onBookNow}
-            className="bg-transparent border-2 border-white text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 hover:bg-white/10"
+            className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 border border-white/30 inline-flex items-center gap-2"
           >
+            <FaEnvelope className="h-5 w-5" aria-hidden="true" />
             Submit a Request
           </button>
         </div>
