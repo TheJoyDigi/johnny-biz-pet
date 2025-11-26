@@ -1,25 +1,30 @@
 import { motion } from "framer-motion";
 import { FaClipboardList } from "react-icons/fa";
+
 const steps = [
   {
     title: "Browse Sitters",
     description:
       "View sitter profiles with photos, reviews, home details, and Ruh-Roh Badges.",
+    color: "#1A9CB0",
   },
   {
     title: "Submit a Request",
     description:
       "Choose your sitter, enter dates, and share details about your pup.",
+    color: "#F28C38",
   },
   {
     title: "Meet & Greet",
     description:
       "Your chosen sitter contacts you to schedule a meet-and-greet and confirm fit.",
+    color: "#6C63FF",
   },
   {
     title: "Book & Relax",
     description:
       "Once booked, your sitter provides updates while your dog enjoys their boutique retreat.",
+    color: "#3A7CA5",
   },
 ];
 
@@ -27,18 +32,19 @@ function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="relative py-20 bg-white overflow-hidden"
+      className="relative py-24 bg-white overflow-hidden"
       aria-labelledby="how-it-works-heading"
     >
+      {/* Playful background elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -right-32 top-12 h-72 w-72 rounded-full bg-gradient-to-br from-[#F28C38]/20 to-[#6C63FF]/10 blur-3xl" />
-        <div className="absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-gradient-to-tr from-[#1A9CB0]/20 to-[#E4572E]/10 blur-3xl" />
+        <div className="absolute -right-20 top-20 h-96 w-96 rounded-full bg-gradient-to-br from-[#F28C38]/10 to-[#6C63FF]/5 blur-3xl animate-pulse-slow" />
+        <div className="absolute -left-20 bottom-0 h-[30rem] w-[30rem] rounded-full bg-gradient-to-tr from-[#1A9CB0]/10 to-[#E4572E]/5 blur-3xl animate-pulse-slow delay-1000" />
       </div>
 
-      <div className="container mx-auto px-4 relative">
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 16 }}
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
@@ -49,47 +55,52 @@ function HowItWorksSection() {
           </span>
           <h2
             id="how-it-works-heading"
-            className="mt-6 text-3xl md:text-4xl font-bold text-[#333333]"
+            className="mt-6 text-4xl md:text-5xl font-extrabold text-[#333333] tracking-tight"
           >
-            Booking through Ruh-Roh Retreat is simple, transparent, and stress-free.
+            Booking is <span className="text-[#1A9CB0] underline decoration-[#F28C38]/50 underline-offset-4">Simple</span> & Stress-Free
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {steps.map(({ title, description }, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+          {steps.map(({ title, description, color }, index) => (
             <motion.div
               key={title}
-              className="group relative bg-white rounded-2xl border border-gray-100 shadow-lg p-6 lg:p-8 overflow-hidden"
-              initial={{ opacity: 0, y: 24 }}
+              className="group relative bg-white rounded-[2rem] border-2 border-transparent hover:border-current p-8 lg:p-10 shadow-lg transition-all duration-300"
+              style={{ borderColor: `${color}20` }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
               whileHover={{
-                y: -10,
-                boxShadow: "0 20px 35px -15px rgba(26, 156, 176, 0.35)",
+                y: -8,
+                boxShadow: `0 20px 40px -15px ${color}30`,
               }}
             >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white via-white/90 to-white" />
-              <div className="relative flex items-center mb-6">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A9CB0] text-white text-lg font-bold mr-4">
+              <div className="flex items-start gap-6">
+                <div 
+                  className="flex-shrink-0 flex h-16 w-16 items-center justify-center rounded-2xl text-white text-2xl font-bold shadow-md transform group-hover:rotate-6 transition-transform duration-300"
+                  style={{ backgroundColor: color }}
+                >
                   {index + 1}
-                </span>
-                <h3 className="text-xl font-semibold text-[#333333]">
-                  {title}
-                </h3>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-[#333333] mb-3 group-hover:text-[color:var(--hover-color)] transition-colors" style={{ '--hover-color': color } as any}>
+                    {title}
+                  </h3>
+                  <p className="text-lg text-gray-600 leading-relaxed">
+                    {description}
+                  </p>
+                </div>
               </div>
-              <p className="relative text-base text-gray-600 leading-relaxed">
-                {description}
-              </p>
             </motion.div>
           ))}
         </div>
 
         <motion.p
-          className="mt-12 text-sm text-gray-500 max-w-3xl mx-auto text-center"
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-16 text-center text-gray-500 max-w-3xl mx-auto font-medium"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
         >
           Ruh-Roh Retreat connects clients with independently verified sitters. Our badge system ensures quality standards while giving sitters the flexibility to deliver care their way.
