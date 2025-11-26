@@ -318,7 +318,7 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
           </div>
 
           <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center">
-            <span className="text-sm text-gray-500 text-center sm:text-left">{sitter.availabilityNotes}</span>
+
             <div className="sm:ml-auto flex flex-wrap gap-3 w-full sm:w-auto justify-center sm:justify-end">
               <Link
                 href={{
