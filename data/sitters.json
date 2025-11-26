@@ -165,12 +165,13 @@
         { "label": "14+ nights", "detail": "10% off" },
         { "label": "30+ nights", "detail": "15% off" }
       ],
-      "referral": [
-        { "label": "Referral Discount", "detail": "10% off" }
-      ],
       "additionalDog": [
         { "label": "Additional dog", "detail": "$40/night per extra dog" }
+      ],
+      "referral": [
+        { "label": "Referral Discount", "detail": "10% off" }
       ]
+
     },
     "reviews": [],
     "contactEmail": "bookings@ruhrohretreat.com"
@@ -273,6 +274,9 @@
         { "label": "7–13 nights", "detail": "5% off" },
         { "label": "14+ nights", "detail": "10% off" },
         { "label": "30+ nights", "detail": "15% off" }
+      ],
+      "additionalDog": [
+        { "label": "Additional dog", "detail": "$40/night per extra dog" }
       ],
       "referral": [
         { "label": "Referral Discount", "detail": "10% off" }
