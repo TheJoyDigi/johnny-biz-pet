@@ -1,97 +1,101 @@
-import { ChangeEvent, FocusEvent, FormEvent, RefObject, useCallback, useEffect, useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
-import { Sitter, SitterPrimaryService } from "@/data/sitters";
+import { Sitter } from "@/data/sitters";
 
-type BookingForm = {
-  sitterId: string;
-  serviceId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  petName: string;
-  petType: string;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
-  addons: { [key: string]: number };
-  notes: string;
-};
+const phoneRegex = /^(\+?1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?\d{3}[-.\s]?\d{4}$/;
+
+const bookingSchema = z.object({
+  sitterId: z.string().min(1, "Select Sitter is required"),
+  serviceId: z.string().min(1, "Service is required"),
+  firstName: z.string().min(1, "First Name is required"),
+  lastName: z.string().min(1, "Last Name is required"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().regex(phoneRegex, "Please enter a valid US phone number"),
+  petName: z.string().min(1, "Pet Name is required"),
+  petType: z.string().min(1, "Pet Type is required"),
+  startDate: z.string().min(1, "Drop Off Date is required"),
+  startTime: z.string().min(1, "Drop Off Time is required"),
+  endDate: z.string().min(1, "Pick Up Date is required"),
+  endTime: z.string().min(1, "Pick Up Time is required"),
+  notes: z.string().optional(),
+  referralSource: z.string().optional(),
+  addons: z.record(z.string(), z.number()).optional(),
+  acceptedTerms: z.boolean().refine((val) => val === true, {
+    message: "Please review and accept the Terms of Service to continue.",
+  }),
+}).refine((data) => {
+  if (!data.startDate || !data.endDate) return true;
+  const start = new Date(data.startDate);
+  const end = new Date(data.endDate);
+  return end >= start;
+}, {
+  message: "Pick Up Date must be after Drop Off Date",
+  path: ["endDate"],
+});
+
+type BookingFormValues = z.infer<typeof bookingSchema>;
 
 type BookingSectionProps = {
-  sectionRef: RefObject<HTMLElement>;
+  sectionRef: React.RefObject<HTMLElement>;
   sitters: Sitter[];
 };
 
 function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
   const router = useRouter();
   const defaultSitter = sitters[0];
-  const [selectedSitter, setSelectedSitter] = useState<Sitter>(defaultSitter);
   const termsPdfPath = "/legal/terms-of-service.pdf";
-  const [bookingForm, setBookingForm] = useState<BookingForm>(() => ({
-    sitterId: defaultSitter?.id ?? "",
-    serviceId: defaultSitter?.services.primary[0]?.name ?? "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    petName: "",
-    petType: "dog",
-    startDate: "",
-    startTime: "09:00",
-    endDate: "",
-    endTime: "17:00",
-    addons: {},
-    notes: "",
-  }));
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [nightsCount, setNightsCount] = useState<number | null>(null);
   const todayISO = new Date().toISOString().split("T")[0];
-  const baseInputClasses = "w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2";
-  const inputClasses = (fieldName: string, forceError = false) => {
-    const hasError = forceError || Boolean(errors[fieldName]);
-    return `${baseInputClasses} ${hasError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"}`;
-  };
-  const renderError = (message?: string) =>
-    message ? (
-      <div className="mt-2 flex items-start gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-md p-2">
-        <svg
-          className="h-4 w-4 mt-0.5 text-red-500"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.5a.75.75 0 00-1.5 0v4.25a.75.75 0 001.5 0V6.5zm0 6.5a.75.75 0 10-1.5 0 .75.75 0 001.5 0z"
-            clipRule="evenodd"
-          />
-        </svg>
-        <span>{message}</span>
-      </div>
-    ) : null;
 
-  const sitterAddOns = selectedSitter?.services.addOns ?? [];
-  const [lastQuerySitter, setLastQuerySitter] = useState<string | null>(null);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-
-  const applySitterSelection = useCallback((newSitter: Sitter) => {
-    setSelectedSitter(newSitter);
-    setBookingForm((prev) => ({
-      ...prev,
-      sitterId: newSitter.id,
-      serviceId: newSitter.services.primary[0]?.name ?? "",
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting, isValid },
+    reset,
+  } = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      sitterId: defaultSitter?.id ?? "",
+      serviceId: defaultSitter?.services.primary[0]?.name ?? "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      petName: "",
+      petType: "dog",
+      startDate: "",
+      startTime: "09:00",
+      endDate: "",
+      endTime: "17:00",
       addons: {},
-    }));
-  }, []);
+      notes: "",
+      referralSource: "",
+      acceptedTerms: undefined, // Let the user check it
+    },
+    mode: "onChange", // Validate on change to update button state in real-time
+  });
 
+  const selectedSitterId = watch("sitterId");
+  const selectedSitter = sitters.find((s) => s.id === selectedSitterId) || defaultSitter;
+  const startDate = watch("startDate");
+  const endDate = watch("endDate");
+  const serviceId = watch("serviceId");
+  const addons = (watch("addons") || {}) as Record<string, number>;
+
+  const [lastQuerySitter, setLastQuerySitter] = useState<string | null>(null);
+
+  // Handle Sitter Query Param
   useEffect(() => {
     if (!router.isReady) return;
     const sitterQuery = router.query.sitter;
@@ -109,163 +113,34 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
       sitters.find((sitter) => sitter.uid === sitterUid) ??
       sitters.find((sitter) => sitter.id === sitterUid);
 
-    if (matchingSitter && matchingSitter.id !== selectedSitter.id) {
-      applySitterSelection(matchingSitter);
+    if (matchingSitter && matchingSitter.id !== selectedSitterId) {
+      setValue("sitterId", matchingSitter.id);
+      setValue("serviceId", matchingSitter.services.primary[0]?.name ?? "");
+      setValue("addons", {});
+      setLastQuerySitter(sitterUid);
     }
+  }, [router.isReady, router.query.sitter, sitters, selectedSitterId, lastQuerySitter, setValue]);
 
-    setLastQuerySitter(sitterUid);
-  }, [router.isReady, router.query.sitter, sitters, selectedSitter.id, applySitterSelection, lastQuerySitter]);
-
+  // Calculate Nights
   useEffect(() => {
-    if (bookingForm.startDate && bookingForm.endDate) {
-      const start = new Date(bookingForm.startDate);
-      const end = new Date(bookingForm.endDate);
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
 
-      if (end < start) {
-        setErrors((prev) => ({ ...prev, date: "End date must be after start date" }));
-        setNightsCount(null);
-      } else {
-        setErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors.date;
-          return newErrors;
-        });
+      if (end >= start) {
         const diffTime = Math.abs(end.getTime() - start.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         setNightsCount(diffDays);
+      } else {
+        setNightsCount(null);
       }
     } else {
       setNightsCount(null);
     }
-  }, [bookingForm.startDate, bookingForm.endDate]);
+  }, [startDate, endDate]);
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setBookingForm({
-      ...bookingForm,
-      [name]: value,
-    });
-
-    // Clear error when user types
-    if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
-
-  const handleBlur = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    const trimmedValue = typeof value === "string" ? value.trim() : value;
-    let error = "";
-
-    if (["firstName", "lastName", "petName", "startDate", "endDate", "startTime", "endTime", "email", "phone"].includes(name)) {
-      if (!trimmedValue) {
-        error = "This field is required";
-      }
-    }
-
-    if (!error && name === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        error = "Please enter a valid email address";
-      }
-    }
-
-    if (!error && name === "phone") {
-      const phoneRegex = /^(\+?1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?\d{3}[-.\s]?\d{4}$/;
-      if (!phoneRegex.test(value)) {
-        error = "Please enter a valid US phone number";
-      }
-    }
-
-    setErrors((prev) => {
-      const newErrors = { ...prev };
-      if (error) {
-        newErrors[name] = error;
-      } else {
-        delete newErrors[name];
-      }
-      return newErrors;
-    });
-  };
-
-  const handleSitterChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const sitterId = e.target.value;
-    const newSitter = sitters.find((s) => s.id === sitterId);
-    if (!newSitter) return;
-
-    applySitterSelection(newSitter);
-  };
-
-  const handleAddonQuantityChange = (name: string, delta: number) => {
-    setBookingForm((prev) => {
-      const currentQty = prev.addons[name] || 0;
-      const newQty = Math.max(0, currentQty + delta);
-      return {
-        ...prev,
-        addons: {
-          ...prev.addons,
-          [name]: newQty,
-        },
-      };
-    });
-  };
-
-  const handleTermsChange = (checked: boolean) => {
-    setAcceptedTerms(checked);
-    if (errors.terms && checked) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next.terms;
-        return next;
-      });
-    }
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: BookingFormValues) => {
     (window as any).clarity?.("event", "Request Booking Clicked");
-
-    const newErrors: { [key: string]: string } = {};
-
-    if (errors.date) {
-      newErrors.date = errors.date;
-    }
-
-    if (!acceptedTerms) {
-      newErrors.terms = "Please review and accept the Terms of Service to continue.";
-    }
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(bookingForm.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    // Validate phone (US phone number format)
-    // Matches: (123) 456-7890, 123-456-7890, 123.456.7890, 1234567890, +1 123 456 7890
-    const phoneRegex = /^(\+?1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?\d{3}[-.\s]?\d{4}$/;
-    if (!phoneRegex.test(bookingForm.phone)) {
-      newErrors.phone = "Please enter a valid US phone number";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      // Scroll to the first error
-      const firstKey = Object.keys(newErrors)[0];
-      const firstErrorField =
-        document.querySelector(`[name="${firstKey}"]`) ??
-        (firstKey === "terms" ? document.querySelector(`[name="acceptedTerms"]`) : null);
-      firstErrorField?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
-
-    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/booking", {
@@ -274,17 +149,16 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...bookingForm,
+          ...data,
           sitterName: selectedSitter.name,
-          locationName: selectedSitter.locations[0].city, // Assuming first location for now
-          acceptedTerms,
+          locationName: selectedSitter.locations[0].city,
         }),
       });
 
-      const data = await response.json();
+      const resData = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "An error occurred while submitting your booking request");
+        throw new Error(resData.message || "An error occurred while submitting your booking request");
       }
 
       setFormSubmitted(true);
@@ -293,31 +167,56 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
         sectionRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
 
-      setBookingForm({
-        sitterId: selectedSitter?.id ?? sitters[0]?.id ?? "",
-        serviceId: selectedSitter?.services.primary[0]?.name ?? sitters[0]?.services.primary[0]?.name ?? "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        petName: "",
-        petType: "dog",
-        startDate: "",
-        startTime: "09:00",
-        endDate: "",
-        endTime: "17:00",
-        addons: {},
-        notes: "",
-      });
-      setAcceptedTerms(false);
+      reset();
       setNightsCount(null);
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("There was an error submitting your booking request. Please try again later.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
+
+  const handleAddonQuantityChange = (name: string, delta: number) => {
+    const currentQty = addons[name] || 0;
+    const newQty = Math.max(0, currentQty + delta);
+    setValue("addons", { ...addons, [name]: newQty });
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    if (!value) return value;
+    const phoneNumber = value.replace(/[^\d]/g, "");
+    const phoneNumberLength = phoneNumber.length;
+    if (phoneNumberLength < 4) return phoneNumber;
+    if (phoneNumberLength < 7) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    }
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+  };
+
+
+
+  const baseInputClasses = "w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors";
+  const getInputClasses = (hasError: boolean) =>
+    `${baseInputClasses} ${hasError ? "border-red-500 focus:ring-red-500 bg-red-50" : "border-gray-300 focus:ring-[#1A9CB0] hover:border-[#1A9CB0]"}`;
+
+  const renderError = (message?: string) =>
+    message ? (
+      <div className="mt-2 flex items-start gap-2 text-sm text-red-600 animate-fadeIn">
+        <svg
+          className="h-4 w-4 mt-0.5 text-red-500 flex-shrink-0"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fillRule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.5a.75.75 0 00-1.5 0v4.25a.75.75 0 001.5 0V6.5zm0 6.5a.75.75 0 10-1.5 0 .75.75 0 001.5 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+        <span>{message}</span>
+      </div>
+    ) : null;
 
   return (
     <section id="booking" ref={sectionRef} className="py-20 bg-[#F4F4F9]">
@@ -330,7 +229,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
         </div>
 
         {formSubmitted ? (
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-3xl mx-auto text-center">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-3xl mx-auto text-center animate-fadeIn">
             <div className="w-16 h-16 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -360,7 +259,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 max-w-4xl mx-auto">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
               {/* 1. Sitter Selection */}
               <div className="mb-6">
                 <label htmlFor="sitterId" className="block text-gray-700 font-medium mb-2">
@@ -368,11 +267,17 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                 </label>
                 <select
                   id="sitterId"
-                  name="sitterId"
-                  required
-                  value={selectedSitter?.id}
-                  onChange={handleSitterChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                  {...register("sitterId", {
+                    onChange: (e) => {
+                      const newSitterId = e.target.value;
+                      const newSitter = sitters.find((s) => s.id === newSitterId);
+                      if (newSitter) {
+                        setValue("serviceId", newSitter.services.primary[0]?.name ?? "");
+                        setValue("addons", {});
+                      }
+                    },
+                  })}
+                  className={getInputClasses(!!errors.sitterId)}
                 >
                   {sitters.map((sitter) => (
                     <option key={sitter.id} value={sitter.id}>
@@ -380,9 +285,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     </option>
                   ))}
                 </select>
+                {errors.sitterId && renderError(errors.sitterId.message)}
                 {selectedSitter && (
                   <p className="mt-2 text-sm text-gray-600">
-                    Location: {selectedSitter.locations.map(l => l.city).join(", ")}
+                    Location: {selectedSitter.locations.map((l) => l.city).join(", ")}
                   </p>
                 )}
               </div>
@@ -394,11 +300,8 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                 </label>
                 <select
                   id="serviceId"
-                  name="serviceId"
-                  required
-                  value={bookingForm.serviceId}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                  {...register("serviceId")}
+                  className={getInputClasses(!!errors.serviceId)}
                 >
                   {selectedSitter?.services.primary.map((service) => (
                     <option key={service.name} value={service.name}>
@@ -406,10 +309,11 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     </option>
                   ))}
                 </select>
-                {bookingForm.serviceId && (
-                   <p className="mt-2 text-sm text-gray-600">
-                     {selectedSitter?.services.primary.find(s => s.name === bookingForm.serviceId)?.description}
-                   </p>
+                {errors.serviceId && renderError(errors.serviceId.message)}
+                {serviceId && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    {selectedSitter?.services.primary.find((s) => s.name === serviceId)?.description}
+                  </p>
                 )}
               </div>
 
@@ -433,7 +337,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                 </div>
               </div>
 
-              {/* 2. Pick Up Date & Time */}
+              {/* 4. Dates & Times */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">
@@ -442,15 +346,11 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="date"
                     id="startDate"
-                    name="startDate"
-                    required
                     min={todayISO}
-                    value={bookingForm.startDate}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={inputClasses("startDate")}
+                    {...register("startDate")}
+                    className={getInputClasses(!!errors.startDate)}
                   />
-                  {renderError(errors.startDate)}
+                  {errors.startDate && renderError(errors.startDate.message)}
                 </div>
                 <div>
                   <label htmlFor="startTime" className="block text-gray-700 font-medium mb-2">
@@ -459,18 +359,13 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="time"
                     id="startTime"
-                    name="startTime"
-                    required
-                    value={bookingForm.startTime}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={inputClasses("startTime")}
+                    {...register("startTime")}
+                    className={getInputClasses(!!errors.startTime)}
                   />
-                  {renderError(errors.startTime)}
+                  {errors.startTime && renderError(errors.startTime.message)}
                 </div>
               </div>
 
-              {/* 3. Drop Off Date & Time */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label htmlFor="endDate" className="block text-gray-700 font-medium mb-2">
@@ -479,15 +374,11 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="date"
                     id="endDate"
-                    name="endDate"
-                    required
-                    min={bookingForm.startDate || todayISO}
-                    value={bookingForm.endDate}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={inputClasses("endDate", Boolean(errors.date))}
+                    min={startDate || todayISO}
+                    {...register("endDate")}
+                    className={getInputClasses(!!errors.endDate)}
                   />
-                  {renderError(errors.endDate)}
+                  {errors.endDate && renderError(errors.endDate.message)}
                 </div>
                 <div>
                   <label htmlFor="endTime" className="block text-gray-700 font-medium mb-2">
@@ -496,14 +387,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="time"
                     id="endTime"
-                    name="endTime"
-                    required
-                    value={bookingForm.endTime}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={inputClasses("endTime")}
+                    {...register("endTime")}
+                    className={getInputClasses(!!errors.endTime)}
                   />
-                  {renderError(errors.endTime)}
+                  {errors.endTime && renderError(errors.endTime.message)}
                 </div>
               </div>
 
@@ -515,10 +402,6 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                 </div>
               )}
 
-              {errors.date && <div className="mb-6">{renderError(errors.date)}</div>}
-
-
-
               {/* 5. Customer Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
@@ -528,14 +411,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="text"
                     id="firstName"
-                  name="firstName"
-                  required
-                  value={bookingForm.firstName}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  className={inputClasses("firstName")}
-                />
-                  {renderError(errors.firstName)}
+                    {...register("firstName")}
+                    className={getInputClasses(!!errors.firstName)}
+                  />
+                  {errors.firstName && renderError(errors.firstName.message)}
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-gray-700 font-medium mb-2">
@@ -544,14 +423,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="text"
                     id="lastName"
-                  name="lastName"
-                  required
-                  value={bookingForm.lastName}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  className={inputClasses("lastName")}
-                />
-                  {renderError(errors.lastName)}
+                    {...register("lastName")}
+                    className={getInputClasses(!!errors.lastName)}
+                  />
+                  {errors.lastName && renderError(errors.lastName.message)}
                 </div>
               </div>
 
@@ -563,30 +438,33 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="email"
                     id="email"
-                  name="email"
-                  required
-                  value={bookingForm.email}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  className={inputClasses("email")}
-                />
-                  {renderError(errors.email)}
+                    {...register("email")}
+                    className={getInputClasses(!!errors.email)}
+                  />
+                  {errors.email && renderError(errors.email.message)}
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">
                     Phone *
                   </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                  name="phone"
-                  required
-                  value={bookingForm.phone}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  className={inputClasses("phone")}
-                />
-                  {renderError(errors.phone)}
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="tel"
+                        id="phone"
+                        onChange={(e) => {
+                          const formatted = formatPhoneNumber(e.target.value);
+                          field.onChange(formatted);
+                        }}
+                        className={getInputClasses(!!errors.phone)}
+                        placeholder="(555) 555-5555"
+                      />
+                    )}
+                  />
+                  {errors.phone && renderError(errors.phone.message)}
                 </div>
               </div>
 
@@ -599,14 +477,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="text"
                     id="petName"
-                  name="petName"
-                  required
-                  value={bookingForm.petName}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  className={inputClasses("petName")}
-                />
-                  {renderError(errors.petName)}
+                    {...register("petName")}
+                    className={getInputClasses(!!errors.petName)}
+                  />
+                  {errors.petName && renderError(errors.petName.message)}
                 </div>
                 <div>
                   <label htmlFor="petType" className="block text-gray-700 font-medium mb-2">
@@ -614,45 +488,60 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   </label>
                   <select
                     id="petType"
-                    name="petType"
-                    required
-                    value={bookingForm.petType}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    {...register("petType")}
+                    className={getInputClasses(!!errors.petType)}
                   >
                     <option value="dog">Dog</option>
                     <option value="cat">Cat</option>
                     <option value="other">Other</option>
                   </select>
+                  {errors.petType && renderError(errors.petType.message)}
                 </div>
               </div>
 
-              {/* 7. Notes */}
+              {/* 7. Referral Source */}
+              <div className="mb-6">
+                <label htmlFor="referralSource" className="block text-gray-700 font-medium mb-2">
+                  How did you hear about us? <span className="text-gray-400 font-normal">(Optional)</span>
+                </label>
+                <select
+                  id="referralSource"
+                  {...register("referralSource")}
+                  className={getInputClasses(!!errors.referralSource)}
+                >
+                  <option value="">Select an option</option>
+                  <option value="Yelp">Yelp</option>
+                  <option value="Google">Google</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="Friend/Family">Friend/Family</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {/* 8. Notes */}
               <div className="mb-6">
                 <label htmlFor="notes" className="block text-gray-700 font-medium mb-2">
                   Additional Notes
                 </label>
                 <textarea
                   id="notes"
-                  name="notes"
                   rows={4}
-                  value={bookingForm.notes}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                  {...register("notes")}
+                  className={getInputClasses(!!errors.notes)}
                   placeholder="Tell us about any special requirements, your pet's routine, or other important details..."
                 ></textarea>
               </div>
 
-              {/* 8. Add-ons */}
-              {sitterAddOns.length > 0 && (
+              {/* 9. Add-ons */}
+              {selectedSitter?.services.addOns && selectedSitter.services.addOns.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">Enhance Your Pet's Stay</h3>
                   <p className="text-gray-600 mb-4">
                     Select any add-ons you'd like to include. You can always modify these later during our meet & greet.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {sitterAddOns.map(({ category, items }) => (
+                    {selectedSitter.services.addOns.map(({ category, items }) => (
                       <div key={category} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <h4 className="text-lg font-semibold text-gray-800 mb-3">{category}</h4>
                         <div className="space-y-4">
@@ -670,16 +559,16 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                                   type="button"
                                   onClick={() => handleAddonQuantityChange(addon.name, -1)}
                                   className={`w-8 h-8 rounded-full flex items-center justify-center border ${
-                                    (bookingForm.addons[addon.name] || 0) > 0
+                                    (addons[addon.name] || 0) > 0
                                       ? "border-[#F28C38] text-[#F28C38] hover:bg-[#F28C38] hover:text-white"
                                       : "border-gray-300 text-gray-300 cursor-not-allowed"
                                   } transition-colors`}
-                                  disabled={(bookingForm.addons[addon.name] || 0) <= 0}
+                                  disabled={(addons[addon.name] || 0) <= 0}
                                 >
                                   -
                                 </button>
                                 <span className="w-6 text-center font-medium text-gray-800">
-                                  {bookingForm.addons[addon.name] || 0}
+                                  {addons[addon.name] || 0}
                                 </span>
                                 <button
                                   type="button"
@@ -703,13 +592,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                 <label className="inline-flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    name="acceptedTerms"
-                    checked={acceptedTerms}
-                    onChange={(e) => handleTermsChange(e.target.checked)}
+                    {...register("acceptedTerms")}
                     className={`mt-1 h-5 w-5 rounded border focus:outline-none focus:ring-2 ${
-                      errors.terms ? "border-red-500 text-red-500 focus:ring-red-500" : "border-gray-300 text-[#1A9CB0] focus:ring-[#1A9CB0]"
+                      errors.acceptedTerms ? "border-red-500 text-red-500 focus:ring-red-500" : "border-gray-300 text-[#1A9CB0] focus:ring-[#1A9CB0]"
                     }`}
-                    required
                   />
                   <span className="text-sm text-gray-700 leading-relaxed">
                     I have reviewed and agree to the{" "}
@@ -719,16 +605,16 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     .
                   </span>
                 </label>
-                {renderError(errors.terms)}
+                {errors.acceptedTerms && renderError(errors.acceptedTerms.message)}
               </div>
 
               <div className="text-center">
                 <button
                   type="submit"
-                  disabled={isSubmitting || Object.keys(errors).length > 0}
+                  disabled={isSubmitting || !isValid}
                   className={`${
-                    isSubmitting || Object.keys(errors).length > 0
-                      ? "bg-gray-400"
+                    isSubmitting || !isValid
+                      ? "bg-gray-400 cursor-not-allowed"
                       : "bg-[#F28C38] hover:bg-[#e07a26]"
                   } text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 relative paw-button`}
                 >

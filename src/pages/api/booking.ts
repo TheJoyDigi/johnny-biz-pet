@@ -42,6 +42,7 @@ export default async function handler(
       endTime,
       addons,
       notes,
+      referralSource,
     } = req.body;
 
     // Basic validation
@@ -133,6 +134,14 @@ export default async function handler(
           ? `
         <h3>Additional Notes:</h3>
         <p>${notes}</p>
+      `
+          : ""
+      }
+
+      ${
+        referralSource
+          ? `
+        <p><strong>Referral Source:</strong> ${referralSource}</p>
       `
           : ""
       }
