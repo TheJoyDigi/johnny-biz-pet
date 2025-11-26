@@ -224,6 +224,43 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                   })}
                 </div>
               </div>
+              {sitter.discounts && (sitter.discounts.lengthOfStay || sitter.discounts.referral) && (
+                <div>
+                  <h3 className="text-lg font-semibold text-[#333333] mb-3">Discounts</h3>
+                  <div className="space-y-4">
+                    {sitter.discounts.lengthOfStay && sitter.discounts.lengthOfStay.length > 0 && (
+                      <div className="rounded-2xl bg-[#F4F4F9] p-4 border border-gray-200">
+                        <p className="text-sm uppercase tracking-wide text-[#1A9CB0] font-semibold mb-2">
+                          Length of Stay
+                        </p>
+                        <ul className="space-y-2">
+                          {sitter.discounts.lengthOfStay.map((discount: { label: string; detail: string }, index: number) => (
+                            <li key={index} className="flex flex-wrap justify-between text-sm text-gray-700">
+                              <span className="font-medium text-[#333333]">{discount.label}</span>
+                              <span className="text-[#F28C38] font-semibold">{discount.detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {sitter.discounts.referral && sitter.discounts.referral.length > 0 && (
+                      <div className="rounded-2xl bg-[#F4F4F9] p-4 border border-gray-200">
+                        <p className="text-sm uppercase tracking-wide text-[#1A9CB0] font-semibold mb-2">
+                          Referral
+                        </p>
+                        <ul className="space-y-2">
+                          {sitter.discounts.referral.map((discount: { label: string; detail: string }, index: number) => (
+                            <li key={index} className="flex flex-wrap justify-between text-sm text-gray-700">
+                              <span className="font-medium text-[#333333]">{discount.label}</span>
+                              <span className="text-[#F28C38] font-semibold">{discount.detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               {addOnCategories.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-[#333333] mb-3">Vacation-Style Add-ons</h3>
@@ -248,6 +285,37 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
               )}
             </div>
           </div>
+
+          {sitter.policies && (
+            <div>
+              <h2 className="text-xl font-semibold text-[#333333] mb-3">Booking Policies</h2>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+                  <h3 className="text-lg font-semibold text-[#333333] mb-3">Extended Care / Late Pickup</h3>
+                  <ul className="space-y-2">
+                    {sitter.policies.extendedCare.map((policy: { label: string; detail: string }, index: number) => (
+                      <li key={index} className="text-sm text-gray-700">
+                        <span className="font-semibold text-[#333333]">{policy.label}:</span>{" "}
+                        {policy.detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+                  <h3 className="text-lg font-semibold text-[#333333] mb-3">Cancellation Policy</h3>
+                  <ul className="space-y-2">
+                    {sitter.policies.cancellation.map((policy: { label: string; detail: string }, index: number) => (
+                      <li key={index} className="text-sm text-gray-700">
+                        <span className="font-semibold text-[#333333]">{policy.label}:</span>{" "}
+                        {policy.detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
 
           {galleryPhotos.length > 0 && (
             <PhotoGallerySection

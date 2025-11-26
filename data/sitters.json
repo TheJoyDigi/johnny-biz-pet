@@ -146,6 +146,29 @@
         }
       ]
     },
+    "policies": {
+      "cancellation": [
+        { "label": "72+ hours", "detail": "Free" },
+        { "label": "24–72 hours", "detail": "Charge $50" },
+        { "label": "<24 hours", "detail": "Charge $100" }
+      ],
+      "extendedCare": [
+        { "label": "Within 2 hours", "detail": "No fee" },
+        { "label": "2–4 hours late", "detail": "$20 flat fee" },
+        { "label": "4+ hours late", "detail": "$30 flat fee" }
+      ]
+    },
+    "discounts": {
+      "lengthOfStay": [
+        { "label": "1–6 nights", "detail": "Full price" },
+        { "label": "7–13 nights", "detail": "5% off" },
+        { "label": "14+ nights", "detail": "10% off" },
+        { "label": "30+ nights", "detail": "15% off" }
+      ],
+      "referral": [
+        { "label": "Referral Discount", "detail": "10% off" }
+      ]
+    },
     "reviews": [],
     "contactEmail": "bookings@ruhrohretreat.com"
   },
@@ -228,6 +251,29 @@
         }
       ],
       "addOns": []
+    },
+    "policies": {
+      "cancellation": [
+        { "label": "Free cancellation", "detail": "until 72h before check-in" },
+        { "label": "72–24h before", "detail": "50% of booking" },
+        { "label": "Within 24h", "detail": "100% of first 2 nights" }
+      ],
+      "extendedCare": [
+        { "label": "Within 2 hours", "detail": "No fee" },
+        { "label": "2–4 hours late", "detail": "$20 flat fee" },
+        { "label": "4+ hours late", "detail": "$30 flat fee" }
+      ]
+    },
+    "discounts": {
+      "lengthOfStay": [
+        { "label": "1–6 nights", "detail": "Full price" },
+        { "label": "7–13 nights", "detail": "5% off" },
+        { "label": "14+ nights", "detail": "10% off" },
+        { "label": "30+ nights", "detail": "15% off" }
+      ],
+      "referral": [
+        { "label": "Referral Discount", "detail": "10% off" }
+      ]
     },
     "reviews": [],
 

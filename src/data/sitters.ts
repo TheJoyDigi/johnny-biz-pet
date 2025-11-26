@@ -46,6 +46,26 @@ export type SitterGalleryPhoto = {
   height?: number;
 };
 
+export type SitterPolicy = {
+  label: string;
+  detail: string;
+};
+
+export type SitterPolicies = {
+  cancellation: SitterPolicy[];
+  extendedCare: SitterPolicy[];
+};
+
+export type SitterDiscount = {
+  label: string;
+  detail: string;
+};
+
+export type SitterDiscounts = {
+  lengthOfStay?: SitterDiscount[];
+  referral?: SitterDiscount[];
+};
+
 export type SitterReview = {
   id: string;
   client: string;
@@ -69,6 +89,8 @@ export type Sitter = {
   homeEnvironment: string[];
   badges: SitterBadge[];
   services: SitterServices;
+  policies?: SitterPolicies;
+  discounts?: SitterDiscounts;
   gallery?: SitterGalleryPhoto[];
   reviews: SitterReview[];
   availabilityNotes?: string;

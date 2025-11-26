@@ -314,60 +314,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
 
               </div>
 
-              {/* 3. Booking Policies */}
-              <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
-                <h3 className="text-lg font-bold text-[#333333] mb-4">Booking Policies & Key Info</h3>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-2">Cancellation Policy</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>
-                        <span className="font-medium text-gray-800">Free cancellation</span> until 72h before check-in.
-                      </li>
-                      <li>
-                        <span className="font-medium text-gray-800">72–24h before:</span> 50% of booking.
-                      </li>
-                      <li>
-                        <span className="font-medium text-gray-800">Within 24h:</span> 100% of first 2 nights.
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-2">Extended Care / Late Pickup</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>
-                        <span className="font-medium text-gray-800">Within 2 hours:</span> No fee
-                      </li>
-                      <li>
-                        <span className="font-medium text-gray-800">2–4 hours late:</span> $20 flat fee
-                      </li>
-                      <li>
-                        <span className="font-medium text-gray-800">4+ hours late:</span> $30 flat fee
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <h4 className="font-semibold text-gray-800 mb-2">Terms of Service</h4>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Ruh-Roh Retreat connects you with independent sitters. Bookings are directly between you and your sitter.
-                    Our Terms include arbitration and class-action waiver provisions.
-                  </p>
-                  <Link
-                    href={termsPdfPath}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#1A9CB0] font-semibold hover:underline text-sm"
-                  >
-                    View full Terms of Service (PDF)
-                  </Link>
-                </div>
-              </div>
-
-              {/* 4. Dates & Times */}
+              {/* 3. Dates & Times */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">
