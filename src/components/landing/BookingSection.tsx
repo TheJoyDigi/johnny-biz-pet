@@ -131,6 +131,37 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
     }
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    let error = "";
+
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        error = "Please enter a valid email address";
+      }
+    } else if (name === "phone") {
+      const phoneRegex = /^(\+?1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?\d{3}[-.\s]?\d{4}$/;
+      if (!phoneRegex.test(value)) {
+        error = "Please enter a valid US phone number";
+      }
+    } else if (["firstName", "lastName", "petName", "startDate", "endDate"].includes(name)) {
+      if (!value.trim()) {
+        error = "This field is required";
+      }
+    }
+
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      if (error) {
+        newErrors[name] = error;
+      } else {
+        delete newErrors[name];
+      }
+      return newErrors;
+    });
+  };
+
   const handleSitterChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const sitterId = e.target.value;
     const newSitter = sitters.find((s) => s.id === sitterId);
@@ -344,8 +375,12 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     min={todayISO}
                     value={bookingForm.startDate}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    onBlur={handleBlur}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.startDate ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
+                    }`}
                   />
+                  {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>}
                 </div>
                 <div>
                   <label htmlFor="startTime" className="block text-gray-700 font-medium mb-2">
@@ -377,10 +412,12 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     min={bookingForm.startDate || todayISO}
                     value={bookingForm.endDate}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.date ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
+                      errors.endDate || errors.date ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
                     }`}
                   />
+                  {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>}
                 </div>
                 <div>
                   <label htmlFor="endTime" className="block text-gray-700 font-medium mb-2">
@@ -423,8 +460,12 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     required
                     value={bookingForm.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    onBlur={handleBlur}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.firstName ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
+                    }`}
                   />
+                  {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-gray-700 font-medium mb-2">
@@ -437,8 +478,12 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     required
                     value={bookingForm.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    onBlur={handleBlur}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.lastName ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
+                    }`}
                   />
+                  {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
                 </div>
               </div>
 
@@ -454,6 +499,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     required
                     value={bookingForm.email}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                       errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
                     }`}
@@ -471,6 +517,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     required
                     value={bookingForm.phone}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                       errors.phone ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
                     }`}
@@ -492,8 +539,12 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     required
                     value={bookingForm.petName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    onBlur={handleBlur}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.petName ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
+                    }`}
                   />
+                  {errors.petName && <p className="text-red-500 text-sm mt-1">{errors.petName}</p>}
                 </div>
                 <div>
                   <label htmlFor="petType" className="block text-gray-700 font-medium mb-2">
