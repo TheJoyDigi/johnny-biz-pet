@@ -1,0 +1,4 @@
+npm warn Unknown project config "network-timeout". This will stop working in the next major version of npm.
+
+> paws-at-home@0.1.0 dev
+> next dev -p 3001
