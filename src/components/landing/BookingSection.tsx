@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent, RefObject, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 import { Sitter, SitterPrimaryService } from "@/data/sitters";
 
@@ -29,6 +30,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
   const router = useRouter();
   const defaultSitter = sitters[0];
   const [selectedSitter, setSelectedSitter] = useState<Sitter>(defaultSitter);
+  const termsPdfPath = "/legal/terms-of-service.pdf";
   const [bookingForm, setBookingForm] = useState<BookingForm>(() => ({
     sitterId: defaultSitter?.id ?? "",
     serviceId: defaultSitter?.services.primary[0]?.name ?? "",
@@ -54,6 +56,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
   
   const sitterAddOns = selectedSitter?.services.addOns ?? [];
   const [lastQuerySitter, setLastQuerySitter] = useState<string | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const applySitterSelection = useCallback((newSitter: Sitter) => {
     setSelectedSitter(newSitter);
@@ -184,6 +187,17 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
     });
   };
 
+  const handleTermsChange = (checked: boolean) => {
+    setAcceptedTerms(checked);
+    if (errors.terms && checked) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.terms;
+        return next;
+      });
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     (window as any).clarity?.("event", "Request Booking Clicked");
@@ -192,6 +206,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
 
     if (errors.date) {
       newErrors.date = errors.date;
+    }
+
+    if (!acceptedTerms) {
+      newErrors.terms = "Please review and accept the Terms of Service to continue.";
     }
 
     // Validate email
@@ -210,7 +228,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       // Scroll to the first error
-      const firstErrorField = document.querySelector(`[name="${Object.keys(newErrors)[0]}"]`);
+      const firstKey = Object.keys(newErrors)[0];
+      const firstErrorField =
+        document.querySelector(`[name="${firstKey}"]`) ??
+        (firstKey === "terms" ? document.querySelector(`[name="acceptedTerms"]`) : null);
       firstErrorField?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
@@ -227,6 +248,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
           ...bookingForm,
           sitterName: selectedSitter.name,
           locationName: selectedSitter.locations[0].city, // Assuming first location for now
+          acceptedTerms,
         }),
       });
 
@@ -258,6 +280,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
         addons: {},
         notes: "",
       });
+      setAcceptedTerms(false);
       setNightsCount(null);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -359,6 +382,26 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                      {selectedSitter?.services.primary.find(s => s.name === bookingForm.serviceId)?.description}
                    </p>
                 )}
+              </div>
+
+              {/* 3. Terms summary */}
+              <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <h3 className="text-lg font-semibold text-[#333333] mb-2">Key points before you book</h3>
+                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                  <li>Ruh-Roh Retreat connects you with independent sitters; bookings are directly between you and your sitter.</li>
+                  <li>Share accurate pet details (health, behavior, meds) so your sitter can keep your pet safe.</li>
+                  <li>Our Terms include arbitration and class-action waiver provisions—please review the full document.</li>
+                </ul>
+                <div className="mt-3 flex flex-wrap gap-3 items-center">
+                  <Link
+                    href={termsPdfPath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#1A9CB0] font-semibold hover:underline"
+                  >
+                    View full Terms of Service (PDF)
+                  </Link>
+                </div>
               </div>
 
               {/* 2. Pick Up Date & Time */}
@@ -634,6 +677,28 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   </div>
                 </div>
               )}
+
+              {/* Terms acceptance */}
+              <div className="mb-6">
+                <label className="inline-flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="acceptedTerms"
+                    checked={acceptedTerms}
+                    onChange={(e) => handleTermsChange(e.target.checked)}
+                    className="mt-1 h-5 w-5 text-[#1A9CB0] border-gray-300 rounded focus:ring-[#1A9CB0]"
+                    required
+                  />
+                  <span className="text-sm text-gray-700 leading-relaxed">
+                    I have reviewed and agree to the{" "}
+                    <Link href={termsPdfPath} target="_blank" rel="noopener noreferrer" className="text-[#1A9CB0] font-semibold hover:underline">
+                      Terms of Service
+                    </Link>
+                    .
+                  </span>
+                </label>
+                {errors.terms && <p className="text-sm text-red-600 mt-2">{errors.terms}</p>}
+              </div>
 
               <div className="text-center">
                 <button
