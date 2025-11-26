@@ -64,6 +64,7 @@ export type SitterDiscount = {
 export type SitterDiscounts = {
   lengthOfStay?: SitterDiscount[];
   referral?: SitterDiscount[];
+  additionalDog?: SitterDiscount[];
 };
 
 export type SitterReview = {

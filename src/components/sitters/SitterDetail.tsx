@@ -258,6 +258,21 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                         </ul>
                       </div>
                     )}
+                    {sitter.discounts.additionalDog && sitter.discounts.additionalDog.length > 0 && (
+                      <div className="rounded-2xl bg-[#F4F4F9] p-4 border border-gray-200">
+                        <p className="text-sm uppercase tracking-wide text-[#1A9CB0] font-semibold mb-2">
+                          Additional Dog
+                        </p>
+                        <ul className="space-y-2">
+                          {sitter.discounts.additionalDog.map((discount: { label: string; detail: string }, index: number) => (
+                            <li key={index} className="flex flex-wrap justify-between text-sm text-gray-700">
+                              <span className="font-medium text-[#333333]">{discount.label}</span>
+                              <span className="text-[#F28C38] font-semibold">{discount.detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

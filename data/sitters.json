@@ -167,6 +167,9 @@
       ],
       "referral": [
         { "label": "Referral Discount", "detail": "10% off" }
+      ],
+      "additionalDog": [
+        { "label": "Additional dog", "detail": "$40/night per extra dog" }
       ]
     },
     "reviews": [],
