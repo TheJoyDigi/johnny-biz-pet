@@ -32,7 +32,7 @@ const locations: Location[] = [
     showAddons: false,
     lat: 33.603568,
     lng: -117.293535,
-    sitterId: "juli-wildomar",
+    sitterId: "trudy-wildomar",
   },
 ];
 

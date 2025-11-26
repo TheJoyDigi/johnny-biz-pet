@@ -10,16 +10,16 @@
 - Each sitter object will include:
   - `name`, `tagline`, `avatar`, `heroImage`.
   - `locations`: array with `city`, `state`, `postalCode`, `lat`, `lng`, `serviceRadiusMiles`.
-  - `bio`: array of paragraphs (Johnny’s current About text, plus Juli’s new content).
+  - `bio`: array of paragraphs (Johnny’s current About text, plus Trudy’s new content).
   - `homeEnvironment`: bullet-ready list describing yard, household, routines, safety checks.
   - `badges`: Ruh-Roh badge keys + copy for the sitter.
   - `services`: `primary` list plus optional `addOns` to align with existing sections.
-  - `reviews`: map existing highlighted/general testimonials to Johnny; create mock ones for Juli (client name, pet name, rating, quote, date).
+  - `reviews`: map existing highlighted/general testimonials to Johnny; create mock ones for Trudy (client name, pet name, rating, quote, date).
   - `availabilityNotes` and `contactEmail` for future automation.
 
 ## Work Breakdown
 1. **Data Seeding**
-   - Build `sitters.json` with Johnny populated using About + Testimonials copy, and add Juli (Wildomar, CA 92595) with mock but believable information.
+   - Build `sitters.json` with Johnny populated using About + Testimonials copy, and add Trudy (Wildomar, CA 92595) with mock but believable information.
 2. **Landing Page Updates**
    - Refactor `AboutSection` to read Johnny’s `bio` from the JSON (either via direct import or utility hook).
    - Update `TestimonialsSection` to consume Johnny’s `reviews`, keeping existing fetch fallback until new page is live.

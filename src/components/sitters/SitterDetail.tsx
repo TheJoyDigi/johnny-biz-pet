@@ -321,7 +321,11 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
             <span className="text-sm text-gray-500 text-center sm:text-left">{sitter.availabilityNotes}</span>
             <div className="sm:ml-auto flex flex-wrap gap-3 w-full sm:w-auto justify-center sm:justify-end">
               <Link
-                href="/#booking"
+                href={{
+                  pathname: "/",
+                  hash: "booking",
+                  query: { sitter: sitter.uid },
+                }}
                 className="inline-flex items-center px-6 py-3 rounded-full bg-[#F28C38] text-white font-semibold hover:bg-[#e07a26] transition-colors"
               >
                 Book with {sitter.name}

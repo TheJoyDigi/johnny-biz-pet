@@ -1,6 +1,6 @@
 import johnnyReviewsData from "../../public/sitters/sr-001/reviews/reviews.json";
 import highlightedJohnnyReviewsData from "../../public/sitters/sr-001/reviews/highlighted-reviews.json";
-import juliReviewsData from "../../public/sitters/sr-002/reviews/reviews.json";
+import trudyReviewsData from "../../public/sitters/sr-002/reviews/reviews.json";
 import type { SitterReview } from "./sitters";
 
 type RawReview = {
@@ -45,15 +45,15 @@ const johnnyTestimonials = mapReviews(johnnyReviewsData as RawReview[], {
   defaultSource: "Rover",
 });
 
-const juliTestimonials = mapReviews(juliReviewsData as RawReview[], {
-  prefix: "juli",
+const trudyTestimonials = mapReviews(trudyReviewsData as RawReview[], {
+  prefix: "trudy",
   defaultPet: "Guest Pup",
   defaultSource: "Community",
 });
 
 const testimonialsBySitter: Record<string, SitterReview[]> = {
   "sr-001": johnnyTestimonials,
-  "sr-002": juliTestimonials,
+  "sr-002": trudyTestimonials,
 };
 
 export function getTestimonialsForSitter(uid: string): SitterReview[] {

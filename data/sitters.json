@@ -127,12 +127,12 @@
     "contactEmail": "bookings@ruhrohretreat.com"
   },
   {
-    "id": "juli-wildomar",
-    "name": "Juli",
+    "id": "trudy-wildomar",
+    "name": "Trudy",
     "tagline": "Lakeview adventures from a calm Wildomar home",
     "uid": "sr-002",
     "avatar": "/sitters/sr-002/avatar.jpg",
-    "heroImage": "/hero/juli-hero.png",
+    "heroImage": "/hero/trudy-hero.png",
     "locations": [
       {
         "city": "Wildomar",
@@ -144,7 +144,7 @@
       }
     ],
     "bio": [
-      "I'm Juli, a lifelong dog nerd who traded agency life for lake breezes and full-time pet hospitality. My Wildomar home sits on a quiet cul-de-sac minutes from hiking trails, so pups get both a peaceful basecamp and plenty of adventure.",
+      "I'm Trudy, a lifelong dog nerd who traded agency life for lake breezes and full-time pet hospitality. My Wildomar home sits on a quiet cul-de-sac minutes from hiking trails, so pups get both a peaceful basecamp and plenty of adventure.",
       "I specialize in confident-but-sensitive pups who need slow introductions and predictable routines. Morning sniffaris around the lake, shaded midday lounge sessions, and evening puzzle games are standard fare.",
       "Communication is my love language: every stay includes twice-daily video recaps plus wellness notes summarizing meals, potty breaks, and enrichment moments."
     ],

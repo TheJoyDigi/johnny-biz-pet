@@ -1,4 +1,5 @@
-import { ChangeEvent, FormEvent, RefObject, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, RefObject, useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 import { Sitter, SitterPrimaryService } from "@/data/sitters";
 
@@ -25,10 +26,12 @@ type BookingSectionProps = {
 };
 
 function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
-  const [selectedSitter, setSelectedSitter] = useState<Sitter>(sitters[0]);
+  const router = useRouter();
+  const defaultSitter = sitters[0];
+  const [selectedSitter, setSelectedSitter] = useState<Sitter>(defaultSitter);
   const [bookingForm, setBookingForm] = useState<BookingForm>(() => ({
-    sitterId: sitters[0]?.id ?? "",
-    serviceId: sitters[0]?.services.primary[0]?.name ?? "",
+    sitterId: defaultSitter?.id ?? "",
+    serviceId: defaultSitter?.services.primary[0]?.name ?? "",
     firstName: "",
     lastName: "",
     email: "",
@@ -50,6 +53,41 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
   const todayISO = new Date().toISOString().split("T")[0];
   
   const sitterAddOns = selectedSitter?.services.addOns ?? [];
+  const [lastQuerySitter, setLastQuerySitter] = useState<string | null>(null);
+
+  const applySitterSelection = useCallback((newSitter: Sitter) => {
+    setSelectedSitter(newSitter);
+    setBookingForm((prev) => ({
+      ...prev,
+      sitterId: newSitter.id,
+      serviceId: newSitter.services.primary[0]?.name ?? "",
+      addons: {},
+    }));
+  }, []);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    const sitterQuery = router.query.sitter;
+    if (!sitterQuery) {
+      setLastQuerySitter(null);
+      return;
+    }
+
+    const sitterUid = Array.isArray(sitterQuery) ? sitterQuery[0] : sitterQuery;
+    if (lastQuerySitter === sitterUid) {
+      return;
+    }
+
+    const matchingSitter =
+      sitters.find((sitter) => sitter.uid === sitterUid) ??
+      sitters.find((sitter) => sitter.id === sitterUid);
+
+    if (matchingSitter && matchingSitter.id !== selectedSitter.id) {
+      applySitterSelection(matchingSitter);
+    }
+
+    setLastQuerySitter(sitterUid);
+  }, [router.isReady, router.query.sitter, sitters, selectedSitter.id, applySitterSelection, lastQuerySitter]);
 
   useEffect(() => {
     if (bookingForm.startDate && bookingForm.endDate) {
@@ -98,13 +136,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
     const newSitter = sitters.find((s) => s.id === sitterId);
     if (!newSitter) return;
 
-    setSelectedSitter(newSitter);
-    setBookingForm({
-      ...bookingForm,
-      sitterId: newSitter.id,
-      serviceId: newSitter.services.primary[0]?.name ?? "",
-      addons: {},
-    });
+    applySitterSelection(newSitter);
   };
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
