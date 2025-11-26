@@ -55,7 +55,7 @@ function HeroSection({ onBookNow }: HeroSectionProps) {
 
           {/* Main Headline */}
           <motion.h1
-            className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 drop-shadow-sm"
+            className="text-5xl md:text-7xl font-bold text-white leading-tight mb-4 drop-shadow-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -64,14 +64,14 @@ function HeroSection({ onBookNow }: HeroSectionProps) {
             <span className="text-[#F28C38]">Dog Sitting</span>
           </motion.h1>
 
-          {/* Subhead & Description */}
+          {/* Subheadline & Description */}
           <motion.p
             className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-2xl drop-shadow-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
+            transition={{ delay: 0.35, duration: 0.8 }}
           >
-            Structured care, happy tails. Your dog deserves more than just a sitter — they deserve a vacation.
+            Powered by Badge-Verified Sitters. Structured, comfortable, vacation-style care—designed for your dog.
           </motion.p>
 
           {/* CTAs */}
