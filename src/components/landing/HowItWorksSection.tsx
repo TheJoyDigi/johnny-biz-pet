@@ -96,15 +96,6 @@ function HowItWorksSection() {
           ))}
         </div>
 
-        <motion.p
-          className="mt-16 text-center text-gray-500 max-w-3xl mx-auto font-medium"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          Ruh-Roh Retreat connects clients with independently verified sitters. Our badge system ensures quality standards while giving sitters the flexibility to deliver care their way.
-        </motion.p>
       </div>
     </section>
   );

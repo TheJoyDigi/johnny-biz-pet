@@ -48,7 +48,7 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     title: "Client Loyalty",
     description:
       "Strong record of repeat bookings reflecting trust, satisfaction, and long-term relationships",
-    imageSrc: "/images/badges/image6.png",
+    imageSrc: "/images/badges/image7.png",
     accent: "from-[#FFE8D6] to-[#FFC3A0]",
   },
   "five-star-consistency": {
@@ -56,7 +56,7 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     title: "5-Star Consistency",
     description:
       "Consistently receives 5-star reviews and maintains exceptional service",
-    imageSrc: "/images/badges/image7.png",
+    imageSrc: "/images/badges/image6.png",
     accent: "from-[#FFF6B7] to-[#FECF6A]",
   },
   "gold-standard": {

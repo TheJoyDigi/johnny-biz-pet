@@ -44,7 +44,7 @@ function BenefitsSection() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[#333333] mb-4">Why Pet Parents Choose Ruh-Roh Retreat</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Our boutique philosophy is built around four pillars of comfort, structure, and trust.
+            Our boutique ethos is built around four pillars of comfort, structure, and trust.
           </p>
         </div>
 

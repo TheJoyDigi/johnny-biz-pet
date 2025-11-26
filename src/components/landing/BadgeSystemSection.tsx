@@ -25,10 +25,7 @@ function BadgeSystemSection() {
             The Ruh-Roh Badge System
           </h2>
           <p className="mt-4 text-lg text-gray-600 leading-relaxed">
-            The Ruh-Roh Badge System turns anxious wondering into confident knowing. Instead of hoping your sitter will send updates or maintain a clean space, badges show you exactly where each sitter excels — based on real client feedback.
-          </p>
-          <p className="mt-3 text-base text-gray-600 leading-relaxed">
-            Badges are not requirements. They’re optional recognition that highlights each sitter’s unique strengths in areas like calm environments, structured care, transparency, and personalized attention. Find the sitter whose approach matches what matters most to you.
+            The Ruh-Roh Badge System turns anxious wondering into confident knowing. Instead of hoping your sitter will send updates or maintain a clean, calm space, badges highlight each sitter's real strengths and are awarded based on real client feedback. This gives you instant clarity so you can choose the sitter whose style fits your dog best.
           </p>
         </motion.div>
 
