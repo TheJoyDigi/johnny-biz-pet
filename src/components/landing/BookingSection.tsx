@@ -291,6 +291,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     Location: {selectedSitter.locations.map((l) => l.city).join(", ")}
                   </p>
                 )}
+
               </div>
 
               {/* 2. Service Selection */}
@@ -310,27 +311,56 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   ))}
                 </select>
                 {errors.serviceId && renderError(errors.serviceId.message)}
-                {serviceId && (
-                  <p className="mt-2 text-sm text-gray-600">
-                    {selectedSitter?.services.primary.find((s) => s.name === serviceId)?.description}
-                  </p>
-                )}
+
               </div>
 
-              {/* 3. Terms summary */}
-              <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <h3 className="text-lg font-semibold text-[#333333] mb-2">Key points before you book</h3>
-                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                  <li>Ruh-Roh Retreat connects you with independent sitters; bookings are directly between you and your sitter.</li>
-                  <li>Share accurate pet details (health, behavior, meds) so your sitter can keep your pet safe.</li>
-                  <li>Our Terms include arbitration and class-action waiver provisions—please review the full document.</li>
-                </ul>
-                <div className="mt-3 flex flex-wrap gap-3 items-center">
+              {/* 3. Booking Policies */}
+              <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
+                <h3 className="text-lg font-bold text-[#333333] mb-4">Booking Policies & Key Info</h3>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Cancellation Policy</h4>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>
+                        <span className="font-medium text-gray-800">Free cancellation</span> until 72h before check-in.
+                      </li>
+                      <li>
+                        <span className="font-medium text-gray-800">72–24h before:</span> 50% of booking.
+                      </li>
+                      <li>
+                        <span className="font-medium text-gray-800">Within 24h:</span> 100% of first 2 nights.
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Extended Care / Late Pickup</h4>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>
+                        <span className="font-medium text-gray-800">Within 2 hours:</span> No fee
+                      </li>
+                      <li>
+                        <span className="font-medium text-gray-800">2–4 hours late:</span> $20 flat fee
+                      </li>
+                      <li>
+                        <span className="font-medium text-gray-800">4+ hours late:</span> $30 flat fee
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <h4 className="font-semibold text-gray-800 mb-2">Terms of Service</h4>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Ruh-Roh Retreat connects you with independent sitters. Bookings are directly between you and your sitter.
+                    Our Terms include arbitration and class-action waiver provisions.
+                  </p>
                   <Link
                     href={termsPdfPath}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#1A9CB0] font-semibold hover:underline"
+                    className="text-[#1A9CB0] font-semibold hover:underline text-sm"
                   >
                     View full Terms of Service (PDF)
                   </Link>
