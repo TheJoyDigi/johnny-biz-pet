@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, RefObject, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, FocusEvent, FormEvent, RefObject, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -53,7 +53,31 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [nightsCount, setNightsCount] = useState<number | null>(null);
   const todayISO = new Date().toISOString().split("T")[0];
-  
+  const baseInputClasses = "w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2";
+  const inputClasses = (fieldName: string, forceError = false) => {
+    const hasError = forceError || Boolean(errors[fieldName]);
+    return `${baseInputClasses} ${hasError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"}`;
+  };
+  const renderError = (message?: string) =>
+    message ? (
+      <div className="mt-2 flex items-start gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-md p-2">
+        <svg
+          className="h-4 w-4 mt-0.5 text-red-500"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fillRule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.5a.75.75 0 00-1.5 0v4.25a.75.75 0 001.5 0V6.5zm0 6.5a.75.75 0 10-1.5 0 .75.75 0 001.5 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+        <span>{message}</span>
+      </div>
+    ) : null;
+
   const sitterAddOns = selectedSitter?.services.addOns ?? [];
   const [lastQuerySitter, setLastQuerySitter] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -134,23 +158,28 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
     }
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleBlur = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    const trimmedValue = typeof value === "string" ? value.trim() : value;
     let error = "";
 
-    if (name === "email") {
+    if (["firstName", "lastName", "petName", "startDate", "endDate", "startTime", "endTime", "email", "phone"].includes(name)) {
+      if (!trimmedValue) {
+        error = "This field is required";
+      }
+    }
+
+    if (!error && name === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
         error = "Please enter a valid email address";
       }
-    } else if (name === "phone") {
+    }
+
+    if (!error && name === "phone") {
       const phoneRegex = /^(\+?1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?\d{3}[-.\s]?\d{4}$/;
       if (!phoneRegex.test(value)) {
         error = "Please enter a valid US phone number";
-      }
-    } else if (["firstName", "lastName", "petName", "startDate", "endDate"].includes(name)) {
-      if (!value.trim()) {
-        error = "This field is required";
       }
     }
 
@@ -419,11 +448,9 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     value={bookingForm.startDate}
                     onChange={handleInputChange}
                     onBlur={handleBlur}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.startDate ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
-                    }`}
+                    className={inputClasses("startDate")}
                   />
-                  {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>}
+                  {renderError(errors.startDate)}
                 </div>
                 <div>
                   <label htmlFor="startTime" className="block text-gray-700 font-medium mb-2">
@@ -436,8 +463,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     required
                     value={bookingForm.startTime}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    onBlur={handleBlur}
+                    className={inputClasses("startTime")}
                   />
+                  {renderError(errors.startTime)}
                 </div>
               </div>
 
@@ -456,11 +485,9 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     value={bookingForm.endDate}
                     onChange={handleInputChange}
                     onBlur={handleBlur}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.endDate || errors.date ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
-                    }`}
+                    className={inputClasses("endDate", Boolean(errors.date))}
                   />
-                  {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>}
+                  {renderError(errors.endDate)}
                 </div>
                 <div>
                   <label htmlFor="endTime" className="block text-gray-700 font-medium mb-2">
@@ -473,8 +500,10 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     required
                     value={bookingForm.endTime}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
+                    onBlur={handleBlur}
+                    className={inputClasses("endTime")}
                   />
+                  {renderError(errors.endTime)}
                 </div>
               </div>
 
@@ -486,7 +515,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                 </div>
               )}
 
-              {errors.date && <p className="text-red-500 mb-6 text-sm">{errors.date}</p>}
+              {errors.date && <div className="mb-6">{renderError(errors.date)}</div>}
 
 
 
@@ -499,16 +528,14 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="text"
                     id="firstName"
-                    name="firstName"
-                    required
-                    value={bookingForm.firstName}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.firstName ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
-                    }`}
-                  />
-                  {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
+                  name="firstName"
+                  required
+                  value={bookingForm.firstName}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClasses("firstName")}
+                />
+                  {renderError(errors.firstName)}
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-gray-700 font-medium mb-2">
@@ -517,16 +544,14 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="text"
                     id="lastName"
-                    name="lastName"
-                    required
-                    value={bookingForm.lastName}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.lastName ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
-                    }`}
-                  />
-                  {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
+                  name="lastName"
+                  required
+                  value={bookingForm.lastName}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClasses("lastName")}
+                />
+                  {renderError(errors.lastName)}
                 </div>
               </div>
 
@@ -538,16 +563,14 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="email"
                     id="email"
-                    name="email"
-                    required
-                    value={bookingForm.email}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
-                    }`}
-                  />
-                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                  name="email"
+                  required
+                  value={bookingForm.email}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClasses("email")}
+                />
+                  {renderError(errors.email)}
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">
@@ -556,16 +579,14 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="tel"
                     id="phone"
-                    name="phone"
-                    required
-                    value={bookingForm.phone}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.phone ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
-                    }`}
-                  />
-                  {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                  name="phone"
+                  required
+                  value={bookingForm.phone}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClasses("phone")}
+                />
+                  {renderError(errors.phone)}
                 </div>
               </div>
 
@@ -578,16 +599,14 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <input
                     type="text"
                     id="petName"
-                    name="petName"
-                    required
-                    value={bookingForm.petName}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.petName ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#1A9CB0]"
-                    }`}
-                  />
-                  {errors.petName && <p className="text-red-500 text-sm mt-1">{errors.petName}</p>}
+                  name="petName"
+                  required
+                  value={bookingForm.petName}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClasses("petName")}
+                />
+                  {renderError(errors.petName)}
                 </div>
                 <div>
                   <label htmlFor="petType" className="block text-gray-700 font-medium mb-2">
@@ -599,6 +618,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     required
                     value={bookingForm.petType}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A9CB0]"
                   >
                     <option value="dog">Dog</option>
@@ -686,7 +706,9 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     name="acceptedTerms"
                     checked={acceptedTerms}
                     onChange={(e) => handleTermsChange(e.target.checked)}
-                    className="mt-1 h-5 w-5 text-[#1A9CB0] border-gray-300 rounded focus:ring-[#1A9CB0]"
+                    className={`mt-1 h-5 w-5 rounded border focus:outline-none focus:ring-2 ${
+                      errors.terms ? "border-red-500 text-red-500 focus:ring-red-500" : "border-gray-300 text-[#1A9CB0] focus:ring-[#1A9CB0]"
+                    }`}
                     required
                   />
                   <span className="text-sm text-gray-700 leading-relaxed">
@@ -697,7 +719,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     .
                   </span>
                 </label>
-                {errors.terms && <p className="text-sm text-red-600 mt-2">{errors.terms}</p>}
+                {renderError(errors.terms)}
               </div>
 
               <div className="text-center">

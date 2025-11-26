@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 
 const TERMS_PDF_PATH = "/legal/terms-of-service.pdf";
-const TERMS_DOCX_PATH = "/legal/terms-of-service.docx";
 
 const TermsOfUseComponent: React.FC = () => {
   return (
@@ -15,26 +14,16 @@ const TermsOfUseComponent: React.FC = () => {
             Last Updated: October 5, 2025
           </p>
           <p className="text-base text-gray-700">
-            This page provides access to the current Terms of Service in both PDF and DOCX formats. Please review the full document before booking.
+            This page provides access to the current Terms of Service in PDF format. Please review the full document before booking.
           </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href={TERMS_PDF_PATH}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 rounded-full bg-[#1A9CB0] text-white font-semibold hover:bg-[#158294] transition-colors"
-            >
-              View PDF
-            </Link>
-            <Link
-              href={TERMS_DOCX_PATH}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 rounded-full bg-white border border-[#1A9CB0] text-[#1A9CB0] font-semibold hover:bg-[#E0F7FA] transition-colors"
-            >
-              Download DOCX
-            </Link>
-          </div>
+          <Link
+            href={TERMS_PDF_PATH}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-4 py-2 rounded-full bg-[#1A9CB0] text-white font-semibold hover:bg-[#158294] transition-colors w-fit"
+          >
+            View PDF
+          </Link>
         </div>
 
         <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
@@ -51,11 +40,6 @@ const TermsOfUseComponent: React.FC = () => {
                 <li>
                   <Link href={TERMS_PDF_PATH} target="_blank" rel="noopener noreferrer" className="text-[#1A9CB0] font-semibold hover:underline">
                     Download the PDF
-                  </Link>
-                </li>
-                <li>
-                  <Link href={TERMS_DOCX_PATH} target="_blank" rel="noopener noreferrer" className="text-[#1A9CB0] font-semibold hover:underline">
-                    Download the DOCX
                   </Link>
                 </li>
               </ul>
