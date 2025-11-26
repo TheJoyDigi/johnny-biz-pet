@@ -16,7 +16,7 @@ type BookingForm = {
   startTime: string;
   endDate: string;
   endTime: string;
-  addons: { [key: string]: boolean };
+  addons: { [key: string]: number };
   notes: string;
 };
 
@@ -139,14 +139,17 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
     applySitterSelection(newSitter);
   };
 
-  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setBookingForm({
-      ...bookingForm,
-      addons: {
-        ...bookingForm.addons,
-        [name]: checked,
-      },
+  const handleAddonQuantityChange = (name: string, delta: number) => {
+    setBookingForm((prev) => {
+      const currentQty = prev.addons[name] || 0;
+      const newQty = Math.max(0, currentQty + delta);
+      return {
+        ...prev,
+        addons: {
+          ...prev.addons,
+          [name]: newQty,
+        },
+      };
     });
   };
 
@@ -538,24 +541,41 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     {sitterAddOns.map(({ category, items }) => (
                       <div key={category} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <h4 className="text-lg font-semibold text-gray-800 mb-3">{category}</h4>
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           {items.map((addon) => (
-                            <label key={`${category}-${addon.name}`} className="flex items-start">
-                              <input
-                                type="checkbox"
-                                name={addon.name}
-                                checked={!!bookingForm.addons[addon.name]}
-                                onChange={handleCheckboxChange}
-                                className="mt-1 mr-3 h-4 w-4 text-[#F28C38] focus:ring-[#F28C38] border-gray-300 rounded"
-                              />
-                              <div>
+                            <div key={`${category}-${addon.name}`} className="flex items-center justify-between">
+                              <div className="flex-1">
                                 <p className="font-medium text-gray-800">{addon.name}</p>
                                 {addon.description && <p className="text-sm text-gray-600">{addon.description}</p>}
                                 {addon.price && (
                                   <p className="text-sm font-semibold text-[#F28C38]">{addon.price}</p>
                                 )}
                               </div>
-                            </label>
+                              <div className="flex items-center space-x-3 ml-4">
+                                <button
+                                  type="button"
+                                  onClick={() => handleAddonQuantityChange(addon.name, -1)}
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center border ${
+                                    (bookingForm.addons[addon.name] || 0) > 0
+                                      ? "border-[#F28C38] text-[#F28C38] hover:bg-[#F28C38] hover:text-white"
+                                      : "border-gray-300 text-gray-300 cursor-not-allowed"
+                                  } transition-colors`}
+                                  disabled={(bookingForm.addons[addon.name] || 0) <= 0}
+                                >
+                                  -
+                                </button>
+                                <span className="w-6 text-center font-medium text-gray-800">
+                                  {bookingForm.addons[addon.name] || 0}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleAddonQuantityChange(addon.name, 1)}
+                                  className="w-8 h-8 rounded-full flex items-center justify-center border border-[#F28C38] text-[#F28C38] hover:bg-[#F28C38] hover:text-white transition-colors"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>

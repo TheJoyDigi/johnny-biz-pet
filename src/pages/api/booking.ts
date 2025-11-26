@@ -83,8 +83,8 @@ export default async function handler(
 
     // Format addons for email
     const selectedAddons = Object.entries(addons)
-      .filter(([_, selected]) => selected)
-      .map(([name, _]) => name);
+      .filter(([_, quantity]) => Number(quantity) > 0)
+      .map(([name, quantity]) => `${name} (x${quantity})`);
 
     // Format dates for email
     const formattedStartDate = new Date(startDate).toLocaleDateString("en-US", {
@@ -101,9 +101,8 @@ export default async function handler(
       day: "numeric",
     });
 
-    // Create email content for the business
-    const businessEmailContent = `
-      <h2>New Booking Request</h2>
+    // Common booking details for both emails
+    const bookingDetailsHtml = `
       <p><strong>Sitter:</strong> ${sitterName}</p>
       <p><strong>Location:</strong> ${locationName}</p>
       <p><strong>Service:</strong> ${serviceId}</p>
@@ -139,21 +138,19 @@ export default async function handler(
       }
     `;
 
+    // Create email content for the business
+    const businessEmailContent = `
+      <h2>New Booking Request</h2>
+      ${bookingDetailsHtml}
+    `;
+
     // Create email content for the customer
     const customerEmailContent = `
       <h2>Booking Request Confirmation</h2>
       <p>Dear ${firstName},</p>
       <p>Thank you for your booking request for ${petName} with ${sitterName}. We have received your request and will get back to you within 24 hours to confirm your booking.</p>
-      <p><strong>Booking Summary:</strong></p>
-      <ul>
-        <li><strong>Sitter:</strong> ${sitterName}</li>
-        <li><strong>Location:</strong> ${locationName}</li>
-        <li><strong>Service:</strong> ${serviceId}</li>
-        <li><strong>Pet Name:</strong> ${petName}</li>
-        <li><strong>Drop Off:</strong> ${formattedStartDate} at ${startTime}</li>
-        <li><strong>Pick Up:</strong> ${formattedEndDate} at ${endTime}</li>
-        <li><strong>Number of Nights:</strong> ${nights}</li>
-      </ul>
+      <h3>Booking Summary:</h3>
+      ${bookingDetailsHtml}
       <p>We look forward to meeting you and ${petName}!</p>
       <p>Best,</p>
       <p>Ruh-Roh Retreat Team</p>
