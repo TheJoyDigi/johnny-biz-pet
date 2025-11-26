@@ -54,9 +54,9 @@ function LandingComponent() {
       <VacationAddOnsSection />
       <HowItWorksSection />
       <BadgeSystemSection />
-      <FounderStorySection />
       <RatesTransparencySection />
       <SafetyTrustSection />
+      <FounderStorySection />
       <LegalTransparencySection />
       <BookingSection sectionRef={bookingRef} sitters={sitters} />
       <CallToActionSection onBookNow={scrollToBooking} locations={locations} />
