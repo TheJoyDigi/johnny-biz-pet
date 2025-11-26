@@ -641,9 +641,9 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
               <div className="text-center">
                 <button
                   type="submit"
-                  disabled={isSubmitting || !isValid}
+                  disabled={isSubmitting}
                   className={`${
-                    isSubmitting || !isValid
+                    isSubmitting
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-[#F28C38] hover:bg-[#e07a26]"
                   } text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 relative paw-button`}
