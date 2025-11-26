@@ -3,9 +3,9 @@ import { FaHome, FaShieldAlt, FaCamera, FaPalette } from "react-icons/fa";
 
 const pillars = [
   {
-    title: "Boutique Comfort",
-    description: "Small groups, cozy home stays, and personalized attention.",
-    detail: "Sitters who align with this pillar host fewer dogs to ensure calm, low-stress stays.",
+    title: "Calm & Clean Environment",
+    description: "A peaceful, well-kept space helps dogs feel grounded and secure.",
+    detail: "Sitters who align with this pillar create calm, organized environments where safety and comfort come first.",
     icon: FaHome,
     accentBorder: "border-[#F28C38]",
     accentText: "text-[#F28C38]",
@@ -13,15 +13,15 @@ const pillars = [
   {
     title: "Structured & Safe",
     description: "Balanced routines, mindful introductions, and calm environments.",
-    detail: "Sitters emphasize consistency and smooth transitions to help dogs settle comfortably.",
+    detail: "Sitters emphasize consistency and smooth transitions to help dogs settle in and feel secure.",
     icon: FaShieldAlt,
     accentBorder: "border-[#1A9CB0]",
     accentText: "text-[#1A9CB0]",
   },
   {
     title: "Transparent Communication",
-    description: "Daily photo and video updates keep you connected, no matter where you are.",
-    detail: "Many sitters also offer live video check-ins or meet-and-greets before your dog’s stay.",
+    description: "Regular updates help you stay connected and confident, no matter where you are.",
+    detail: "Updates can include photos, videos, or messages based on what works for you and your sitter. Many sitters also offer meet-and-greets before your trip.",
     icon: FaCamera,
     accentBorder: "border-[#6C63FF]",
     accentText: "text-[#6C63FF]",
@@ -29,7 +29,7 @@ const pillars = [
   {
     title: "Personalized Vacations",
     description: "Every pup deserves a tailored experience.",
-    detail: "Pet parents can choose fun enrichment add-ons to make their dog’s stay feel like a true retreat.",
+    detail: "Many sitters offer optional add-on activities—like Sniffaris, Paw-casso paintings, or pup cup outings—to make your dog’s stay feel like a true retreat.",
     footer: "Add-ons vary by sitter.",
     icon: FaPalette,
     accentBorder: "border-[#E4572E]",

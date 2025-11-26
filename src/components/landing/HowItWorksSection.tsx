@@ -55,11 +55,11 @@ function HowItWorksSection() {
           </h2>
         </motion.div>
 
-        <div className="flex flex-col gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {steps.map(({ title, description }, index) => (
             <motion.div
               key={title}
-              className="group relative bg-white rounded-2xl border border-gray-100 shadow-lg p-8 overflow-hidden"
+              className="group relative bg-white rounded-2xl border border-gray-100 shadow-lg p-6 lg:p-8 overflow-hidden"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -92,7 +92,7 @@ function HowItWorksSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          Ruh-Roh Retreat connects clients and independent sitters but does not set pricing, guarantee services, or supervise sitters.
+          Ruh-Roh Retreat connects clients with independently verified sitters. Our badge system ensures quality standards while giving sitters the flexibility to deliver care their way.
         </motion.p>
       </div>
     </section>

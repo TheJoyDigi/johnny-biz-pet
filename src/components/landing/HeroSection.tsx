@@ -136,13 +136,29 @@ function HeroSection({ onBookNow }: HeroSectionProps) {
             Your dog deserves more than just care — they deserve a vacation.
           </motion.p>
           <motion.p
-            className="text-lg md:text-xl mb-8 text-white/90"
+            className="text-lg md:text-xl mb-4 text-white/90"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.75 }}
           >
-            Ruh-Roh Retreat connects pet parents with independent sitters who share our boutique philosophy of structure,
+            Ruh-Roh Retreat connects pet parents with badge-verified sitters who share our boutique philosophy of structure,
             comfort, and personalized attention.
+          </motion.p>
+          <motion.p
+            className="text-base md:text-lg mb-2 text-white/80 font-semibold"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.8 }}
+          >
+            ⭐⭐⭐⭐⭐ Founded by sitters with 95+ five-star reviews
+          </motion.p>
+          <motion.p
+            className="text-base md:text-lg mb-8 text-white/80"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2, ease: HERO_FADE_EASE, delay: 0.85 }}
+          >
+            20+ reviews on Google & Yelp as Ruh-Roh Retreat
           </motion.p>
         </motion.div>
       </div>
