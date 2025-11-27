@@ -35,14 +35,6 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     imageSrc: "/images/badges/image2.png",
     accent: "from-[#FFECB3] to-[#FFCC80]",
   },
-  "playbook-excellence": {
-    key: "playbook-excellence",
-    title: "Playbook Excellence",
-    description:
-      "Sitters who naturally incorporate the Ruh-Roh Playbook to deliver a calm, boutique retreat experience.",
-    imageSrc: "/images/badges/image4.png",
-    accent: "from-[#D7FFD9] to-[#A7F0BA]",
-  },
   "client-loyalty": {
     key: "client-loyalty",
     title: "Client Loyalty",
@@ -63,7 +55,7 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     key: "gold-standard",
     title: "Gold Elite",
     description:
-      "The highest honor, awarded to sitters who maintain 95%+ verification rates across all four core pillars—Calm & Clean Environment, Structured Care, Transparency, and Personalized Experience—plus Client Loyalty and Five-Star Consistency. Gold Elite sitters represent proven, consistent excellence maintained over their most recent bookings.",
+      "The highest honor, earned automatically by sitters who consistently excel across all four core pillars—Calm & Clean Environment, Structured Care, Transparency, and Personalized Experience—plus Client Loyalty and Five-Star Consistency. Gold Elite reflects a strong, ongoing pattern of excellence based on a sitter's most recent client reviews.",
     imageSrc: "/images/badges/image8.png",
     accent: "from-[#FFD700] to-[#FDB931]",
   },

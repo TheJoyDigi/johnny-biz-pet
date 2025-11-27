@@ -10,6 +10,8 @@ import Header from "@/components/header";
 import { sitters, SitterBadge } from "@/data/sitters";
 import { BADGE_DEFINITIONS, BadgeDefinition } from "@/constants/badges";
 
+const TOTAL_BADGES = Object.keys(BADGE_DEFINITIONS).length;
+
 function getAverageRating(reviewsLength: number, totalStars: number) {
   if (reviewsLength === 0) return null;
   return totalStars / reviewsLength;
@@ -45,7 +47,7 @@ function SittersPage() {
               const averageRating = getAverageRating(reviewsCount, totalStars);
 
               const earnedBadgesCount = sitter.badges.filter((b) => b.earned).length;
-              const totalBadges = 8;
+              const totalBadges = TOTAL_BADGES;
               const isGoldStandard = earnedBadgesCount === totalBadges;
               const goldStandardBadge = sitter.badges.find((b) => b.key === "gold-standard");
               const goldStandardDef = goldStandardBadge ? BADGE_DEFINITIONS[goldStandardBadge.key] : undefined;

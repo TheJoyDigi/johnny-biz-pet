@@ -56,7 +56,7 @@ function SafetyTrustSection() {
             At Ruh-Roh Retreat, your dog’s safety and comfort come first.
           </p>
           <p className="mt-3 text-base text-gray-600">
-            We’ve built a boutique, high-standard network where every sitter is carefully vetted, background checked, and committed to providing a calm, structured, and caring environment.
+            Ruh-Roh Retreat is a curated community of independent sitters who complete a third-party background check and share a naturally calm, structured care approach.
           </p>
         </motion.div>
 

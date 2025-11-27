@@ -71,7 +71,7 @@ function HeroSection({ onBookNow }: HeroSectionProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.8 }}
           >
-            Powered by Badge-Verified Sitters. Structured, comfortable, vacation-style care—designed for your dog.
+            Powered by Badge-Rated Sitters. Structured, comfortable, vacation-style care—designed for your dog.
           </motion.p>
 
           {/* CTAs */}
