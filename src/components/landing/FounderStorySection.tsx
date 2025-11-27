@@ -3,7 +3,7 @@ import { FaHeart } from "react-icons/fa";
 
 function FounderStorySection() {
   return (
-    <section className="py-20 bg-[#F4F4F9]">
+    <section id="our-story" className="py-20 bg-[#F4F4F9]">
       <div className="container mx-auto px-4">
         <motion.div
           className="max-w-4xl mx-auto"

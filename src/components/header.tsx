@@ -1,7 +1,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+
+const NAV_ITEMS = [
+  { label: "Home", href: "/" },
+  { label: "Why Ruh-Roh", href: "/#benefits" },
+  { label: "Vacation Add-Ons", href: "/#vacation-add-ons" },
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Safety & Trust", href: "/#safety" },
+  { label: "Our Story", href: "/#our-story" },
+  { label: "Meet Our Sitters", href: "/sitters" },
+  { label: "Blog", href: "/blog" },
+  { label: "Waiver", href: "/waiver" },
+] as const;
+
+const PRIMARY_CTA = { label: "Book Now", href: "/#booking" };
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,28 +37,17 @@ export default function Header() {
             />
           </Link>
         </div>
-        <nav className="hidden lg:flex space-x-8 h-[80px] items-center">
-          <Link href="/" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-            Home
-          </Link>
-
-          <Link href="/#benefits" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-            Why Ruh-Roh
-          </Link>
-          <Link href="/#about" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-            About
-          </Link>
-          <Link href="/sitters" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-            Meet Our Sitters
-          </Link>
-          <Link href="/#testimonials" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-            Testimonials
-          </Link>
-          <Link href="/blog" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-            Blog
-          </Link>
-          <Link href="/waiver" className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-            Waiver
+        <nav className="hidden lg:flex items-center gap-6 h-[80px]">
+          {NAV_ITEMS.map(({ href, label }) => (
+            <Link key={href} href={href} className="text-gray-800 hover:text-[#1A9CB0] font-medium">
+              {label}
+            </Link>
+          ))}
+          <Link
+            href={PRIMARY_CTA.href}
+            className="ml-2 rounded-full bg-[#1A9CB0] px-5 py-2 font-semibold text-white shadow-md transition hover:bg-[#147384]"
+          >
+            {PRIMARY_CTA.label}
           </Link>
         </nav>
         <button
@@ -79,62 +81,22 @@ export default function Header() {
             </button>
           </div>
           <nav className="flex-1 flex flex-col p-4 space-y-4">
+            {NAV_ITEMS.map(({ href, label }) => (
+              <Link
+                key={`${label}-${href}`}
+                href={href}
+                className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {label}
+              </Link>
+            ))}
             <Link
-              href="/"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
+              href={PRIMARY_CTA.href}
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-[#1A9CB0] px-6 py-3 text-lg font-semibold text-white shadow-md hover:bg-[#147384]"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Home
-            </Link>
-
-            <Link
-              href="/#benefits"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Why Ruh-Roh
-            </Link>
-            <Link
-              href="/#about"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="/sitters"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Meet Our Sitters
-            </Link>
-            <Link
-              href="/#testimonials"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Testimonials
-            </Link>
-            <Link
-              href="/#booking"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Book Now
-            </Link>
-            <Link
-              href="/blog"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Blog
-            </Link>
-            <Link
-              href="/waiver"
-              className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Waiver
+              {PRIMARY_CTA.label}
             </Link>
           </nav>
         </div>

@@ -1,42 +1,38 @@
 import Head from "next/head";
 
+const SITE_URL = "https://www.ruhrohretreat.com";
+const SOCIAL_IMAGE = `${SITE_URL}/ruhrohretreat-social.jpg`;
+const META_TITLE = "Ruh-Roh Retreat | Boutique In-Home Dog Sitting in Irvine & Wildomar";
+const META_DESCRIPTION =
+  "Boutique in-home dog sitting powered by Badge-Rated sitters who deliver calm, structured care, daily updates, and vacation-style add-ons throughout Irvine and Wildomar.";
+
 export const DefaultMetaData = () => (
   <Head>
-    <title>Ruh-Roh Retreat - Premium Pet Boarding Services</title>
+    <title>{META_TITLE}</title>
+    <meta name="description" content={META_DESCRIPTION} />
     <meta
-      name="description"
-      content="Luxury overnight boarding with premium add-on services for your pets. Providing trustworthy and reliable pet care with regular photo updates and peace of mind."
+      name="keywords"
+      content="boutique dog boarding, Irvine dog sitter, Wildomar dog boarding, badge-rated sitters, calm dog care, structured dog daycare, Ruh-Roh Retreat, luxury dog add-ons"
     />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Ruh-Roh Retreat" />
+    <link rel="canonical" href={SITE_URL} />
 
     {/* Twitter Card Metadata */}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="Ruh-Roh Retreat - Premium Pet Boarding Services"
-    />
-    <meta
-      name="twitter:description"
-      content="Luxury overnight boarding with premium add-on services for your pets. Providing trustworthy and reliable pet care with regular photo updates and peace of mind."
-    />
-    <meta
-      name="twitter:image"
-      content="https://www.ruhrohretreat.com/ruhrohretreat-social.jpg"
-    />
+    <meta name="twitter:title" content={META_TITLE} />
+    <meta name="twitter:description" content={META_DESCRIPTION} />
+    <meta name="twitter:image" content={SOCIAL_IMAGE} />
+    <meta name="twitter:site" content="@ruhrohretreat" />
 
     {/* Open Graph Metadata */}
-    <meta
-      property="og:title"
-      content="Ruh-Roh Retreat - Premium Pet Boarding Services"
-    />
-    <meta
-      property="og:description"
-      content="Luxury overnight boarding with premium add-on services for your pets. Providing trustworthy and reliable pet care with regular photo updates and peace of mind."
-    />
-    <meta
-      property="og:image"
-      content="https://www.ruhrohretreat.com/ruhrohretreat-social.jpg"
-    />
+    <meta property="og:title" content={META_TITLE} />
+    <meta property="og:description" content={META_DESCRIPTION} />
+    <meta property="og:image" content={SOCIAL_IMAGE} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={SITE_URL} />
+    <meta property="og:site_name" content="Ruh-Roh Retreat" />
+    <meta property="og:locale" content="en_US" />
 
     {/* Schema.org structured data for local business */}
     <script
@@ -45,36 +41,63 @@ export const DefaultMetaData = () => (
         __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
+          "@id": `${SITE_URL}#ruh-roh-retreat`,
           name: "Ruh-Roh Retreat",
-          image: "https://www.ruhrohretreat.com/ruhrohretreat-social.jpg",
-          url: "https://www.ruhrohretreat.com",
+          description: META_DESCRIPTION,
+          image: SOCIAL_IMAGE,
+          url: SITE_URL,
           telephone: "+17143294534",
+          priceRange: "$$",
           address: {
             "@type": "PostalAddress",
+            streetAddress: "13212 Telmo",
             addressLocality: "Irvine",
             addressRegion: "CA",
             postalCode: "92618",
             addressCountry: "US",
           },
+          areaServed: ["Irvine CA", "Wildomar CA", "Orange County", "Temecula Valley"],
           geo: {
             "@type": "GeoCoordinates",
             latitude: 33.6583,
             longitude: -117.7384,
           },
-          openingHoursSpecification: {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday",
-            ],
-            opens: "07:00",
-            closes: "21:00",
-          },
+          openingHoursSpecification: [
+            {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+              ],
+              opens: "07:00",
+              closes: "21:00",
+            },
+          ],
+          makesOffer: [
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Boutique Dog Boarding",
+                serviceType: "In-home overnight care with calm, small-group environments",
+                areaServed: ["Irvine CA", "Wildomar CA"],
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Doggy Daycare",
+                serviceType: "Structured daytime care with enrichment activities",
+                areaServed: ["Irvine CA", "Wildomar CA"],
+              },
+            },
+          ],
           sameAs: [
             "https://www.facebook.com/ruhrohretreat",
             "https://www.instagram.com/ruhrohretreat",

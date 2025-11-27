@@ -33,7 +33,7 @@ const highlights = [
 
 function SafetyTrustSection() {
   return (
-    <section className="relative overflow-hidden bg-white py-20">
+    <section id="safety" className="relative overflow-hidden bg-white py-20">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#F8FBFF] via-white to-[#FFF8F3]" />
       <div className="relative container mx-auto px-4">
         <motion.div

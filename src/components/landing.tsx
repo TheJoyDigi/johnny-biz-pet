@@ -66,10 +66,14 @@ function LandingComponent() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
+            "@id": "https://www.ruhrohretreat.com#ruh-roh-retreat",
             name: "Ruh-Roh Retreat",
-            image: "https://www.ruhrohretreat.com",
+            description:
+              "Boutique in-home dog sitting powered by Badge-Rated sitters who specialize in calm, structured care and vacation-style add-ons for Orange County and Temecula Valley pet parents.",
+            image: "https://www.ruhrohretreat.com/ruhrohretreat-social.jpg",
             url: "https://www.ruhrohretreat.com",
             telephone: "+17143294534",
+            priceRange: "$$",
             address: {
               "@type": "PostalAddress",
               streetAddress: "13212 Telmo",
@@ -78,7 +82,12 @@ function LandingComponent() {
               postalCode: "92618",
               addressCountry: "US",
             },
-            priceRange: "$$",
+            areaServed: [
+              "Irvine, California",
+              "Wildomar, California",
+              "Orange County, California",
+              "Temecula Valley, California",
+            ],
             openingHoursSpecification: [
               {
                 "@type": "OpeningHoursSpecification",
@@ -88,15 +97,37 @@ function LandingComponent() {
                   "Wednesday",
                   "Thursday",
                   "Friday",
+                  "Saturday",
+                  "Sunday",
                 ],
-                opens: "08:00",
-                closes: "18:00",
+                opens: "07:00",
+                closes: "21:00",
+              },
+            ],
+            makesOffer: [
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Boutique In-Home Dog Boarding",
+                  serviceType: "Overnight dog care with Badge-Rated sitters",
+                },
               },
               {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: ["Saturday"],
-                opens: "09:00",
-                closes: "17:00",
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Structured Doggy Daycare",
+                  serviceType: "Calm daytime care with enrichment activities",
+                },
+              },
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Vacation-Style Add-Ons",
+                  serviceType: "Sniffari walks, aromatherapy, and enrichment upgrades",
+                },
               },
             ],
             sameAs: [
