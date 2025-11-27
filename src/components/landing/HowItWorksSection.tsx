@@ -69,11 +69,12 @@ function HowItWorksSection() {
               style={{ borderColor: `${color}20` }}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.1, type: "tween", ease: "easeOut" }}
               viewport={{ once: true }}
               whileHover={{
                 y: -8,
                 boxShadow: `0 20px 40px -15px ${color}30`,
+                transition: { type: "tween", ease: "easeOut", duration: 0.25 },
               }}
             >
               <div className="flex items-start gap-6">

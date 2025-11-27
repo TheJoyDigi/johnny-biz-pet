@@ -89,9 +89,13 @@ function VacationAddOnsSection() {
               style={{ borderColor: `${color}20` }} // 20 is hex opacity
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.1, type: "tween", ease: "easeOut" }}
               viewport={{ once: true }}
-              whileHover={{ y: -8, boxShadow: `0 20px 40px -15px ${color}40` }}
+              whileHover={{
+                y: -8,
+                boxShadow: `0 20px 40px -15px ${color}40`,
+                transition: { type: "tween", ease: "easeOut", duration: 0.25 },
+              }}
             >
               <div
                 className="absolute top-0 right-0 w-32 h-32 rounded-bl-full opacity-10 transition-transform duration-500 group-hover:scale-110"
