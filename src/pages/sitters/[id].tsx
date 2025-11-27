@@ -7,6 +7,7 @@ import path from "path";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import SitterDetail from "@/components/sitters/SitterDetail";
+import { SITE_URL, SOCIAL_IMAGE_URL } from "@/components/meta-data";
 import { getSitterById, Sitter, sitters, SitterGalleryPhoto } from "@/data/sitters";
 
 type SitterPageProps = {
@@ -14,11 +15,79 @@ type SitterPageProps = {
 };
 
 const SitterPage = ({ sitter }: SitterPageProps) => {
+  const canonicalUrl = `${SITE_URL}/sitters/${sitter.id}`;
+  const toAbsoluteImageUrl = (path: string | undefined) =>
+    path?.startsWith("http") ? path : path ? `${SITE_URL}${path}` : SOCIAL_IMAGE_URL;
+  const servedAreas = sitter.locations
+    .map((location) => `${location.city}, ${location.state} ${location.postalCode}`)
+    .join(" • ");
+  const heroImage = toAbsoluteImageUrl(sitter.heroImage);
+  const avatarImage = toAbsoluteImageUrl(sitter.avatar);
+  const totalStars = sitter.reviews.reduce((sum, review) => sum + review.rating, 0);
+  const reviewCount = sitter.reviews.length;
+  const averageRating = reviewCount > 0 ? Number((totalStars / reviewCount).toFixed(1)) : null;
+
+  const sitterSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: sitter.name,
+    description: sitter.tagline,
+    image: avatarImage,
+    url: canonicalUrl,
+    worksFor: {
+      "@type": "Organization",
+      name: "Ruh-Roh Retreat",
+      url: SITE_URL,
+    },
+    areaServed: sitter.locations.map((location) => `${location.city}, ${location.state} ${location.postalCode}`),
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Pet care services",
+      itemListElement: sitter.services.primary.map((service) => ({
+        "@type": "Offer",
+        name: service.name,
+        description: service.description,
+        price: service.price,
+      })),
+    },
+    aggregateRating:
+      averageRating && reviewCount
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: averageRating,
+            ratingCount: reviewCount,
+          }
+        : undefined,
+  };
+
   return (
     <>
       <Head>
-        <title>{`${sitter.name} | Ruh-Roh Retreat Sitter Profile`}</title>
-        <meta name="description" content={`Meet ${sitter.name}, a Ruh-Roh Retreat sitter serving ${sitter.locations[0]?.city ?? "Southern California"}.`} />
+        <title>{`${sitter.name} | ${sitter.tagline}`}</title>
+        <meta
+          name="description"
+          content={`Meet ${sitter.name}, a Ruh-Roh Retreat sitter serving ${servedAreas} with boutique, in-home boarding.`}
+        />
+        <meta
+          name="keywords"
+          content={`${sitter.name} pet sitter, ${servedAreas} pet boarding, boutique dog boarding, Ruh-Roh sitter profile`}
+        />
+        <meta property="og:title" content={`${sitter.name} | ${sitter.tagline}`} />
+        <meta
+          property="og:description"
+          content={`Book ${sitter.name} for boutique boarding with transparent reviews, badge achievements, and tailored pet care in ${servedAreas}.`}
+        />
+        <meta property="og:image" content={heroImage} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Ruh-Roh Retreat" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${sitter.name} | ${sitter.tagline}`} />
+        <meta
+          name="twitter:description"
+          content={`Book ${sitter.name} for boutique boarding with transparent reviews, badge achievements, and tailored pet care in ${servedAreas}.`}
+        />
+        <meta name="twitter:image" content={heroImage} />
+        <link rel="canonical" href={canonicalUrl} />
       </Head>
       <Header />
       <main className="bg-[#F4F4F9] min-h-screen py-10 sm:py-16">
@@ -43,6 +112,12 @@ const SitterPage = ({ sitter }: SitterPageProps) => {
           </div>
         </div>
       </main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(sitterSchema),
+        }}
+      />
       <Footer />
     </>
   );

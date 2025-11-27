@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import { SITE_URL, SOCIAL_IMAGE_URL } from "@/components/meta-data";
 import { sitters, SitterBadge } from "@/data/sitters";
 import { BADGE_DEFINITIONS, BadgeDefinition } from "@/constants/badges";
 
@@ -19,12 +20,53 @@ type BadgeWithDef = SitterBadge & { definition: BadgeDefinition | undefined };
 
 function SittersPage() {
   const [selectedBadge, setSelectedBadge] = useState<BadgeWithDef | null>(null);
+  const canonicalUrl = `${SITE_URL}/sitters`;
+
+  const sitterListSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Ruh-Roh Retreat Sitters",
+    description:
+      "Verified Ruh-Roh Retreat sitters with boutique, in-home boarding options across Irvine and Wildomar.",
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: sitters.map((sitter, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${SITE_URL}/sitters/${sitter.id}`,
+        name: `${sitter.name} – ${sitter.tagline}`,
+      })),
+    },
+  };
 
   return (
     <>
       <Head>
-        <title>Meet Our Sitters | Ruh-Roh Retreat</title>
-        <meta name="description" content="Browse verified Ruh-Roh Retreat sitters in Irvine and Wildomar." />
+        <title>Meet Our Sitters | Boutique Boarding Hosts in Irvine & Wildomar</title>
+        <meta
+          name="description"
+          content="Browse Ruh-Roh Retreat sitters with Gold Standard badges, transparent reviews, and boutique boarding homes in Irvine and Wildomar."
+        />
+        <meta
+          name="keywords"
+          content="Irvine dog sitter, Wildomar dog sitter, boutique pet boarding hosts, in-home pet boarding, Ruh-Roh sitters"
+        />
+        <meta property="og:title" content="Meet Our Sitters | Boutique Boarding Hosts in Irvine & Wildomar" />
+        <meta
+          property="og:description"
+          content="Explore Ruh-Roh Retreat's vetted sitters, badge program, and verified client reviews across Irvine and Wildomar."
+        />
+        <meta property="og:image" content={SOCIAL_IMAGE_URL} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Ruh-Roh Retreat" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Meet Our Sitters | Boutique Boarding Hosts in Irvine & Wildomar" />
+        <meta
+          name="twitter:description"
+          content="Explore Ruh-Roh Retreat's vetted sitters, badge program, and verified client reviews across Irvine and Wildomar."
+        />
+        <meta name="twitter:image" content={SOCIAL_IMAGE_URL} />
+        <link rel="canonical" href={canonicalUrl} />
       </Head>
       <Header />
       <main className="bg-[#F4F4F9] min-h-screen py-16">
@@ -213,6 +255,13 @@ function SittersPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(sitterListSchema),
+        }}
+      />
 
       <Footer />
     </>
