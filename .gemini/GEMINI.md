@@ -21,9 +21,33 @@ Ruh Roh Retreat is a Next.js application for a boutique dog care service. The pr
 -   **Task Tracking:** The breakdown of work into milestones and trackable tasks is located in `phase2_plan.md`. This file serves as the project's to-do list.
 -   **UI/UX Requirements:** The plan (`phase2_plan.md`) specifies that all new portals must have a **clean, modern, and responsive** design using **Tailwind CSS**. It also mandates robust handling of **loading, error, and empty states**.
 
+### Active Feature Plans
+-   `BOOKING_WORKFLOW_IMPROVEMENT_PLAN.md`: Detailed plan for improving the booking request workflow (Backend & Frontend).
+-   `MEET_OUR_SITTERS_PLAN.md`: Plan for the public-facing "Meet Our Sitters" page and data structure.
+
 ## Code Quality & Conventions
 
-- **TypeScript Strictness:** This project uses a strict TypeScript configuration. All new code, especially React components with props, must have explicit type definitions to prevent build failures. Always add types for function arguments and component props.
+-   **TypeScript Strictness:** This project uses a strict TypeScript configuration. All new code, especially React components with props, must have explicit type definitions to prevent build failures. Always add types for function arguments and component props.
+-   **Project Structure:**
+    -   `src/components`: Landing sections and shared widgets.
+    -   `src/pages`: Routes.
+    -   `src/lib`: Data helpers and hooks.
+    -   `src/styles`: Tailwind configuration.
+    -   `supabase`: Database schema, seeds, and migrations.
+
+## Repository Guidelines (from AGENTS.md)
+
+-   **Build & Test:**
+    -   `npm run dev`: Local server.
+    -   `npm run test`: Jest + pricing smoke test.
+    -   `npm run lint`: Run before every PR.
+-   **Coding Style:**
+    -   Components: TypeScript functions, PascalCase filenames.
+    -   Tailwind: Group classes by layout -> spacing -> typography.
+    -   Formatting: Let ESLint/Prettier drive formatting.
+-   **Testing:**
+    -   Prefer behavior assertions (text, aria roles) over snapshots.
+    -   Stub external services (Supabase, Twilio).
 
 ## Local Memory
 

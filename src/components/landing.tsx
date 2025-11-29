@@ -12,6 +12,7 @@ import LegalTransparencySection from "./landing/LegalTransparencySection";
 import RatesTransparencySection from "./landing/RatesTransparencySection";
 import SafetyTrustSection from "./landing/SafetyTrustSection";
 import VacationAddOnsSection from "./landing/VacationAddOnsSection";
+import FloatingCTA from "./landing/FloatingCTA";
 import { Location } from "./landing/types";
 import { sitters } from "@/data/sitters";
 
@@ -38,6 +39,7 @@ const locations: Location[] = [
 
 function LandingComponent() {
   const bookingRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
 
   const scrollToSection = (ref: RefObject<HTMLElement>) => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
@@ -47,9 +49,11 @@ function LandingComponent() {
 
   return (
     <div className="relative overflow-x-hidden">
-      <HeroSection
-        onBookNow={scrollToBooking}
-      />
+      <div ref={heroRef}>
+        <HeroSection
+          onBookNow={scrollToBooking}
+        />
+      </div>
       <BenefitsSection />
       <VacationAddOnsSection />
       <HowItWorksSection />
@@ -60,6 +64,7 @@ function LandingComponent() {
       <LegalTransparencySection />
       <BookingSection sectionRef={bookingRef} sitters={sitters} />
       <CallToActionSection onBookNow={scrollToBooking} locations={locations} />
+      <FloatingCTA onBookNow={scrollToBooking} hideRef={bookingRef} heroRef={heroRef} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

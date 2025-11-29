@@ -17,31 +17,36 @@
       }
     ],
     "bio": [
-      "Hi! I’m Johnny — a lifelong animal lover with over 15 years of hands-on experience caring for dogs of all sizes, ages, and personalities. I’ve worked as a veterinary assistant, cared for whole groups of Bernese Mountain Dogs (up to 20 at once!), and now specialize in creating a calm, boutique-style boarding experience that helps pups feel safe, relaxed, and understood.",
-      "For years, I worked in corporate finance, but dog care was always where I felt the most fulfilled. Eventually, I followed that feeling and transitioned into pet care full-time. It’s the best decision I’ve ever made — now your dog gets my full attention, patience, and presence all day long.",
-      "🧰 My Background & Approach",
-      "✔ Vet-assistant trained — comfortable with medication, special cases, and senior care",
-      "✔ Experienced with shy, anxious, or high-energy pups",
-      "✔ Skilled at reading dog body language and keeping group play calm and positive",
-      "✔ Focused on both physical care and emotional well-being",
-      "I take a structured, calming approach with every dog — gentle introductions, predictable routines, and a peaceful environment where each pup gets one-on-one attention.",
-      "🏡 What Pet Parents Can Expect",
-      "• A cozy, upscale home environment — never chaotic like a kennel",
-      "• Thoughtful, supervised group play",
-      "• Flexible daily routines tailored to your dog’s needs",
+      "Hi! I’m Johnny — a calm, structured, small-group sitter dedicated to giving pups a peaceful, boutique-style stay in Irvine. With 15+ years of hands-on dog experience, I focus on gentle introductions, predictable routines, and a cozy home environment that helps dogs feel safe, relaxed, and understood.",
+      "Hi! I’m Johnny — a lifelong dog person with over 15 years of hands-on experience caring for dogs of all ages, temperaments, and personalities. I specialize in providing a calm, structured, small-group environment that helps pups feel safe and relaxed from the moment they arrive.",
+      "My home is set up intentionally for comfort: peaceful spaces, cozy resting spots, a fully fenced patio for outdoor breaks, and a clean, well-kept environment that stays tidy throughout your dog’s stay. I host only friendly, house-trained pups so every dog enjoys a smooth, low-stress experience.",
+      "My Care Style",
+      "I take a thoughtful, attentive approach with every dog:",
+      "• Gentle, low-stress introductions to help dogs settle in",
+      "• Clear, consistent routines tailored to your pup’s comfort",
+      "• Calm group dynamics with close supervision",
+      "• Reading & supporting dog body language to keep interactions positive",
+      "• A peaceful environment with plenty of affection, enrichment, and relaxation",
+      "Whether your pup is shy, energetic, or somewhere in between, I adjust the pace so they feel understood and safe.",
+      "What Pet Parents Can Expect",
+      "• A warm, upscale home environment — never chaotic like a kennel",
+      "• Predictable daily rhythms that help dogs relax",
+      "• Thoughtful group play with close oversight",
       "• Clean, tidy spaces (I deep-clean after every stay)",
-      "• Plenty of affection, enrichment, and relaxation",
-      "• Tons of real-time photo/video updates so you’ll always know how your pup is doing",
-      "❤️ Why Pet Parents Book With Me",
-      "• Trained & Trusted Care — My experience lets me confidently handle everything from routine care to more sensitive cases.",
-      "• Calm, Safe Environment — I host only friendly, house-trained pups to ensure a peaceful stay.",
-      "• Boutique Experience — Your dog gets enrichment, comfort, and personalized attention — more like a cozy retreat than a boarding facility.",
-      "• Home All Day — I’m fully present, offering the kind of consistent supervision and companionship most dogs crave.",
-      "• Fun Add-Ons — From sniffaris to aromatherapy, pups enjoy unique touches that make their stay extra special.",
-      "• Daily Updates — You’ll never wonder how your pup is doing — I send tons of photos and videos throughout the day.",
-      "Your dog becomes part of the family here — safe, relaxed, and loved. I can’t wait to welcome them into my home. 🐾✨"
+      "• Optional add-ons for enrichment, outings, or vacation-style fun",
+      "• Reliable photo/video updates so you always know how your pup is doing",
+      "Your dog becomes part of my family during their stay — cared for with patience, presence, and the same attention I give my own pets.",
+      "I’m here to give your pup a retreat of their own — calm, structured, and filled with genuine care. I can’t wait to welcome them into my home. 🐾✨"
+    ],
+    "skills": [
+      "15 years of experience",
+      "oral medication administration",
+      "injected medication administration",
+      "senior dog experience",
+      "special needs dog experience"
     ],
     "homeEnvironment": [
+      "No smoking—clean, fresh, and odor-free home.",
       "1,200 sq ft apartment with open, comfortable living spaces",
       "Two-bedroom setup with plenty of room for dogs to settle in",
       "Dogs welcome on all furniture — beds, couches, and cozy spots",
@@ -52,30 +57,6 @@
     ],
     "badges": [
       {
-        "key": "calm-clean-environment",
-        "title": "Calm & Clean Environment",
-        "description": "Hygienic, peaceful spaces for stress-free stays",
-        "earned": true
-      },
-      {
-        "key": "structured-care",
-        "title": "Structured Care",
-        "description": "Consistent routines and thoughtful introductions",
-        "earned": true
-      },
-      {
-        "key": "personalized-care",
-        "title": "Personalized Care",
-        "description": "Fun add-ons and vacation-style enrichment",
-        "earned": true
-      },
-      {
-        "key": "transparency",
-        "title": "Transparency",
-        "description": "Reliable photo and video updates",
-        "earned": true
-      },
-      {
         "key": "client-loyalty",
         "title": "Client Loyalty",
         "description": "Sitters with strong repeat bookings and long-term trusted client relationships.",
@@ -85,12 +66,6 @@
         "key": "five-star-consistency",
         "title": "5-Star Consistency",
         "description": "Sitters who consistently receive excellent reviews and provide a dependable guest experience.",
-        "earned": true
-      },
-      {
-        "key": "gold-standard",
-        "title": "Ruh-Roh Retreat Gold Standard",
-        "description": "Sitters who earn all seven badges achieve the Ruh-Roh Gold Standard, representing the complete boutique-vacation experience.",
         "earned": true
       }
     ],
@@ -109,33 +84,35 @@
       ],
       "addOns": [
         {
-          "category": "Mental Stimulation & Exercise",
+          "category": "Enrichment Activities",
           "items": [
-            { "name": "Sniffari Walk", "price": "$10" },
-            { "name": "Extended Walk (20 min extra)", "price": "$15" },
-            { "name": "Jogging Session (20 min)", "price": "$15" },
-            { "name": "Dog Park Trip", "price": "$15" },
-            { "name": "Puzzle Feeder or Frozen Kong", "price": "$5" }
+            { "name": "Sniffari Walk (structured scent, exploration walk)", "price": "$15" },
+            { "name": "Bubble Play Session (dog-safe bubbles — super easy & fun)", "price": "$10" },
+            { "name": "Extended Walk (20 min longer neighborhood walk)", "price": "$15" },
+            { "name": "Jogging Session (light jog for active dogs)", "price": "$15+" },
+            { "name": "Dog Park Trip (supervised dog park visit)", "price": "$15" },
+            { "name": "Puzzle Feeder / Frozen Kong (custom stuffed frozen kong, puzzle feeder)", "price": "$5" },
+            { "name": "PAW-cassio Painting (dog-safe art)", "price": "$20" },
+            { "name": "Puppuccino & Treat Outing", "price": "$15" },
+            { "name": "One-On-One Fetch", "price": "$10" }
           ]
         },
         {
-          "category": "Fun & Unique Experiences",
+          "category": "Wellness & Spa",
           "items": [
-            { "name": "PAW-casso Painting", "price": "$20" },
-            { "name": "Puppuccino & Pup Treat Outing", "price": "$15" },
-            { "name": "Cuddle & Movie Night", "price": "$10" },
-            { "name": "Storytime (Morning or Evening)", "price": "$5" }
-          ]
-        },
-        {
-          "category": "Wellness & Comfort",
-          "items": [
-            { "name": "Basic Obedience Reinforcement", "price": "$15" },
             { "name": "Bath & Blow Dry", "price": "$40" },
             { "name": "Massage & Brushing", "price": "$15" },
             { "name": "Calming Aromatherapy", "price": "$10" },
+            { "name": "Warm Towel Cuddle", "price": "$5" },
             { "name": "Teeth Brushing", "price": "$5" },
+            { "name": "Ear Cleaning (gentle ear wipe/clean)", "price": "$5" },
             { "name": "Nail Trim", "price": "$10" }
+          ]
+        },
+        {
+          "category": "Food-Related Add-Ons",
+          "items": [
+            { "name": "Stuffed Frozen Kong Customization (choose flavors)", "price": "$5" }
           ]
         }
       ]
@@ -165,7 +142,6 @@
       "referral": [
         { "label": "Referral Discount", "detail": "10% off" }
       ]
-
     },
     "reviews": [],
     "contactEmail": "bookings@ruhrohretreat.com"
@@ -199,7 +175,15 @@
       "I truly treat every dog like they’re part of my family. Whether your pup loves to zoom around the yard or prefers cozy naps and gentle cuddles, I adjust the day to match their personality and needs.",
       "I can’t wait to welcome your pup into my home and give them all the care, comfort, and love they deserve. 🐾💛"
     ],
+    "skills": [
+      "40 years of experience",
+      "oral medication administration",
+      "injected medication administration",
+      "senior dog experience",
+      "special needs dog experience"
+    ],
     "homeEnvironment": [
+      "No smoking—clean, fresh, and odor-free home.",
       "Spacious 2,500 sq ft home with plenty of room for dogs to relax, explore, and feel at ease",
       "Three-bedroom layout that allows for calm separation when needed and peaceful group time",
       "Two fully fenced yards — secure spaces for safe outdoor play, sniffing, and sunbathing",
@@ -248,7 +232,32 @@
           "price": "$50/night"
         }
       ],
-      "addOns": []
+      "addOns": [
+        {
+          "category": "Enrichment Activities",
+          "items": [
+            { "name": "“Adventure Drive” Car Ride (window cracked, supervised—many dogs love the stimulation)", "price": "$15" },
+            { "name": "Bubble Play Session (dog-safe bubbles — super easy & fun)", "price": "$10" },
+            { "name": "One-On-One Fetch", "price": "$10" }
+          ]
+        },
+        {
+          "category": "Wellness & Spa",
+          "items": [
+            { "name": "Massage & Brushing", "price": "$15" },
+            { "name": "Warm Towel Cuddle", "price": "$5" },
+            { "name": "Teeth Brushing", "price": "$5" },
+            { "name": "Ear Cleaning (gentle ear wipe/clean)", "price": "$5" }
+          ]
+        },
+        {
+          "category": "Food-Related Add-Ons",
+          "items": [
+            { "name": "Stuffed Frozen Kong Customization (choose flavors)", "price": "$5" },
+            { "name": "Doggie Room Service Meal Topping (Sitter chooses items they are comfortable using — bone broth, veggie mix, etc.)", "price": "$5" }
+          ]
+        }
+      ]
     },
     "policies": {
       "cancellation": [
@@ -265,9 +274,7 @@
     "discounts": {
       "lengthOfStay": [
         { "label": "1–6 nights", "detail": "Full price" },
-        { "label": "7–13 nights", "detail": "5% off" },
-        { "label": "14+ nights", "detail": "10% off" },
-        { "label": "30+ nights", "detail": "15% off" }
+        { "label": "7+ days", "detail": "10% off" }
       ],
       "additionalDog": [
         { "label": "Additional dog", "detail": "$40/night per extra dog" }
@@ -277,7 +284,6 @@
       ]
     },
     "reviews": [],
-
     "contactEmail": "bookings@ruhrohretreat.com"
   }
 ]

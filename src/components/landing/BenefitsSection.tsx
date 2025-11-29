@@ -12,8 +12,8 @@ const pillars = [
   },
   {
     title: "Structured & Safe",
-    description: "Balanced routines, mindful introductions, and calm environments.",
-    detail: "Sitters emphasize consistency and smooth transitions to help dogs settle in and feel secure.",
+    description: "Balance routines, predictable schedules, and low – stress introductions, help dogs feel secure and settle in comfortably.",
+    detail: "Sitters who align with this pillar emphasize consistency and thoughtful transitions so each dog can adjust at their own pace and feel safe in their care.",
     icon: FaShieldAlt,
     accentBorder: "border-[#1A9CB0]",
     accentText: "text-[#1A9CB0]",
@@ -44,7 +44,7 @@ function BenefitsSection() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[#333333] mb-4">Why Pet Parents Choose Ruh-Roh Retreat</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Our boutique ethos is built around four pillars of comfort, structure, and trust.
+            Our boutique ethos is built around four pillars inspired by comfort, care, and trust.
           </p>
         </div>
 
