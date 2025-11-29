@@ -21,13 +21,22 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
   const sitterUid = sitter.uid;
   const baseReviews = sitter.reviews ?? [];
   const highlightedReviews = getHighlightedTestimonialsForSitter(sitterUid);
-  const signature = (review: { client: string; date: string; text: string }) =>
-    `${review.client}-${review.date}-${review.text}`;
+  const signature = (review: { client: string; date: string }) =>
+    `${review.client}-${review.date}`;
   const highlightedSignatures = new Set(highlightedReviews.map(signature));
   const remainingReviews = baseReviews.filter(
     (review) => !highlightedSignatures.has(signature(review))
   );
   const orderedReviews = [...highlightedReviews, ...remainingReviews];
+
+  const totalReviews = orderedReviews.length;
+  const averageRating =
+    totalReviews > 0
+      ? (
+          orderedReviews.reduce((sum, review) => sum + review.rating, 0) /
+          totalReviews
+        ).toFixed(1)
+      : "New";
 
   const initiallyVisibleHighlighted = highlightedReviews.slice(0, 5);
 
@@ -92,9 +101,22 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                 <p className="text-sm sm:text-base md:text-lg text-gray-600 mt-1">{sitter.tagline}</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-col items-start md:items-end gap-2">
+              {totalReviews > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <FaStar className="h-5 w-5 text-[#F6C343]" />
+                  <span className="text-xl font-bold text-[#333333]">
+                    {averageRating}
+                  </span>
+                  <span className="text-gray-500 font-medium">
+                    ({totalReviews})
+                  </span>
+                </div>
+              )}
               <span className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] text-xs sm:text-sm font-semibold">
-                {sitter.locations.map((location) => `${location.city}, ${location.state}`).join(" • ")}
+                {sitter.locations
+                  .map((location) => `${location.city}, ${location.state}`)
+                  .join(" • ")}
               </span>
             </div>
           </div>
