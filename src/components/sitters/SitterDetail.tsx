@@ -325,12 +325,46 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                           {category}
                         </p>
                         <ul className="space-y-2">
-                          {items.map((addon) => (
-                            <li key={`${category}-${addon.name}`} className="flex flex-wrap justify-between text-sm text-gray-700">
-                              <span className="font-medium text-[#333333]">{addon.name}</span>
-                              {addon.price && <span className="text-[#F28C38] font-semibold">{addon.price}</span>}
-                            </li>
-                          ))}
+                          {items.map((addon, index) => {
+                            const addonId = `${category}-${addon.name}-${index}`;
+                            // We can reuse the openServices state or create a new one. 
+                            // Since openServices is keyed by name, and addon names are unique within a sitter context (mostly), 
+                            // we can use a composite key or just the name if unique. 
+                            // Let's use a composite key for safety: category + name
+                            const isOpen = openServices[addonId]; 
+                            const toggleAddon = () => {
+                              setOpenServices((prev) => ({
+                                ...prev,
+                                [addonId]: !prev[addonId],
+                              }));
+                            };
+
+                            return (
+                              <li key={addonId} className="border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+                                <div 
+                                  className={`flex flex-wrap justify-between text-sm text-gray-700 items-center ${addon.description ? "cursor-pointer hover:bg-gray-50 rounded-lg -mx-2 px-2 py-1 transition-colors" : "py-1"}`}
+                                  onClick={addon.description ? toggleAddon : undefined}
+                                  role={addon.description ? "button" : undefined}
+                                  aria-expanded={addon.description ? isOpen : undefined}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-[#333333]">{addon.name}</span>
+                                    {addon.description && (
+                                      <FaChevronDown 
+                                        className={`h-3 w-3 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                                      />
+                                    )}
+                                  </div>
+                                  {addon.price && <span className="text-[#F28C38] font-semibold ml-auto pl-4">{addon.price}</span>}
+                                </div>
+                                {isOpen && addon.description && (
+                                  <div className="text-xs text-gray-500 mt-1 pl-2 pr-2 animate-fadeIn">
+                                    {addon.description}
+                                  </div>
+                                )}
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     ))}

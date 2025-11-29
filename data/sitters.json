@@ -85,13 +85,13 @@
         {
           "category": "Enrichment Activities",
           "items": [
-            { "name": "Sniffari Walk (structured scent, exploration walk)", "price": "$15" },
-            { "name": "Bubble Play Session (dog-safe bubbles — super easy & fun)", "price": "$10" },
-            { "name": "Extended Walk (20 min longer neighborhood walk)", "price": "$15" },
-            { "name": "Jogging Session (light jog for active dogs)", "price": "$15+" },
-            { "name": "Dog Park Trip (supervised dog park visit)", "price": "$15" },
-            { "name": "Puzzle Feeder / Frozen Kong (custom stuffed frozen kong, puzzle feeder)", "price": "$5" },
-            { "name": "PAW-cassio Painting (dog-safe art)", "price": "$20" },
+            { "name": "Sniffari Walk", "description": "structured scent, exploration walk", "price": "$15" },
+            { "name": "Bubble Play Session", "description": "dog-safe bubbles — super easy & fun", "price": "$10" },
+            { "name": "Extended Walk", "description": "20 min longer neighborhood walk", "price": "$15" },
+            { "name": "Jogging Session", "description": "light jog for active dogs", "price": "$15" },
+            { "name": "Dog Park Trip", "description": "supervised dog park visit", "price": "$15" },
+            { "name": "Puzzle Feeder / Frozen Kong", "description": "custom stuffed frozen kong, puzzle feeder", "price": "$5" },
+            { "name": "PAW-cassio Painting", "description": "dog-safe art", "price": "$20" },
             { "name": "Puppuccino & Treat Outing", "price": "$15" },
             { "name": "One-On-One Fetch", "price": "$10" }
           ]
@@ -104,14 +104,14 @@
             { "name": "Calming Aromatherapy", "price": "$10" },
             { "name": "Warm Towel Cuddle", "price": "$5" },
             { "name": "Teeth Brushing", "price": "$5" },
-            { "name": "Ear Cleaning (gentle ear wipe/clean)", "price": "$5" },
+            { "name": "Ear Cleaning", "description": "gentle ear wipe/clean", "price": "$5" },
             { "name": "Nail Trim", "price": "$10" }
           ]
         },
         {
           "category": "Food-Related Add-Ons",
           "items": [
-            { "name": "Stuffed Frozen Kong Customization (choose flavors)", "price": "$5" }
+            { "name": "Stuffed Frozen Kong Customization", "description": "choose flavors", "price": "$5" }
           ]
         }
       ]
@@ -195,7 +195,8 @@
     ],
     "homeEnvironment": [
       "No smoking—clean, fresh, and odor-free home.",
-      "Spacious 2,500 sq ft home with plenty of room for dogs to relax, explore, and feel at ease",
+      "1,200 sq ft apartment with open, comfortable living spaces",
+      "Two-bedroom setup with plenty of room for dogs to relax, explore, and feel at ease",
       "Three-bedroom layout that allows for calm separation when needed and peaceful group time",
       "Two fully fenced yards — secure spaces for safe outdoor play, sniffing, and sunbathing",
       "Peaceful small-group setting with Trudy’s three friendly resident dogs who help newcomers feel welcome",
@@ -247,8 +248,8 @@
         {
           "category": "Enrichment Activities",
           "items": [
-            { "name": "“Adventure Drive” Car Ride (window cracked, supervised—many dogs love the stimulation)", "price": "$15" },
-            { "name": "Bubble Play Session (dog-safe bubbles — super easy & fun)", "price": "$10" },
+            { "name": "“Adventure Drive” Car Ride", "description": "window cracked, supervised—many dogs love the stimulation", "price": "$15" },
+            { "name": "Bubble Play Session", "description": "dog-safe bubbles — super easy & fun", "price": "$10" },
             { "name": "One-On-One Fetch", "price": "$10" }
           ]
         },
@@ -258,14 +259,14 @@
             { "name": "Massage & Brushing", "price": "$15" },
             { "name": "Warm Towel Cuddle", "price": "$5" },
             { "name": "Teeth Brushing", "price": "$5" },
-            { "name": "Ear Cleaning (gentle ear wipe/clean)", "price": "$5" }
+            { "name": "Ear Cleaning", "description": "gentle ear wipe/clean", "price": "$5" }
           ]
         },
         {
           "category": "Food-Related Add-Ons",
           "items": [
-            { "name": "Stuffed Frozen Kong Customization (choose flavors)", "price": "$5" },
-            { "name": "Doggie Room Service Meal Topping (Sitter chooses items they are comfortable using — bone broth, veggie mix, etc.)", "price": "$5" }
+            { "name": "Stuffed Frozen Kong Customization", "description": "choose flavors", "price": "$5" },
+            { "name": "Doggie Room Service Meal Topping", "description": "Sitter chooses items they are comfortable using — bone broth, veggie mix, etc.", "price": "$5" }
           ]
         }
       ]
