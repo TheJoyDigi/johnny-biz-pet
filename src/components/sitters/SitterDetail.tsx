@@ -156,13 +156,26 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
-            <div>
-              <h2 className="text-xl font-semibold text-[#333333] mb-3">Home Environment</h2>
-              <ul className="space-y-2 text-gray-700 list-disc list-inside">
-                {sitter.homeEnvironment.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+            <div className="space-y-8">
+              {sitter.skills && sitter.skills.length > 0 && (
+                <div>
+                  <h2 className="text-xl font-semibold text-[#333333] mb-3">Skills</h2>
+                  <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                    {sitter.skills.map((skill) => (
+                      <li key={skill}>{skill}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              <div>
+                <h2 className="text-xl font-semibold text-[#333333] mb-3">Home Environment</h2>
+                <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                  {sitter.homeEnvironment.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
             <div>
               <h2 className="text-xl font-semibold text-[#333333] mb-3">Ruh-Roh Badges</h2>

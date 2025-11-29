@@ -189,7 +189,6 @@
     "skills": [
       "40 years of experience",
       "oral medication administration",
-      "injected medication administration",
       "senior dog experience",
       "special needs dog experience"
     ],
@@ -207,27 +206,15 @@
     ],
     "badges": [
       {
-        "key": "calm-clean-environment",
-        "title": "Calm & Clean Environment",
-        "description": "Hygienic, peaceful spaces for stress-free stays",
+        "key": "client-loyalty",
+        "title": "Client Loyalty",
+        "description": "Sitters with strong repeat bookings and long-term trusted client relationships.",
         "earned": true
       },
       {
-        "key": "structured-care",
-        "title": "Structured Care",
-        "description": "Consistent routines and thoughtful introductions",
-        "earned": true
-      },
-      {
-        "key": "personalized-care",
-        "title": "Personalized Care",
-        "description": "Fun add-ons and vacation-style enrichment",
-        "earned": true
-      },
-      {
-        "key": "transparency",
-        "title": "Transparency",
-        "description": "Reliable photo and video updates",
+        "key": "five-star-consistency",
+        "title": "5-Star Consistency",
+        "description": "Sitters who consistently receive excellent reviews and provide a dependable guest experience.",
         "earned": true
       }
     ],
