@@ -121,12 +121,38 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
             </div>
           </div>
 
-          <div className="mt-8 space-y-4">
-            {sitter.bio.map((paragraph, index) => (
-              <p key={`${sitter.id}-bio-${index}`} className="text-gray-700 leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
+          <div className="mt-8 space-y-8">
+            {(() => {
+              const bioSections = sitter.bio.reduce((acc, item) => {
+                const isTitle = 
+                  item === "My Care Style" || 
+                  item === "What Pet Parents Can Expect";
+
+                if (isTitle) {
+                  acc.push({ title: item, content: [] });
+                } else {
+                  if (acc.length === 0) {
+                    acc.push({ title: null, content: [item] });
+                  } else {
+                    acc[acc.length - 1].content.push(item);
+                  }
+                }
+                return acc;
+              }, [] as { title: string | null; content: string[] }[]);
+
+              return bioSections.map((section, index) => (
+                <div key={`${sitter.id}-bio-section-${index}`} className="space-y-4">
+                  {section.title && (
+                    <h3 className="text-xl font-bold text-[#333333]">{section.title}</h3>
+                  )}
+                  {section.content.map((paragraph, pIndex) => (
+                    <p key={`${sitter.id}-bio-p-${index}-${pIndex}`} className="text-gray-700 leading-relaxed">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              ));
+            })()}
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
