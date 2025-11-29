@@ -9,13 +9,14 @@ import { getHighlightedTestimonialsForSitter } from "@/data/testimonials";
 import PhotoGallerySection from "../landing/PhotoGallerySection";
 import { Photo } from "../photo-gallery";
 import { BADGE_DEFINITIONS } from "@/constants/badges";
+import ReviewsDialog from "./ReviewsDialog";
 
 type SitterDetailProps = {
   sitter: Sitter;
 };
 
 const SitterDetail = ({ sitter }: SitterDetailProps) => {
-  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [isReviewsDialogOpen, setIsReviewsDialogOpen] = useState(false);
   const [showAllHighlighted, setShowAllHighlighted] = useState(false);
   const sitterUid = sitter.uid;
   const baseReviews = sitter.reviews ?? [];
@@ -30,16 +31,15 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
 
   const initiallyVisibleHighlighted = highlightedReviews.slice(0, 5);
 
-  const reviewsToDisplay = showAllReviews
-    ? orderedReviews
-    : showAllHighlighted
+  const reviewsToDisplay = showAllHighlighted
     ? highlightedReviews
     : initiallyVisibleHighlighted.length > 0
     ? initiallyVisibleHighlighted
     : orderedReviews.slice(0, 1);
 
-  const canShowMoreHighlighted = highlightedReviews.length > 5 && !showAllHighlighted && !showAllReviews;
-  const canShowAllReviews = orderedReviews.length > reviewsToDisplay.length && !showAllReviews;
+  const canShowMoreHighlighted = highlightedReviews.length > 5 && !showAllHighlighted;
+  const canShowAllReviews = orderedReviews.length > reviewsToDisplay.length;
+  
   const galleryPhotos: Photo[] =
     sitter.gallery?.map((photo, index) => ({
       id: `${sitter.id}-gallery-${index}`,
@@ -75,7 +75,7 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
         />
       </div>
       <div className="p-6 sm:p-8 lg:p-12 space-y-8 sm:space-y-10">
-        <div>
+        <div className="space-y-8 sm:space-y-10">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
             <div className="flex items-center gap-4">
               <div className="relative h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 rounded-full ring-4 ring-white shadow-lg overflow-hidden">
@@ -369,21 +369,10 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                   )}
                   {canShowAllReviews && (
                     <button
-                      onClick={() => setShowAllReviews(true)}
+                      onClick={() => setIsReviewsDialogOpen(true)}
                       className="text-[#1A9CB0] font-semibold hover:underline"
                     >
                       View all {orderedReviews.length} reviews
-                    </button>
-                  )}
-                  {showAllReviews && (
-                     <button
-                      onClick={() => {
-                        setShowAllReviews(false);
-                        setShowAllHighlighted(false);
-                      }}
-                      className="text-[#1A9CB0] font-semibold hover:underline"
-                    >
-                      Show less
                     </button>
                   )}
                 </div>
@@ -408,6 +397,12 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
           </div>
         </div>
       </div>
+      
+      <ReviewsDialog 
+        isOpen={isReviewsDialogOpen} 
+        onClose={() => setIsReviewsDialogOpen(false)} 
+        reviews={orderedReviews} 
+      />
     </section>
   );
 };
