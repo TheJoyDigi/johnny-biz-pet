@@ -291,6 +291,11 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                     Location: {selectedSitter.locations.map((l) => l.city).join(", ")}
                   </p>
                 )}
+                <div className="mt-2">
+                  <Link href="/sitters" className="text-sm text-[#1A9CB0] hover:underline font-medium">
+                    Not sure? View Sitter Profiles
+                  </Link>
+                </div>
 
               </div>
 
