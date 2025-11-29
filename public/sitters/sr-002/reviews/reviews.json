@@ -1,38 +1,89 @@
 [
   {
-    "id": 1,
-    "name": "Laura M.",
+    "id": 11,
+    "name": "Chad G.",
+    "pet": "Jake",
+    "rating": 5,
+    "date": "Jul 27, 2025",
+    "text": "Trudy was great. She watched my young Labrador Jake for 9 days and checked in with pictures regularly. I think he was treated like family and had lots of play time with other furry friends. I definitely recommend her.",
+    "service": "Boarding"
+  },
+  {
+    "id": 12,
+    "name": "Amber S.",
+    "pet": "Sunny",
+    "rating": 5,
+    "date": "Jul 27, 2025",
+    "text": "Trudy was fantastic! Easy booking process. She sent regular updates and photos throughout the stay. Our girl was on her own vacation while we were away. I would highly recommend Trudy and plan to use her in the future.",
+    "service": "Boarding"
+  },
+  {
+    "id": 13,
+    "name": "Ashley P.",
+    "pet": "Kane",
+    "rating": 5,
+    "date": "Jul 26, 2025",
+    "text": "Trudy was absolutely wonderful and so easy to setup with her, very responsive, even sent pics during our dog's week-long stay. We did a meet and greet beforehand. Drop off and pickup was easy. I’ve never left our dog with anyone before and would definitely use her again and highly recommend as well!",
+    "service": "Boarding"
+  },
+  {
+    "id": 14,
+    "name": "Doug P.",
     "pet": "Ranger",
     "rating": 5,
-    "date": "Jun 12, 2025",
-    "text": "Ranger came home tired, clean, and so content. Trudy's trail updates and structured playdates were perfect for his working-dog brain.",
-    "image": "/sitters/sr-002/reviews/images/testimonial-pet-1.jpeg"
+    "date": "Jul 15, 2025",
+    "text": "It was great getting pictures and updates and Trudy was extremely nice to work with. She made Ranger feel at home.",
+    "service": "Boarding"
   },
   {
-    "id": 2,
-    "name": "Devon P.",
-    "pet": "Miso",
+    "id": 15,
+    "name": "Kari M.",
+    "pet": "Piper",
     "rating": 5,
-    "date": "May 30, 2025",
-    "text": "Miso can be nervous with new people, but Trudy's gradual introductions and Maple the Lab made her feel instantly safe.",
-    "image": "/sitters/sr-002/reviews/images/testimonial-pet-2.jpeg"
+    "date": "Jul 09, 2025",
+    "text": "Trudy was amazing and our dog seemed to have a great time! Our initial dog sitter plans fell through so we needed to find another plan quickly and it was over the holiday weekend! Trudy was so accommodating in figuring out our dropoff/pickup timing and was extra attentive to our dog’s fear of fireworks. We definitely hope to have her watch our dog again on our next vacation!",
+    "service": "Boarding"
   },
   {
-    "id": 3,
-    "name": "Angelica R.",
-    "pet": "Churro",
+    "id": 16,
+    "name": "Lauren Z.",
+    "pet": "Dolly",
     "rating": 5,
-    "date": "Apr 18, 2025",
-    "text": "Loved the twice-daily videos and wellness notes. The fenced yard and splash spot kept Churro entertained the whole weekend.",
-    "image": "/sitters/sr-002/reviews/images/testimonial-pet-3.jpeg"
+    "date": "Jul 09, 2025",
+    "text": "Trudy is an amazing sitter. She is very communicative and shows she cares deeply for the pups under her care. We will definitely continue to book with her in the future. Highly recommend!",
+    "service": "Boarding"
   },
   {
-    "id": 4,
-    "name": "Sam H.",
-    "pet": "Kona",
+    "id": 17,
+    "name": "Ryan D.",
+    "pet": "Dakota",
     "rating": 5,
-    "date": "Mar 15, 2025",
-    "text": "Kona came home happy, calm, and freshly brushed. The paw balm add-on was worth every penny.",
-    "image": "/sitters/sr-002/reviews/images/testimonial-pet-3.jpeg"
+    "date": "Jul 08, 2025",
+    "text": "We had a last minute trip come up, and needed a new place to board our almost 2 year old lab. We did a meet and greet with Trudy and she was phenomenal right off the bat. Dakota felt very at home and safe immediately. She took extra care of him during the holiday fireworks. Upon pick up, he was so happy he barely wanted to leave! Definitely recommend Trudy.",
+    "service": "Boarding"
+  },
+  {
+    "id": 18,
+    "name": "Darli B.",
+    "pet": "Lady",
+    "rating": 5,
+    "date": "Jun 10, 2025",
+    "text": "What a pleasure it is to provide a wonderful review for Trudy. She has watched my Golden Retriever Lady, our cockatiels, and our cat. She is kind, gentle, patient, reliable, and truly loves animals."
+  },
+  {
+    "id": 19,
+    "name": "Jessica S.",
+    "pet": "Guest Pup",
+    "rating": 5,
+    "date": "Jun 10, 2025",
+    "text": "I have known Trudy for over 25 years. She has always had loving pets and treats animals like family. My dogs adore her and wait by the door when she visits. I highly recommend her as a pet caregiver."
+  },
+  {
+    "id": 20,
+    "name": "Erica F.",
+    "pet": "Guest Pup",
+    "rating": 5,
+    "date": "Jun 10, 2025",
+    "text": "I have two rambunctious dogs who adore their 'Aunt Trudy.' She gives them love, attention, and patience. I trust her completely with my pups, and she never minds the fur or slobber — she just loves dogs that much!"
   }
 ]

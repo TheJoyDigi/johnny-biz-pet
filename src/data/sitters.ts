@@ -74,7 +74,7 @@ export type SitterReview = {
   rating: number;
   date: string;
   text: string;
-  image?: string;
+  image?: string | null;
   source?: string;
 };
 

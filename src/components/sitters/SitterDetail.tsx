@@ -50,20 +50,11 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
     })) ?? [];
   const addOnCategories = sitter.services.addOns ?? [];
   const [openServices, setOpenServices] = useState<Record<string, boolean>>({});
-  const renderReviewAvatar = (review: SitterReview) =>
-    review.image ? (
-      <Image
-        src={review.image}
-        alt={`${review.client}'s pet`}
-        width={48}
-        height={48}
-        className="h-12 w-12 rounded-full object-cover"
-      />
-    ) : (
-      <div className="h-12 w-12 rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] flex items-center justify-center font-semibold">
-        {review.client.charAt(0)}
-      </div>
-    );
+  const renderReviewAvatar = (review: SitterReview) => (
+    <div className="h-12 w-12 rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] flex items-center justify-center font-semibold">
+      {review.client.charAt(0)}
+    </div>
+  );
 
   const toggleService = (name: string) => {
     setOpenServices((prev) => ({
