@@ -7,15 +7,14 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { sitters, SitterBadge } from "@/data/sitters";
+import { sitters, SitterBadge, SitterReview } from "@/data/sitters";
 import { BADGE_DEFINITIONS, BadgeDefinition } from "@/constants/badges";
+import { getHighlightedTestimonialsForSitter } from "@/data/testimonials";
 
 const TOTAL_BADGES = Object.keys(BADGE_DEFINITIONS).length;
 
-function getAverageRating(reviewsLength: number, totalStars: number) {
-  if (reviewsLength === 0) return null;
-  return totalStars / reviewsLength;
-}
+const reviewSignature = (review: SitterReview) =>
+  `${review.client}-${review.date}-${review.text}`;
 
 type BadgeWithDef = SitterBadge & { definition: BadgeDefinition | undefined };
 
@@ -42,9 +41,16 @@ function SittersPage() {
 
           <div className="grid gap-8 md:grid-cols-2">
             {sitters.map((sitter) => {
-              const totalStars = sitter.reviews.reduce((sum, review) => sum + review.rating, 0);
-              const reviewsCount = sitter.reviews.length;
-              const averageRating = getAverageRating(reviewsCount, totalStars);
+              const baseReviews = sitter.reviews ?? [];
+              const highlightedReviews = getHighlightedTestimonialsForSitter(sitter.uid);
+              const highlightedSignatures = new Set(highlightedReviews.map(reviewSignature));
+              const combinedReviews = [
+                ...highlightedReviews,
+                ...baseReviews.filter((review) => !highlightedSignatures.has(reviewSignature(review))),
+              ];
+              const totalStars = combinedReviews.reduce((sum, review) => sum + review.rating, 0);
+              const reviewsCount = combinedReviews.length;
+              const averageRating = reviewsCount === 0 ? null : totalStars / reviewsCount;
 
               const earnedBadgesCount = sitter.badges.filter((b) => b.earned).length;
               const totalBadges = TOTAL_BADGES;
