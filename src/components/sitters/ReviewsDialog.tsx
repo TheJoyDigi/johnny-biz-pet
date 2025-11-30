@@ -34,11 +34,7 @@ const ReviewsDialog = ({ isOpen, onClose, reviews }: ReviewsDialogProps) => {
 
   if (!isOpen) return null;
 
-  const renderReviewAvatar = (review: SitterReview) => (
-    <div className="h-12 w-12 rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] flex items-center justify-center font-semibold shrink-0 text-lg">
-      {review.client.charAt(0)}
-    </div>
-  );
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
@@ -76,7 +72,9 @@ const ReviewsDialog = ({ isOpen, onClose, reviews }: ReviewsDialogProps) => {
           {reviews.map((review, index) => (
             <div key={`${review.id || index}`} className="border-b border-gray-100 last:border-0 pb-8 last:pb-0">
               <div className="flex items-start gap-4">
-                {renderReviewAvatar(review)}
+                <div className="h-12 w-12 rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] flex items-center justify-center font-semibold shrink-0 text-lg">
+                  {review.client.charAt(0)}
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
                     <h3 className="font-semibold text-[#333333] text-lg">{review.client}</h3>

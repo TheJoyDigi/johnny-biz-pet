@@ -423,7 +423,9 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                   <div key={`${review.id}-${reviewIndex}`} className="rounded-2xl bg-[#F4F4F9] p-4 border border-gray-100">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        {renderReviewAvatar(review)}
+                        <div className="h-10 w-10 rounded-full bg-[#1A9CB0]/10 flex items-center justify-center text-[#1A9CB0] font-bold text-lg flex-shrink-0">
+                          {review.client.charAt(0)}
+                        </div>
                         <div>
                           <p className="font-semibold text-[#333333]">{review.client}</p>
                           <p className="text-sm text-gray-500">{`Pet: ${review.pet}`}</p>
