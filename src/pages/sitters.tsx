@@ -9,12 +9,8 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { sitters, SitterBadge, SitterReview } from "@/data/sitters";
 import { BADGE_DEFINITIONS, BadgeDefinition } from "@/constants/badges";
-import { getHighlightedTestimonialsForSitter } from "@/data/testimonials";
 
 const TOTAL_BADGES = Object.keys(BADGE_DEFINITIONS).length;
-
-const reviewSignature = (review: SitterReview) =>
-  `${review.client}-${review.date}-${review.text}`;
 
 type BadgeWithDef = SitterBadge & { definition: BadgeDefinition | undefined };
 
@@ -41,15 +37,9 @@ function SittersPage() {
 
           <div className="grid gap-8 md:grid-cols-2">
             {sitters.map((sitter) => {
-              const baseReviews = sitter.reviews ?? [];
-              const highlightedReviews = getHighlightedTestimonialsForSitter(sitter.uid);
-              const highlightedSignatures = new Set(highlightedReviews.map(reviewSignature));
-              const combinedReviews = [
-                ...highlightedReviews,
-                ...baseReviews.filter((review) => !highlightedSignatures.has(reviewSignature(review))),
-              ];
-              const totalStars = combinedReviews.reduce((sum, review) => sum + review.rating, 0);
-              const reviewsCount = combinedReviews.length;
+              const reviews = sitter.reviews ?? [];
+              const totalStars = reviews.reduce((sum, review) => sum + review.rating, 0);
+              const reviewsCount = reviews.length;
               const averageRating = reviewsCount === 0 ? null : totalStars / reviewsCount;
 
               const earnedBadgesCount = sitter.badges.filter((b) => b.earned).length;

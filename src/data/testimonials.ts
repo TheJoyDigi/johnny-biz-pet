@@ -1,7 +1,5 @@
 import johnnyReviewsData from "../../public/sitters/sr-001/reviews/reviews.json";
-import highlightedJohnnyReviewsData from "../../public/sitters/sr-001/reviews/highlighted-reviews.json";
 import trudyReviewsData from "../../public/sitters/sr-002/reviews/reviews.json";
-import highlightedTrudyReviewsData from "../../public/sitters/sr-002/reviews/highlighted-reviews.json";
 import type { SitterReview } from "./sitters";
 
 type RawReview = {
@@ -13,16 +11,6 @@ type RawReview = {
   rating: number;
   pet?: string;
   service?: string;
-};
-
-type RawHighlightedReview = {
-  id: number;
-  name: string;
-  service?: string;
-  date: string;
-  text: string;
-  image?: string;
-  rating: number;
 };
 
 const mapReviews = (
@@ -59,33 +47,6 @@ const testimonialsBySitter: Record<string, SitterReview[]> = {
 
 export function getTestimonialsForSitter(uid: string): SitterReview[] {
   return testimonialsBySitter[uid] ?? [];
-}
-
-const highlightedTestimonialsBySitter: Record<string, SitterReview[]> = {
-  "sr-001": (highlightedJohnnyReviewsData as RawHighlightedReview[]).map((review) => ({
-    id: `johnny-highlight-${review.id}`,
-    client: review.name,
-    pet: review.service ?? "Guest Pup",
-    rating: review.rating,
-    date: review.date,
-    text: review.text,
-    image: review.image,
-    source: "Highlight",
-  })),
-  "sr-002": (highlightedTrudyReviewsData as RawHighlightedReview[]).map((review) => ({
-    id: `trudy-highlight-${review.id}`,
-    client: review.name,
-    pet: review.service ?? "Guest Pup",
-    rating: review.rating,
-    date: review.date,
-    text: review.text,
-    image: review.image,
-    source: "Highlight",
-  })),
-};
-
-export function getHighlightedTestimonialsForSitter(uid: string): SitterReview[] {
-  return highlightedTestimonialsBySitter[uid] ?? [];
 }
 
 export default testimonialsBySitter;

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { FaChevronDown, FaStar } from "react-icons/fa";
 
 import { Sitter, SitterReview } from "@/data/sitters";
-import { getHighlightedTestimonialsForSitter } from "@/data/testimonials";
 import PhotoGallerySection from "../landing/PhotoGallerySection";
 import { Photo } from "../photo-gallery";
 import { BADGE_DEFINITIONS } from "@/constants/badges";
@@ -19,35 +18,22 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
   const [isReviewsDialogOpen, setIsReviewsDialogOpen] = useState(false);
   const [showAllHighlighted, setShowAllHighlighted] = useState(false);
   const sitterUid = sitter.uid;
-  const baseReviews = sitter.reviews ?? [];
-  const highlightedReviews = getHighlightedTestimonialsForSitter(sitterUid);
-  const signature = (review: { client: string; date: string }) =>
-    `${review.client}-${review.date}`;
-  const highlightedSignatures = new Set(highlightedReviews.map(signature));
-  const remainingReviews = baseReviews.filter(
-    (review) => !highlightedSignatures.has(signature(review))
-  );
-  const orderedReviews = [...highlightedReviews, ...remainingReviews];
+  const reviews = sitter.reviews ?? [];
+  
+  // Sort reviews by date descending just in case
+  const sortedReviews = [...reviews].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  const totalReviews = orderedReviews.length;
+  const totalReviews = sortedReviews.length;
   const averageRating =
     totalReviews > 0
       ? (
-          orderedReviews.reduce((sum, review) => sum + review.rating, 0) /
+          sortedReviews.reduce((sum, review) => sum + review.rating, 0) /
           totalReviews
         ).toFixed(1)
       : "New";
 
-  const initiallyVisibleHighlighted = highlightedReviews.slice(0, 5);
-
-  const reviewsToDisplay = showAllHighlighted
-    ? highlightedReviews
-    : initiallyVisibleHighlighted.length > 0
-    ? initiallyVisibleHighlighted
-    : orderedReviews.slice(0, 1);
-
-  const canShowMoreHighlighted = highlightedReviews.length > 5 && !showAllHighlighted;
-  const canShowAllReviews = orderedReviews.length > reviewsToDisplay.length;
+  const reviewsToDisplay = sortedReviews.slice(0, 5);
+  const canShowAllReviews = sortedReviews.length > reviewsToDisplay.length;
   
   const galleryPhotos: Photo[] =
     sitter.gallery?.map((photo, index) => ({
@@ -429,7 +415,7 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
 
           <div>
             <h2 className="text-xl font-semibold text-[#333333] mb-3">Verified Reviews</h2>
-            {orderedReviews.length === 0 ? (
+            {sortedReviews.length === 0 ? (
               <p className="text-gray-500">No reviews yet. Check back soon!</p>
             ) : (
               <div className="space-y-4">
@@ -454,20 +440,12 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                   </div>
                 ))}
                 <div className="flex flex-wrap gap-4">
-                  {canShowMoreHighlighted && (
-                    <button
-                      onClick={() => setShowAllHighlighted(true)}
-                      className="text-[#1A9CB0] font-semibold hover:underline"
-                    >
-                      View {highlightedReviews.length - 5} more highlighted reviews
-                    </button>
-                  )}
                   {canShowAllReviews && (
                     <button
                       onClick={() => setIsReviewsDialogOpen(true)}
                       className="text-[#1A9CB0] font-semibold hover:underline"
                     >
-                      View all {orderedReviews.length} reviews
+                      View all {sortedReviews.length} reviews
                     </button>
                   )}
                 </div>
@@ -496,7 +474,7 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
       <ReviewsDialog 
         isOpen={isReviewsDialogOpen} 
         onClose={() => setIsReviewsDialogOpen(false)} 
-        reviews={orderedReviews} 
+        reviews={sortedReviews} 
       />
     </section>
   );
