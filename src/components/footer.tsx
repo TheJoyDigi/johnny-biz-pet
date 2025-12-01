@@ -9,18 +9,23 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Ruh-Roh Retreat</h3>
             <p className="text-gray-300">
-              Premium overnight boarding with luxury accommodations and specialized add-on services tailored to your pet's needs.
+              Ruh-Roh Retreat connects pet parents with independent sitters who share our boutique philosophy of structure, comfort, and personalized attention.
             </p>
-          </div>
+         </div>
 
           {/* Column 2 - Quick Links */}
           <div>
             <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
+              <li><Link href="/" className="text-gray-300 hover:text-white">Home</Link></li>
               <li><Link href="/#services" className="text-gray-300 hover:text-white">Services</Link></li>
-              <li><Link href="/#about" className="text-gray-300 hover:text-white">About Me</Link></li>
+              <li><Link href="/#benefits" className="text-gray-300 hover:text-white">Why Ruh-Roh</Link></li>
+              <li><Link href="/#about" className="text-gray-300 hover:text-white">About</Link></li>
+              <li><Link href="/sitters" className="text-gray-300 hover:text-white">Meet Our Sitters</Link></li>
               <li><Link href="/#testimonials" className="text-gray-300 hover:text-white">Testimonials</Link></li>
-              <li><Link href="/#contact" className="text-gray-300 hover:text-white">Contact</Link></li>
+              <li><Link href="/#booking" className="text-gray-300 hover:text-white">Book Now</Link></li>
+              <li><Link href="/blog" className="text-gray-300 hover:text-white">Blog</Link></li>
+              <li><Link href="/waiver" className="text-gray-300 hover:text-white">Waiver</Link></li>
             </ul>
           </div>
 

@@ -37,7 +37,7 @@ EMAIL_FROM=sending_email_address
 BOOKING_RECIPIENT_EMAIL=recipient_email_address
 
 # Supabase Configuration
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3001
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
@@ -97,7 +97,7 @@ node scripts/seed-auth-users.js
 
 This script will read the users from the `public.users` table and create corresponding users in the `auth.users` table with a default password of `password`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3001](http://localhost:3001) with your browser to see the result.
 
 ## Project Structure
 

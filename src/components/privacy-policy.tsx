@@ -1,133 +1,49 @@
-const PrivacyPolicyComponent = () => {
+import React from "react";
+import Link from "next/link";
+
+const PRIVACY_PDF_PATH = "/legal/privacy-policy.pdf";
+
+const PrivacyPolicyComponent: React.FC = () => {
   return (
-    <div>
-      <div className="mainContainer">
-        <h1>Ruh-Roh Retreat Privacy Policy</h1>
-
-        <section>
-          <h2>1. Introduction</h2>
-          <p>
-            Welcome to Ruh-Roh Retreat. This Privacy Policy explains how I
-            collect, use, disclose, and safeguard your information when you
-            visit my website and use my services. By using Ruh-Roh Retreat, you
-            agree to the terms of this Privacy Policy. If you do not agree with
-            the terms, please do not access my services.
+    <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-10">
+        <div className="flex flex-col gap-4 mb-8">
+          <p className="uppercase tracking-widest text-sm font-semibold text-[#1A9CB0]">Privacy Policy</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-[#333333]">Ruh-Roh Retreat Privacy Policy</h1>
+          <p className="text-base text-gray-700">Last Updated: October 5, 2025</p>
+          <p className="text-base text-gray-700">
+            This page provides access to our Privacy Policy in PDF format. Please review the full document to understand how we collect, use, and protect your information.
           </p>
-        </section>
+          <Link
+            href={PRIVACY_PDF_PATH}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-4 py-2 rounded-full bg-[#1A9CB0] text-white font-semibold hover:bg-[#158294] transition-colors w-fit"
+          >
+            View PDF
+          </Link>
+        </div>
 
-        <section>
-          <h2>2. Information I Collect</h2>
-          <h3>2.1 Personal Information</h3>
-          <p>
-            I may collect personal information that you voluntarily provide to
-            me when you register an account, use my services, or contact me.
-            This may include your name, email address, phone number, and other
-            contact details.
-          </p>
-
-          <h3>2.2 Non-Personal Information</h3>
-          <p>
-            I may collect non-personal information about you automatically when
-            you interact with my website. This information may include your IP
-            address, browser type, device type, and usage data.
-          </p>
-        </section>
-
-        <section>
-          <h2>3. How I Use Your Information</h2>
-          <p>
-            I may use the information I collect for various purposes, including:
-          </p>
-          <ul>
-            <li>Providing and maintaining my services</li>
-            <li>Improving and personalizing your experience</li>
-            <li>Communicating with you about updates, promotions, and news</li>
-            <li>Responding to your inquiries and providing customer support</li>
-            <li>Monitoring and analyzing usage patterns and trends</li>
-            <li>Ensuring the security and integrity of my services</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>4. How I Share Your Information</h2>
-          <p>I may share your information in the following circumstances:</p>
-          <ul>
-            <li>
-              <strong>With Service Providers:</strong> I may share your
-              information with third-party service providers who perform
-              services on my behalf.
-            </li>
-            <li>
-              <strong>For Legal Reasons:</strong> I may disclose your
-              information if required to do so by law or in response to valid
-              requests by public authorities.
-            </li>
-            <li>
-              <strong>Business Transfers:</strong> In the event of a merger,
-              acquisition, or sale of all or a portion of my assets, your
-              information may be transferred to the new owners.
-            </li>
-            <li>
-              <strong>With Your Consent:</strong> I may share your information
-              with third parties if you have given me your consent to do so.
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>5. Security of Your Information</h2>
-          <p>
-            I take reasonable measures to protect your information from
-            unauthorized access, use, or disclosure. However, no method of
-            transmission over the internet or electronic storage is completely
-            secure, and I cannot guarantee absolute security.
-          </p>
-        </section>
-
-        <section>
-          <h2>6. Your Choices</h2>
-          <p>
-            You have the right to access, update, or delete your personal
-            information. You can do this by logging into your account or
-            contacting me at
-            <a href="mailto:hello@ruhrohretreat.com">hello@ruhrohretreat.com</a>
-            . You may also opt out of receiving promotional communications from
-            me by following the unsubscribe instructions provided in those
-            emails.
-          </p>
-        </section>
-
-        <section>
-          <h2>7. Children&apos;s Privacy</h2>
-          <p>
-            My services are not intended for use by children under the age of
-            13. I do not knowingly collect personal information from children
-            under 13. If I become aware that I have collected personal
-            information from a child under 13, I will take steps to delete such
-            information.
-          </p>
-        </section>
-
-        <section>
-          <h2>8. Changes to This Privacy Policy</h2>
-          <p>
-            I may update this Privacy Policy from time to time. I will notify
-            you of any changes by posting the new Privacy Policy on my website.
-            You are advised to review this Privacy Policy periodically for any
-            changes. Your continued use of my services after any changes
-            signifies your acceptance of the updated Privacy Policy.
-          </p>
-        </section>
-
-        <section>
-          <h2>9. Contact Us</h2>
-          <p>
-            If you have any questions about this Privacy Policy, please contact
-            me at
-            <a href="mailto:hello@ruhrohretreat.com">hello@ruhrohretreat.com</a>
-            .
-          </p>
-        </section>
+        <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+          <object
+            data={PRIVACY_PDF_PATH}
+            type="application/pdf"
+            className="w-full h-[80vh]"
+          >
+            <div className="p-6 text-sm text-gray-700 space-y-4">
+              <p>
+                It looks like your browser cannot display the PDF inline. You can download the Privacy Policy instead:
+              </p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>
+                  <Link href={PRIVACY_PDF_PATH} target="_blank" rel="noopener noreferrer" className="text-[#1A9CB0] font-semibold hover:underline">
+                    Download the PDF
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </object>
+        </div>
       </div>
     </div>
   );

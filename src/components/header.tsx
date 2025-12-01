@@ -1,7 +1,20 @@
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+
+const NAV_ITEMS = [
+  { label: "Home", href: "/" },
+  { label: "Why Ruh-Roh", href: "/#benefits" },
+  { label: "Vacation Add-Ons", href: "/#vacation-add-ons" },
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Safety & Trust", href: "/#safety" },
+  { label: "Our Story", href: "/#our-story" },
+  { label: "Meet Our Sitters", href: "/sitters" },
+  { label: "Blog", href: "/blog" },
+  { label: "Waiver", href: "/waiver" },
+] as const;
+
+const PRIMARY_CTA = { label: "Book Now", href: "/#booking" };
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,17 +37,22 @@ export default function Header() {
             />
           </Link>
         </div>
-        <nav className="hidden md:flex space-x-8 h-[80px] items-center">
-          <Link href="/" className="text-gray-800 hover:text-[#1A9CB0] font-medium">Home</Link>
-          <Link href="/#services" className="text-gray-800 hover:text-[#1A9CB0] font-medium">Services</Link>
-          <Link href="/#about" className="text-gray-800 hover:text-[#1A9CB0] font-medium">About</Link>
-          <Link href="/#testimonials" className="text-gray-800 hover:text-[#1A9CB0] font-medium">Testimonials</Link>
-          <Link href="/blog" className="text-gray-800 hover:text-[#1A9CB0] font-medium">Blog</Link>
-          <Link href="/waiver" className="text-gray-800 hover:text-[#1A9CB0] font-medium">Waiver</Link>
+        <nav className="hidden lg:flex items-center gap-6 h-[80px]">
+          {NAV_ITEMS.map(({ href, label }) => (
+            <Link key={href} href={href} className="text-gray-800 hover:text-[#1A9CB0] font-medium">
+              {label}
+            </Link>
+          ))}
+          <Link
+            href={PRIMARY_CTA.href}
+            className="ml-2 rounded-full bg-[#1A9CB0] px-5 py-2 font-semibold text-white shadow-md transition hover:bg-[#147384]"
+          >
+            {PRIMARY_CTA.label}
+          </Link>
         </nav>
         <button
           onClick={toggleMobileMenu}
-          className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#1A9CB0]"
+          className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#1A9CB0]"
         >
           <span className="sr-only">Open menu</span>
           {!mobileMenuOpen ? (
@@ -50,7 +68,7 @@ export default function Header() {
       </div>
 
       {/* Mobile Menu */}
-      <div className={`md:hidden fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`lg:hidden fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-4 border-b">
             <Link href="/" className="text-logo">
@@ -63,14 +81,23 @@ export default function Header() {
             </button>
           </div>
           <nav className="flex-1 flex flex-col p-4 space-y-4">
-            <Link href="/" className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-            <Link href="/#services" className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]" onClick={() => setMobileMenuOpen(false)}>Services</Link>
-            <Link href="/#about" className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]" onClick={() => setMobileMenuOpen(false)}>About</Link>
-            <Link href="/#testimonials" className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]" onClick={() => setMobileMenuOpen(false)}>Testimonials</Link>
-            <Link href="/#booking" className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]" onClick={() => setMobileMenuOpen(false)}>Book Now</Link>
-            <Link href="/#meet-greet" className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]" onClick={() => setMobileMenuOpen(false)}>Meet & Greet</Link>
-            <Link href="/blog" className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
-            <Link href="/waiver" className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]" onClick={() => setMobileMenuOpen(false)}>Waiver</Link>
+            {NAV_ITEMS.map(({ href, label }) => (
+              <Link
+                key={`${label}-${href}`}
+                href={href}
+                className="text-xl font-medium text-gray-800 hover:text-[#1A9CB0]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {label}
+              </Link>
+            ))}
+            <Link
+              href={PRIMARY_CTA.href}
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-[#1A9CB0] px-6 py-3 text-lg font-semibold text-white shadow-md hover:bg-[#147384]"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {PRIMARY_CTA.label}
+            </Link>
           </nav>
         </div>
       </div>

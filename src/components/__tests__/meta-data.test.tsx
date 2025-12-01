@@ -20,11 +20,11 @@ describe('DefaultMetaData', () => {
   it('renders the default title and description', () => {
     render(<DefaultMetaData />, { container: document.head });
 
-    expect(document.title).toBe('Ruh-Roh Retreat - Premium Pet Boarding Services');
+    expect(document.title).toBe('Ruh-Roh Retreat | Boutique In-Home Dog Sitting in Irvine & Wildomar');
     const description = document.querySelector('meta[name="description"]');
     expect(description).toHaveAttribute(
       'content',
-      'Luxury overnight boarding with premium add-on services for your pets. Providing trustworthy and reliable pet care with regular photo updates and peace of mind.'
+      'Boutique in-home dog sitting powered by Badge-Rated sitters who deliver calm, structured care, daily updates, and vacation-style add-ons throughout Irvine and Wildomar.'
     );
   });
 });

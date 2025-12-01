@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { FaArrowLeft, FaArrowRight, FaPaw, FaTimes } from "react-icons/fa";
 
-type Photo = {
+export type Photo = {
   id: string;
   src: string;
   alt: string;
@@ -11,9 +11,17 @@ type Photo = {
   height: number;
 };
 
-const PhotoGallery: React.FC = () => {
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const [loading, setLoading] = useState(true);
+type GalleryVariant = "landing" | "profile";
+
+type PhotoGalleryProps = {
+  photos: Photo[];
+  title?: string;
+  description?: string;
+  variant?: GalleryVariant;
+};
+
+const PhotoGallery: React.FC<PhotoGalleryProps> = ({ photos, title, description, variant = "landing" }) => {
+  const [galleryPhotos, setGalleryPhotos] = useState<Photo[]>(photos);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mobileCurrentIndex, setMobileCurrentIndex] = useState(0);
@@ -23,26 +31,18 @@ const PhotoGallery: React.FC = () => {
   const autoSlideIntervalRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    const fetchPhotos = async () => {
-      try {
-        const response = await fetch("/api/gallery-photos");
-        const data = await response.json();
-        setPhotos(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching photos:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchPhotos();
-  }, []);
+    setGalleryPhotos(photos);
+    setSelectedPhoto(null);
+    setCurrentIndex(0);
+    setMobileCurrentIndex(0);
+    setDesktopPage(0);
+  }, [photos]);
 
   useEffect(() => {
-    if (isAutoSlideActive) {
+    if (isAutoSlideActive && galleryPhotos.length > 0) {
       autoSlideIntervalRef.current = setInterval(() => {
-        setMobileCurrentIndex((prev) => (prev + 1) % photos.length);
-        setDesktopPage((prev) => (prev + 1) % Math.ceil(photos.length / photosPerPage));
+        setMobileCurrentIndex((prev) => (prev + 1) % galleryPhotos.length);
+        setDesktopPage((prev) => (prev + 1) % Math.ceil(galleryPhotos.length / photosPerPage));
       }, 3000);
     }
 
@@ -51,7 +51,7 @@ const PhotoGallery: React.FC = () => {
         clearInterval(autoSlideIntervalRef.current);
       }
     };
-  }, [isAutoSlideActive, photos.length]);
+  }, [isAutoSlideActive, galleryPhotos.length]);
 
   const openLightbox = (photo: Photo, index: number) => {
     setSelectedPhoto(photo);
@@ -64,26 +64,30 @@ const PhotoGallery: React.FC = () => {
   }, []);
 
   const goToPrevious = useCallback(() => {
-    const newIndex = (currentIndex - 1 + photos.length) % photos.length;
-    setSelectedPhoto(photos[newIndex]);
+    if (galleryPhotos.length === 0) return;
+    const newIndex = (currentIndex - 1 + galleryPhotos.length) % galleryPhotos.length;
+    setSelectedPhoto(galleryPhotos[newIndex]);
     setCurrentIndex(newIndex);
     setIsAutoSlideActive(false);
-  }, [currentIndex, photos]);
+  }, [currentIndex, galleryPhotos]);
 
   const goToNext = useCallback(() => {
-    const newIndex = (currentIndex + 1) % photos.length;
-    setSelectedPhoto(photos[newIndex]);
+    if (galleryPhotos.length === 0) return;
+    const newIndex = (currentIndex + 1) % galleryPhotos.length;
+    setSelectedPhoto(galleryPhotos[newIndex]);
     setCurrentIndex(newIndex);
     setIsAutoSlideActive(false);
-  }, [currentIndex, photos]);
+  }, [currentIndex, galleryPhotos]);
 
   const goToPreviousMobile = () => {
-    setMobileCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    if (galleryPhotos.length === 0) return;
+    setMobileCurrentIndex((prev) => (prev - 1 + galleryPhotos.length) % galleryPhotos.length);
     setIsAutoSlideActive(false);
   };
 
   const goToNextMobile = () => {
-    setMobileCurrentIndex((prev) => (prev + 1) % photos.length);
+    if (galleryPhotos.length === 0) return;
+    setMobileCurrentIndex((prev) => (prev + 1) % galleryPhotos.length);
     setIsAutoSlideActive(false);
   };
 
@@ -93,7 +97,7 @@ const PhotoGallery: React.FC = () => {
   };
 
   const goToNextPage = () => {
-    const maxPage = Math.ceil(photos.length / photosPerPage) - 1;
+    const maxPage = Math.max(0, Math.ceil(galleryPhotos.length / photosPerPage) - 1);
     setDesktopPage((prev) => Math.min(maxPage, prev + 1));
     setIsAutoSlideActive(false);
   };
@@ -108,7 +112,7 @@ const PhotoGallery: React.FC = () => {
     setIsAutoSlideActive(false);
   };
 
-  const currentPagePhotos = photos.slice(
+  const currentPagePhotos = galleryPhotos.slice(
     desktopPage * photosPerPage,
     (desktopPage + 1) * photosPerPage
   );
@@ -136,52 +140,47 @@ const PhotoGallery: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedPhoto, currentIndex, goToPrevious, goToNext, closeLightbox]);
 
-  if (loading) {
+  if (galleryPhotos.length === 0) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 15, -15, 0],
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        >
-          <FaPaw className="text-6xl text-[#F28C38]" />
-        </motion.div>
-      </div>
+      <section id="gallery" className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4 text-center text-gray-500">
+          <p>No photos available yet.</p>
+        </div>
+      </section>
     );
   }
 
+  const heading = title ?? "Furry Friends Gallery";
+  const subheading = description ?? "Paws, whiskers, and wagging tails - memories of our adorable guests!";
+
+  const sectionClassName =
+    variant === "profile" ? "py-10 bg-transparent" : "py-16 bg-gray-50";
+
+  const containerClassName =
+    variant === "profile"
+      ? "max-w-5xl mx-auto px-0 md:px-4"
+      : "container mx-auto px-4";
+
   return (
-    <section id="gallery" className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
+    <section id="gallery" className={sectionClassName}>
+      <div className={containerClassName}>
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-            Furry Friends Gallery
-          </h2>
-          <p className="mt-4 text-xl text-gray-600">
-            Paws, whiskers, and wagging tails - memories of our adorable guests!
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">{heading}</h2>
+          <p className="mt-4 text-xl text-gray-600">{subheading}</p>
         </div>
 
         {/* Mobile Photo Carousel (visible only on mobile) */}
         <div className="block sm:hidden mb-8">
           <div className="relative">
             <div className="relative w-full h-80 rounded-lg overflow-hidden shadow-md">
-              {photos.length > 0 && (
-                <Image
-                  src={photos[mobileCurrentIndex].src}
-                  alt={photos[mobileCurrentIndex].alt}
-                  fill
-                  sizes="100vw"
-                  priority
-                  style={{ objectFit: "contain" }}
-                />
-              )}
+              <Image
+                src={galleryPhotos[mobileCurrentIndex].src}
+                alt={galleryPhotos[mobileCurrentIndex].alt}
+                fill
+                sizes="100vw"
+                priority
+                style={{ objectFit: "contain" }}
+              />
             </div>
 
             <button
@@ -201,7 +200,7 @@ const PhotoGallery: React.FC = () => {
             </button>
 
             <div className="absolute -bottom-8 left-0 right-0 flex justify-center space-x-2 pt-2">
-              {photos.map((_, i) => (
+              {galleryPhotos.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setMobileIndex(i)}
@@ -262,7 +261,7 @@ const PhotoGallery: React.FC = () => {
                 <FaArrowLeft className="text-[#1A9CB0] text-xl" />
               </button>
             )}
-            {desktopPage < Math.ceil(photos.length / photosPerPage) - 1 && (
+            {desktopPage < Math.ceil(galleryPhotos.length / photosPerPage) - 1 && (
               <button
                 className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300"
                 onClick={goToNextPage}
@@ -274,7 +273,7 @@ const PhotoGallery: React.FC = () => {
 
             <div className="flex justify-center mt-6 space-x-2">
               {Array.from({
-                length: Math.ceil(photos.length / photosPerPage),
+                length: Math.max(1, Math.ceil(galleryPhotos.length / photosPerPage)),
               }).map((_, i) => (
                 <button
                   key={i}
@@ -353,12 +352,12 @@ const PhotoGallery: React.FC = () => {
               </motion.div>
 
               <div className="absolute bottom-8 left-0 right-0 flex justify-center space-x-2">
-                {photos.map((_, i) => (
+                {galleryPhotos.map((_, i) => (
                   <button
                     key={i}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedPhoto(photos[i]);
+                      setSelectedPhoto(galleryPhotos[i]);
                       setCurrentIndex(i);
                       setIsAutoSlideActive(false);
                     }}
