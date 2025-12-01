@@ -18,14 +18,15 @@ export default function Footer() {
             <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><Link href="/" className="text-gray-300 hover:text-white">Home</Link></li>
-              <li><Link href="/#services" className="text-gray-300 hover:text-white">Services</Link></li>
               <li><Link href="/#benefits" className="text-gray-300 hover:text-white">Why Ruh-Roh</Link></li>
-              <li><Link href="/#about" className="text-gray-300 hover:text-white">About</Link></li>
+              <li><Link href="/#vacation-add-ons" className="text-gray-300 hover:text-white">Vacation Add-Ons</Link></li>
+              <li><Link href="/#how-it-works" className="text-gray-300 hover:text-white">How It Works</Link></li>
+              <li><Link href="/#safety" className="text-gray-300 hover:text-white">Safety &amp; Trust</Link></li>
+              <li><Link href="/#our-story" className="text-gray-300 hover:text-white">Our Story</Link></li>
               <li><Link href="/sitters" className="text-gray-300 hover:text-white">Meet Our Sitters</Link></li>
-              <li><Link href="/#testimonials" className="text-gray-300 hover:text-white">Testimonials</Link></li>
-              <li><Link href="/#booking" className="text-gray-300 hover:text-white">Book Now</Link></li>
               <li><Link href="/blog" className="text-gray-300 hover:text-white">Blog</Link></li>
               <li><Link href="/waiver" className="text-gray-300 hover:text-white">Waiver</Link></li>
+              <li><Link href="/#booking" className="text-gray-300 hover:text-white">Book Now</Link></li>
             </ul>
           </div>
 
