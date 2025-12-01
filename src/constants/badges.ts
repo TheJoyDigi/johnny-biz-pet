@@ -17,7 +17,7 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
   "structured-care": {
     key: "structured-care",
     title: "Structured Care",
-    description: "Consistent routines, smooth transitions, and thoughtful introductions that help dogs settle comfortably",
+    description: "Consistent routines, smooth transitions, and low-stress introductions that help dogs settle comfortably",
     imageSrc: "/images/badges/image1.png",
     accent: "from-[#B8F2E6] to-[#AEC5EB]",
   },

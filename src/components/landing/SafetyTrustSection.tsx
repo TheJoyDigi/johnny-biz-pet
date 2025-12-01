@@ -60,9 +60,9 @@ function SafetyTrustSection() {
           </p>
         </motion.div>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="mt-12 flex justify-center max-w-5xl mx-auto">
           <motion.div
-            className="bg-white/80 border border-[#1A9CB0]/15 rounded-2xl p-8 shadow-lg backdrop-blur"
+            className="bg-white/80 border border-[#1A9CB0]/15 rounded-2xl p-8 shadow-lg backdrop-blur max-w-lg w-full"
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -79,23 +79,7 @@ function SafetyTrustSection() {
             </p>
           </motion.div>
 
-          <motion.div
-            className="bg-white/80 border border-[#1A9CB0]/15 rounded-2xl p-8 shadow-lg backdrop-blur"
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A9CB0]/10 text-[#1A9CB0] mb-6">
-              <FaShieldAlt aria-hidden="true" className="text-xl" />
-            </div>
-            <h3 className="text-xl font-bold text-[#333333] mb-3">
-              Platform-Provided Incident Protection
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              Every booking includes platform-level incident protection to help cover unexpected costs from rare accidents, injuries, or property damage that may occur during a stay. This protection is automatically included with your booking, offering added peace of mind.
-            </p>
-          </motion.div>
+
         </div>
       </div>
     </section>
