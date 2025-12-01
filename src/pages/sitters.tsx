@@ -20,15 +20,15 @@ function SittersPage() {
   return (
     <>
       <Head>
-        <title>Meet Our Sitters | Ruh-Roh Retreat</title>
+        <title>Meet Available Sitters | Ruh-Roh Retreat</title>
         <meta name="description" content="Browse verified Ruh-Roh Retreat sitters in Irvine and Wildomar." />
       </Head>
       <Header />
       <main className="bg-[#F4F4F9] min-h-screen py-16">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <p className="uppercase tracking-widest text-sm font-semibold text-[#1A9CB0]">Meet Our Sitters</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-[#333333] mt-4">Handpicked hosts for boutique dog vacations</h1>
+            <p className="uppercase tracking-widest text-sm font-semibold text-[#1A9CB0]">Meet Available Sitters</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-[#333333] mt-4">Curated hosts for boutique dog vacations</h1>
             <p className="text-lg text-gray-600 mt-4">
               Every Ruh-Roh sitter earns badges for communication, stability, and spotless home environments. Compare locations
               below and open a profile to explore bios, services, and verified reviews.
@@ -145,7 +145,7 @@ function SittersPage() {
                         }}
                         className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#1A9CB0] text-white font-semibold hover:bg-[#157c8d] transition-colors"
                       >
-                        Book This Sitter
+                        Request to Book
                       </Link>
                     </div>
                   </div>

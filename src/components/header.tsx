@@ -10,7 +10,6 @@ const NAV_ITEMS = [
   { label: "Safety & Trust", href: "/#safety" },
   { label: "Our Story", href: "/#our-story" },
   { label: "Meet Our Sitters", href: "/sitters" },
-  { label: "Find Sitter", href: "/sitters" },
   { label: "Blog", href: "/blog" },
   { label: "Waiver", href: "/waiver" },
 ] as const;
