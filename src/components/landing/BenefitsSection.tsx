@@ -1,5 +1,7 @@
-import { motion } from "framer-motion";
-import { FaHome, FaShieldAlt, FaCamera, FaPalette } from "react-icons/fa";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaHome, FaShieldAlt, FaCamera, FaPalette, FaChevronDown } from "react-icons/fa";
+import Image from "next/image";
 
 const pillars = [
   {
@@ -9,6 +11,7 @@ const pillars = [
     icon: FaHome,
     accentBorder: "border-[#F28C38]",
     accentText: "text-[#F28C38]",
+    imageSrc: "/images/calm-clean.png",
   },
   {
     title: "Structured & Safe",
@@ -17,6 +20,7 @@ const pillars = [
     icon: FaShieldAlt,
     accentBorder: "border-[#1A9CB0]",
     accentText: "text-[#1A9CB0]",
+    imageSrc: "/images/structured-safe.png",
   },
   {
     title: "Transparent Communication",
@@ -25,6 +29,7 @@ const pillars = [
     icon: FaCamera,
     accentBorder: "border-[#6C63FF]",
     accentText: "text-[#6C63FF]",
+    imageSrc: "/images/transparent-communication.png",
   },
   {
     title: "Personalized Vacations",
@@ -34,10 +39,13 @@ const pillars = [
     icon: FaPalette,
     accentBorder: "border-[#E4572E]",
     accentText: "text-[#E4572E]",
+    imageSrc: "/images/personalized-vacations.png",
   },
 ];
 
 function BenefitsSection() {
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
   return (
     <section id="benefits" className="py-20 bg-[#F4F4F9]">
       <div className="container mx-auto px-4">
@@ -59,31 +67,69 @@ function BenefitsSection() {
           home.
         </motion.p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-          {pillars.map(({ title, description, detail, footer, icon: Icon, accentBorder, accentText }, index) => (
-            <motion.div
-              key={title}
-              className={`bg-white rounded-xl shadow-lg p-8 border-t-4 ${accentBorder} flex flex-col h-full`}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{
-                y: -10,
-                boxShadow: "0 20px 35px -15px rgba(26, 156, 176, 0.35)",
-              }}
-            >
-              <div className="flex items-center mb-6">
-                <div className={`h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center text-2xl ${accentText}`}>
-                  <Icon aria-hidden="true" />
-                </div>
-                <h3 className="text-xl font-semibold text-[#333333] ml-4">{title}</h3>
-              </div>
-              <p className="text-gray-600 text-base leading-relaxed">{description}</p>
-              <p className="text-gray-600 text-base leading-relaxed mt-3">{detail}</p>
-              {footer ? <p className="text-sm text-gray-500 mt-4">{footer}</p> : null}
-            </motion.div>
-          ))}
+        <div className="max-w-3xl mx-auto space-y-4">
+          {pillars.map(({ title, description, detail, footer, icon: Icon, accentBorder, accentText, imageSrc }, index) => {
+            const isOpen = expandedIndex === index;
+            return (
+              <motion.div
+                key={title}
+                className={`bg-white rounded-xl shadow-sm overflow-hidden border-l-4 ${accentBorder}`}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <button
+                  onClick={() => setExpandedIndex(isOpen ? null : index)}
+                  className="w-full flex items-center p-6 text-left focus:outline-none hover:bg-gray-50 transition-colors"
+                >
+                  <div className={`flex-shrink-0 h-12 w-12 rounded-full bg-gray-50 flex items-center justify-center text-xl ${accentText}`}>
+                    <Icon aria-hidden="true" />
+                  </div>
+                  <div className="ml-4 flex-grow">
+                    <h3 className="text-lg font-semibold text-[#333333]">{title}</h3>
+                    <p className="text-gray-500 text-sm mt-1">{description}</p>
+                  </div>
+                  <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-4 text-gray-400"
+                  >
+                    <FaChevronDown />
+                  </motion.div>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial="collapsed"
+                      animate="open"
+                      exit="collapsed"
+                      variants={{
+                        open: { opacity: 1, height: "auto" },
+                        collapsed: { opacity: 0, height: 0 }
+                      }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="px-6 pb-6">
+
+                        <div className="relative h-64 w-full rounded-lg overflow-hidden mb-6 shadow-md">
+                          <Image
+                            src={imageSrc}
+                            alt={title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <p className="text-gray-600 text-base leading-relaxed">{detail}</p>
+                        {footer ? <p className="text-sm text-gray-400 mt-4 italic">{footer}</p> : null}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
