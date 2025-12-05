@@ -30,7 +30,7 @@ const mapReviews = (
 
 const johnnyTestimonials = mapReviews(johnnyReviewsData as RawReview[], {
   prefix: "johnny",
-  defaultPet: "Family Pup",
+  defaultPet: "",
   defaultSource: "Rover",
 });
 
