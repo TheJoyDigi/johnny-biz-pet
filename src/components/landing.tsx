@@ -3,12 +3,12 @@ import { RefObject, useRef } from "react";
 import AboutSection from "./landing/AboutSection";
 import BenefitsSection from "./landing/BenefitsSection";
 import BadgeSystemSection from "./landing/BadgeSystemSection";
-import FounderStorySection from "./landing/FounderStorySection";
-import BookingSection from "./landing/BookingSection";
+
+
 import CallToActionSection from "./landing/CallToActionSection";
 import HowItWorksSection from "./landing/HowItWorksSection";
 import HeroSection from "./landing/HeroSection";
-import LegalTransparencySection from "./landing/LegalTransparencySection";
+
 import RatesTransparencySection from "./landing/RatesTransparencySection";
 import SafetyTrustSection from "./landing/SafetyTrustSection";
 import VacationAddOnsSection from "./landing/VacationAddOnsSection";
@@ -38,33 +38,28 @@ const locations: Location[] = [
 ];
 
 function LandingComponent() {
-  const bookingRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
   const scrollToSection = (ref: RefObject<HTMLElement>) => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const scrollToBooking = () => scrollToSection(bookingRef);
+
 
   return (
     <div className="relative overflow-x-hidden">
       <div ref={heroRef}>
-        <HeroSection
-          onBookNow={scrollToBooking}
-        />
+        <HeroSection />
       </div>
       <BenefitsSection />
-      <VacationAddOnsSection />
       <HowItWorksSection />
-      <BadgeSystemSection />
       <RatesTransparencySection />
       <SafetyTrustSection />
-      <FounderStorySection />
-      <LegalTransparencySection />
-      <BookingSection sectionRef={bookingRef} sitters={sitters} />
-      <CallToActionSection onBookNow={scrollToBooking} locations={locations} />
-      <FloatingCTA onBookNow={scrollToBooking} hideRef={bookingRef} heroRef={heroRef} />
+
+
+
+      <CallToActionSection locations={locations} />
+      <FloatingCTA heroRef={heroRef} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

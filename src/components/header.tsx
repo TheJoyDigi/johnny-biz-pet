@@ -5,16 +5,18 @@ import Image from "next/image";
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Why Ruh-Roh", href: "/#benefits" },
-  { label: "Vacation Add-Ons", href: "/#vacation-add-ons" },
+  { label: "Vacation Add-Ons", href: "/vacation-add-ons" },
+  { label: "Badges", href: "/badges" },
   { label: "How It Works", href: "/#how-it-works" },
   { label: "Safety & Trust", href: "/#safety" },
-  { label: "Our Story", href: "/#our-story" },
+  { label: "Our Story", href: "/our-story" },
+  { label: "Legal", href: "/legal-transparency" },
   { label: "Meet Our Sitters", href: "/sitters" },
   { label: "Blog", href: "/blog" },
   { label: "Waiver", href: "/waiver" },
 ] as const;
 
-const PRIMARY_CTA = { label: "Book Now", href: "/#booking" };
+
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -37,22 +39,9 @@ export default function Header() {
             />
           </Link>
         </div>
-        <nav className="hidden lg:flex items-center gap-6 h-[80px]">
-          {NAV_ITEMS.map(({ href, label }) => (
-            <Link key={href} href={href} className="text-gray-800 hover:text-[#1A9CB0] font-medium">
-              {label}
-            </Link>
-          ))}
-          <Link
-            href={PRIMARY_CTA.href}
-            className="ml-2 rounded-full bg-[#1A9CB0] px-5 py-2 font-semibold text-white shadow-md transition hover:bg-[#147384]"
-          >
-            {PRIMARY_CTA.label}
-          </Link>
-        </nav>
         <button
           onClick={toggleMobileMenu}
-          className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#1A9CB0]"
+          className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#1A9CB0]"
         >
           <span className="sr-only">Open menu</span>
           {!mobileMenuOpen ? (
@@ -68,7 +57,7 @@ export default function Header() {
       </div>
 
       {/* Mobile Menu */}
-      <div className={`lg:hidden fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-4 border-b">
             <Link href="/" className="text-logo">
@@ -91,13 +80,22 @@ export default function Header() {
                 {label}
               </Link>
             ))}
-            <Link
-              href={PRIMARY_CTA.href}
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-[#1A9CB0] px-6 py-3 text-lg font-semibold text-white shadow-md hover:bg-[#147384]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {PRIMARY_CTA.label}
-            </Link>
+            <div className="mt-4 flex flex-col gap-3">
+              <Link
+                href="/book"
+                className="inline-flex items-center justify-center rounded-full bg-white border-2 border-[#1A9CB0] px-6 py-3 text-lg font-semibold text-[#1A9CB0] shadow-sm hover:bg-gray-50"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Submit a Request
+              </Link>
+              <Link
+                href="/sitters"
+                className="inline-flex items-center justify-center rounded-full bg-[#1A9CB0] px-6 py-3 text-lg font-semibold text-white shadow-md hover:bg-[#147384]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Find Sitter
+              </Link>
+            </div>
           </nav>
         </div>
       </div>

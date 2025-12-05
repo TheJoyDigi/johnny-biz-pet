@@ -4,6 +4,7 @@ import Footer from "@/components/footer";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import Script from "next/script";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -53,6 +54,20 @@ export default function App({ Component, pageProps }: AppProps) {
         </main>
         {!isPortalPage && <Footer />}
       </div>
+
+      {/* Google Tag Manager */}
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=AW-17780183336"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'AW-17780183336');
+        `}
+      </Script>
     </>
   );
 }

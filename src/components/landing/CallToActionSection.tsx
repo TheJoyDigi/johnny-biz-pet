@@ -5,11 +5,10 @@ import MultiLocationMap from "../MultiLocationMap";
 import { Location } from "./types";
 
 type CallToActionSectionProps = {
-  onBookNow: () => void;
   locations: Location[];
 };
 
-function CallToActionSection({ onBookNow, locations }: CallToActionSectionProps) {
+function CallToActionSection({ locations }: CallToActionSectionProps) {
   return (
     <section id="contact" className="py-16 bg-[#1A9CB0]">
       <div className="container mx-auto px-4 text-center text-white">
@@ -25,13 +24,13 @@ function CallToActionSection({ onBookNow, locations }: CallToActionSectionProps)
             <FaPaw className="h-5 w-5" aria-hidden="true" />
             Find a Sitter
           </Link>
-          <button
-            onClick={onBookNow}
+          <Link
+            href="/book"
             className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 border border-white/30 inline-flex items-center gap-2"
           >
             <FaEnvelope className="h-5 w-5" aria-hidden="true" />
             Submit a Request
-          </button>
+          </Link>
         </div>
         <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
           <a href="tel:+17143294534" className="flex items-center text-xl hover:underline">

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 import { Sitter } from "@/data/sitters";
 
@@ -53,7 +54,15 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
   const termsPdfPath = "/legal/terms-of-service.pdf";
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [nightsCount, setNightsCount] = useState<number | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const todayISO = new Date().toISOString().split("T")[0];
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
 
   const {
     register,
@@ -522,49 +531,77 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <p className="text-gray-600 mb-4">
                     Select any add-ons you'd like to include. You can always modify these later during our meet & greet.
                   </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedSitter.services.addOns.map(({ category, items }) => (
-                      <div key={category} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h4 className="text-lg font-semibold text-gray-800 mb-3">{category}</h4>
-                        <div className="space-y-4">
-                          {items.map((addon) => (
-                            <div key={`${category}-${addon.name}`} className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <p className="font-medium text-gray-800">{addon.name}</p>
-                                {addon.description && <p className="text-sm text-gray-600">{addon.description}</p>}
-                                {addon.price && (
-                                  <p className="text-sm font-semibold text-[#F28C38]">{addon.price}</p>
-                                )}
-                              </div>
-                              <div className="flex items-center space-x-3 ml-4">
-                                <button
-                                  type="button"
-                                  onClick={() => handleAddonQuantityChange(addon.name, -1)}
-                                  className={`w-8 h-8 rounded-full flex items-center justify-center border ${
-                                    (addons[addon.name] || 0) > 0
-                                      ? "border-[#F28C38] text-[#F28C38] hover:bg-[#F28C38] hover:text-white"
-                                      : "border-gray-300 text-gray-300 cursor-not-allowed"
-                                  } transition-colors`}
-                                  disabled={(addons[addon.name] || 0) <= 0}
-                                >
-                                  -
-                                </button>
-                                <span className="w-6 text-center font-medium text-gray-800">
-                                  {addons[addon.name] || 0}
+                  <div className="grid grid-cols-1 gap-4">
+                    {selectedSitter.services.addOns.map(({ category, items }) => {
+                      const isExpanded = expandedCategories[category];
+                      const selectedCount = items.reduce((acc, item) => acc + (addons[item.name] || 0), 0);
+                      
+                      return (
+                        <div key={category} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md">
+                          <button
+                            type="button"
+                            onClick={() => toggleCategory(category)}
+                            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none"
+                          >
+                            <div className="flex items-center gap-3">
+                              <h4 className="text-lg font-semibold text-gray-800">{category}</h4>
+                              {selectedCount > 0 && (
+                                <span className="bg-[#1A9CB0] text-white text-xs font-bold px-2 py-1 rounded-full">
+                                  {selectedCount} selected
                                 </span>
-                                <button
-                                  type="button"
-                                  onClick={() => handleAddonQuantityChange(addon.name, 1)}
-                                  className="w-8 h-8 rounded-full flex items-center justify-center border border-[#F28C38] text-[#F28C38] hover:bg-[#F28C38] hover:text-white transition-colors"
-                                >
-                                  +
-                                </button>
-                              </div>
+                              )}
                             </div>
-                          ))}
+                            <div className={`text-gray-500 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}>
+                              <FaChevronDown />
+                            </div>
+                          </button>
+                          
+                          <div
+                            className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                              isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+                            }`}
+                          >
+                            <div className="p-4 space-y-4 border-t border-gray-100">
+                              {items.map((addon) => (
+                                <div key={`${category}-${addon.name}`} className="flex items-center justify-between group">
+                                  <div className="flex-1 pr-4">
+                                    <p className="font-medium text-gray-800 group-hover:text-[#1A9CB0] transition-colors">{addon.name}</p>
+                                    {addon.description && <p className="text-sm text-gray-500 mt-0.5">{addon.description}</p>}
+                                    {addon.price && (
+                                      <p className="text-sm font-semibold text-[#F28C38] mt-1">{addon.price}</p>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center space-x-3 bg-gray-50 rounded-full px-2 py-1 border border-gray-200">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAddonQuantityChange(addon.name, -1)}
+                                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                                        (addons[addon.name] || 0) > 0
+                                          ? "text-[#F28C38] hover:bg-[#F28C38] hover:text-white"
+                                          : "text-gray-300 cursor-not-allowed"
+                                      }`}
+                                      disabled={(addons[addon.name] || 0) <= 0}
+                                    >
+                                      -
+                                    </button>
+                                    <span className="w-6 text-center font-bold text-gray-700">
+                                      {addons[addon.name] || 0}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAddonQuantityChange(addon.name, 1)}
+                                      className="w-8 h-8 rounded-full flex items-center justify-center text-[#F28C38] hover:bg-[#F28C38] hover:text-white transition-colors"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
