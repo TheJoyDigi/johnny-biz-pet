@@ -325,7 +325,7 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                         </div>
                         <div>
                           <p className="font-semibold text-[#333333]">{review.client}</p>
-                          <p className="text-sm text-gray-500">{`Pet: ${review.pet}`}</p>
+                          {review.pet && <p className="text-sm text-gray-500">{review.pet}</p>}
                         </div>
                       </div>
                       <p className="text-sm text-gray-500 ml-auto">{review.date}</p>

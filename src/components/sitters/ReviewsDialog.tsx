@@ -80,7 +80,7 @@ const ReviewsDialog = ({ isOpen, onClose, reviews }: ReviewsDialogProps) => {
                     <h3 className="font-semibold text-[#333333] text-lg">{review.client}</h3>
                     <span className="text-sm text-gray-500">{review.date}</span>
                   </div>
-                  <p className="text-sm text-gray-500 mb-3 font-medium">Pet: {review.pet}</p>
+                  {review.pet && <p className="text-sm text-gray-500 mb-3 font-medium">{review.pet}</p>}
                   <div className="flex items-center gap-1 text-[#F6C343] mb-3">
                     {Array.from({ length: review.rating }).map((_, i) => (
                       <FaStar key={i} className="h-4 w-4" />
