@@ -35,7 +35,7 @@ export default function LegalTransparencyPage() {
           content="Learn about how Ruh-Roh Retreat works with our community of independent sitters."
         />
       </Head>
-      <main className="pb-20 bg-gradient-to-b from-white via-[#F8FAFC] to-white">
+      <main className="pt-20 pb-20 bg-gradient-to-b from-white via-[#F8FAFC] to-white">
         <section className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.span

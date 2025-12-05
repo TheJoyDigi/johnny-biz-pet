@@ -13,7 +13,7 @@ export default function OurStoryPage() {
           content="Read the story behind Ruh-Roh Retreat - from a lifelong connection to animals to a boutique dog care network."
         />
       </Head>
-      <main className="pb-20 bg-[#F4F4F9]">
+      <main className="pt-20 pb-20 bg-[#F4F4F9]">
         <section className="container mx-auto px-4">
           <motion.div
             className="max-w-4xl mx-auto"
