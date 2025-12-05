@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { label: "Waiver", href: "/waiver" },
 ] as const;
 
-const PRIMARY_CTA = { label: "Book Now", href: "/#booking" };
+
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -80,13 +80,22 @@ export default function Header() {
                 {label}
               </Link>
             ))}
-            <Link
-              href={PRIMARY_CTA.href}
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-[#1A9CB0] px-6 py-3 text-lg font-semibold text-white shadow-md hover:bg-[#147384]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {PRIMARY_CTA.label}
-            </Link>
+            <div className="mt-4 flex flex-col gap-3">
+              <Link
+                href="/book"
+                className="inline-flex items-center justify-center rounded-full bg-white border-2 border-[#1A9CB0] px-6 py-3 text-lg font-semibold text-[#1A9CB0] shadow-sm hover:bg-gray-50"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Submit a Request
+              </Link>
+              <Link
+                href="/sitters"
+                className="inline-flex items-center justify-center rounded-full bg-[#1A9CB0] px-6 py-3 text-lg font-semibold text-white shadow-md hover:bg-[#147384]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Find Sitter
+              </Link>
+            </div>
           </nav>
         </div>
       </div>
