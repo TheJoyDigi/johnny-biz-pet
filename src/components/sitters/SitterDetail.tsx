@@ -356,13 +356,12 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
         <div className="flex justify-center">
             <Link
                 href={{
-                  pathname: "/",
-                  hash: "booking",
+                  pathname: "/book",
                   query: { sitter: sitter.uid },
                 }}
                 className="inline-flex items-center px-8 py-4 rounded-full bg-[#F28C38] text-white font-bold text-lg hover:bg-[#e07a26] transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-                Book with {sitter.name}
+                Request to Book
             </Link>
         </div>
 
