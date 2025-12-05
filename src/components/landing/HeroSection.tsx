@@ -1,7 +1,7 @@
 import { motion, cubicBezier } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { FaEnvelope, FaPaw } from "react-icons/fa";
+import { FaEnvelope, FaPaw, FaGoogle, FaYelp } from "react-icons/fa";
 
 type HeroSectionProps = {
   onBookNow: () => void;
@@ -50,7 +50,7 @@ function HeroSection({ onBookNow }: HeroSectionProps) {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium mb-8"
           >
             <span className="text-[#F28C38]">★★★★★</span>
-            <span>Founded by sitters with 95+ five-star reviews</span>
+            <span>Founded by sitters with 150+ 5-star reviews from Rover</span>
           </motion.div>
 
           {/* Main Headline */}
@@ -98,14 +98,34 @@ function HeroSection({ onBookNow }: HeroSectionProps) {
           </motion.div>
 
           {/* Additional Trust Signal */}
-          <motion.p
-            className="mt-8 text-white/60 text-sm font-medium"
+          <motion.div
+            className="mt-10 flex flex-col sm:flex-row items-center gap-4 text-white/80 text-sm font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 1 }}
           >
-            Trusted by local pet parents • Verified Reviews on Google & Yelp
-          </motion.p>
+            <span>Trusted by local pet parents • Verified Reviews on:</span>
+            <div className="flex gap-3">
+              <a
+                href="https://share.google/sDp4rVUlgWhyagpl7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all hover:scale-105"
+              >
+                <FaGoogle className="text-[#4285F4]" />
+                <span className="font-bold text-gray-800">Google</span>
+              </a>
+              <a
+                href="https://www.yelp.com/biz/ruh-roh-retreat-irvine"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all hover:scale-105"
+              >
+                <FaYelp className="text-[#FF1A1A]" />
+                <span className="font-bold text-gray-800">Yelp</span>
+              </a>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

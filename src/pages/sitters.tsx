@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { FaStar, FaTimes } from "react-icons/fa";
+import { FaStar, FaTimes, FaQuestionCircle } from "react-icons/fa";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -93,7 +93,12 @@ function SittersPage() {
                     <p className="text-gray-600 mt-3">{sitter.bio[0]}</p>
 
                     <div className="mt-6">
-                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Badges</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Badges</h3>
+                        <Link href="/badges" title="What is the badge system?" className="text-gray-400 hover:text-[#1A9CB0] transition-colors">
+                          <FaQuestionCircle className="w-4 h-4" />
+                        </Link>
+                      </div>
                       <div className="mt-2">
                         {isGoldStandard && goldStandardBadge && goldStandardDef ? (
                           <button

@@ -2,8 +2,24 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHome, FaShieldAlt, FaCamera, FaPalette, FaChevronDown } from "react-icons/fa";
 import Image from "next/image";
+import Link from "next/link";
 
-const pillars = [
+import { IconType } from "react-icons";
+
+interface Pillar {
+  title: string;
+  description: string;
+  detail: string;
+  icon: IconType;
+  accentBorder: string;
+  accentText: string;
+  imageSrc: string;
+  link?: string;
+  linkText?: string;
+  footer?: string;
+}
+
+const pillars: Pillar[] = [
   {
     title: "Calm & Clean Environment",
     description: "A peaceful, well-kept space helps dogs feel grounded and secure.",
@@ -35,11 +51,12 @@ const pillars = [
     title: "Personalized Vacations",
     description: "Every pup deserves a tailored experience.",
     detail: "Many sitters offer optional add-on activities—like Sniffaris, Paw-casso paintings, or pup cup outings—to make your dog’s stay feel like a true retreat.",
-    footer: "Add-ons vary by sitter.",
     icon: FaPalette,
     accentBorder: "border-[#E4572E]",
     accentText: "text-[#E4572E]",
     imageSrc: "/images/personalized-vacations.png",
+    link: "/vacation-add-ons",
+    linkText: "Explore Add-ons",
   },
 ];
 
@@ -64,11 +81,14 @@ function BenefitsSection() {
           viewport={{ once: true }}
         >
           Each independent sitter in our network chooses to align with these values, helping pups feel safe, happy, and right at
-          home.
+          home. Our badge system helps you see which sitters consistently excel in each area.{" "}
+          <Link href="/badges" className="text-[#1A9CB0] font-semibold hover:underline">
+            Learn More →
+          </Link>
         </motion.p>
 
         <div className="max-w-3xl mx-auto space-y-4">
-          {pillars.map(({ title, description, detail, footer, icon: Icon, accentBorder, accentText, imageSrc }, index) => {
+          {pillars.map(({ title, description, detail, footer, icon: Icon, accentBorder, accentText, imageSrc, link, linkText }, index) => {
             const isOpen = expandedIndex === index;
             return (
               <motion.div
@@ -122,7 +142,12 @@ function BenefitsSection() {
                           />
                         </div>
                         <p className="text-gray-600 text-base leading-relaxed">{detail}</p>
-                        {footer ? <p className="text-sm text-gray-400 mt-4 italic">{footer}</p> : null}
+                        {footer && <p className="text-sm text-gray-400 mt-4 italic">{footer}</p>}
+                        {link && linkText && (
+                          <Link href={link} className="text-[#1A9CB0] font-semibold hover:underline mt-4 inline-block">
+                            {linkText} →
+                          </Link>
+                        )}
                       </div>
                     </motion.div>
                   )}

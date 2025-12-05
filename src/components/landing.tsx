@@ -55,9 +55,7 @@ function LandingComponent() {
         />
       </div>
       <BenefitsSection />
-      <VacationAddOnsSection />
       <HowItWorksSection />
-      <BadgeSystemSection />
       <RatesTransparencySection />
       <SafetyTrustSection />
       <FounderStorySection />
