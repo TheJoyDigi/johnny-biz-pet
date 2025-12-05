@@ -48,23 +48,23 @@ export default function FloatingCTA({ heroRef }: FloatingCTAProps) {
             transition={{ duration: 0.3 }}
           >
             <Link
-              href="/sitters"
+              href="/book"
               className="flex items-center justify-center w-14 h-14 bg-white text-[#1A9CB0] rounded-full shadow-lg hover:bg-gray-50 hover:scale-105 transition-all duration-300 border border-[#1A9CB0]/20 group relative"
+              aria-label="Submit a Request"
+            >
+              <FaCalendarCheck className="text-xl" />
+              <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Submit a Request
+              </span>
+            </Link>
+            <Link
+              href="/sitters"
+              className="flex items-center justify-center w-14 h-14 bg-[#1A9CB0] text-white rounded-full shadow-lg hover:bg-[#147384] hover:scale-105 transition-all duration-300 group relative"
               aria-label="Find Sitter"
             >
               <FaPaw className="text-xl" />
               <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                 Find Sitter
-              </span>
-            </Link>
-            <Link
-              href="/book"
-              className="flex items-center justify-center w-14 h-14 bg-[#1A9CB0] text-white rounded-full shadow-lg hover:bg-[#147384] hover:scale-105 transition-all duration-300 group relative"
-              aria-label="Book Now"
-            >
-              <FaCalendarCheck className="text-xl" />
-              <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Submit a Request
               </span>
             </Link>
           </motion.div>
@@ -78,18 +78,18 @@ export default function FloatingCTA({ heroRef }: FloatingCTAProps) {
             transition={{ duration: 0.3 }}
           >
             <Link
-              href="/sitters"
-              className="flex-1 flex items-center justify-center gap-2 bg-white border border-[#1A9CB0] text-[#1A9CB0] font-semibold py-3 rounded-full shadow-sm active:bg-gray-50"
-            >
-              <FaPaw />
-              Find Sitter
-            </Link>
-            <Link
               href="/book"
-              className="flex-1 flex items-center justify-center gap-2 bg-[#1A9CB0] text-white font-semibold py-3 rounded-full shadow-md active:bg-[#147384]"
+              className="flex-1 flex items-center justify-center gap-2 bg-white border border-[#1A9CB0] text-[#1A9CB0] font-semibold py-3 rounded-full shadow-sm active:bg-gray-50"
             >
               <FaCalendarCheck />
               Submit a Request
+            </Link>
+            <Link
+              href="/sitters"
+              className="flex-1 flex items-center justify-center gap-2 bg-[#1A9CB0] text-white font-semibold py-3 rounded-full shadow-md active:bg-[#147384]"
+            >
+              <FaPaw />
+              Find Sitter
             </Link>
           </motion.div>
         </>
