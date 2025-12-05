@@ -15,7 +15,7 @@ export default function BookPage() {
           content="Book your dog's staycation with one of our badge-verified sitters."
         />
       </Head>
-      <main className="pt-20">
+      <main>
         <BookingSection sectionRef={bookingRef} sitters={sitters} />
       </main>
     </>
