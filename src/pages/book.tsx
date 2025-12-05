@@ -1,7 +1,5 @@
 import Head from "next/head";
 import { useRef } from "react";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
 import BookingSection from "@/components/landing/BookingSection";
 import { sitters } from "@/data/sitters";
 
@@ -17,11 +15,9 @@ export default function BookPage() {
           content="Book your dog's staycation with one of our badge-verified sitters."
         />
       </Head>
-      <Header />
       <main className="pt-20">
         <BookingSection sectionRef={bookingRef} sitters={sitters} />
       </main>
-      <Footer />
     </>
   );
 }

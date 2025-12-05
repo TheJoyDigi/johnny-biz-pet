@@ -2,8 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FaBalanceScale, FaUserShield, FaClipboardList } from "react-icons/fa";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+
 
 const highlights = [
   {
@@ -36,7 +35,6 @@ export default function LegalTransparencyPage() {
           content="Learn about how Ruh-Roh Retreat works with our community of independent sitters."
         />
       </Head>
-      <Header />
       <main className="pt-20 pb-20 bg-gradient-to-b from-white via-[#F8FAFC] to-white">
         <section className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
@@ -105,7 +103,6 @@ export default function LegalTransparencyPage() {
           </motion.div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }

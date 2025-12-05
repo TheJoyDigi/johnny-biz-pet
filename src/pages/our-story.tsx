@@ -1,8 +1,7 @@
 import Head from "next/head";
 import { motion } from "framer-motion";
 import { FaHeart } from "react-icons/fa";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+
 
 export default function OurStoryPage() {
   return (
@@ -14,7 +13,6 @@ export default function OurStoryPage() {
           content="Read the story behind Ruh-Roh Retreat - from a lifelong connection to animals to a boutique dog care network."
         />
       </Head>
-      <Header />
       <main className="pt-20 pb-20 bg-[#F4F4F9]">
         <section className="container mx-auto px-4">
           <motion.div
@@ -78,7 +76,6 @@ export default function OurStoryPage() {
           </motion.div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }
