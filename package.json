@@ -4,7 +4,7 @@
   "private": true,
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "pnpm": ">=9.0.0"
   },
   "scripts": {
     "dev": "next dev -p 3001",
@@ -13,7 +13,7 @@
     "lint": "next lint",
     "test": "jest && node scripts/test-pricing-calculation.js",
     "clean": "rm -rf .next",
-    "clean-install": "rm -rf node_modules && npm install",
+    "clean-install": "rm -rf node_modules && pnpm install",
     "postbuild": "next-sitemap",
     "generate-image": "node scripts/gen-image.js",
     "generate-blog": "node scripts/generate-blog-post.js",
