@@ -3,13 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaEnvelope, FaPaw, FaGoogle, FaYelp } from "react-icons/fa";
 
-type HeroSectionProps = {
-  onBookNow: () => void;
-};
+
 
 const HERO_FADE_EASE = cubicBezier(0.4, 0, 0.2, 1);
 
-function HeroSection({ onBookNow }: HeroSectionProps) {
+function HeroSection() {
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -88,13 +86,13 @@ function HeroSection({ onBookNow }: HeroSectionProps) {
               <FaPaw className="h-5 w-5" aria-hidden="true" />
               Find a Sitter
             </Link>
-            <button
-              onClick={onBookNow}
+            <Link
+              href="/book"
               className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 border border-white/30 inline-flex items-center gap-2"
             >
               <FaEnvelope className="h-5 w-5" aria-hidden="true" />
               Submit a Request
-            </button>
+            </Link>
           </motion.div>
 
           {/* Additional Trust Signal */}

@@ -144,8 +144,7 @@ function SittersPage() {
                       </Link>
                       <Link
                         href={{
-                          pathname: "/",
-                          hash: "booking",
+                          pathname: "/book",
                           query: { sitter: sitter.uid },
                         }}
                         className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#1A9CB0] text-white font-semibold hover:bg-[#157c8d] transition-colors"
