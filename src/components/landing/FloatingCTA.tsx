@@ -64,7 +64,7 @@ export default function FloatingCTA({ heroRef }: FloatingCTAProps) {
             >
               <FaCalendarCheck className="text-xl" />
               <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Book Now
+                Submit a Request
               </span>
             </Link>
           </motion.div>
@@ -89,7 +89,7 @@ export default function FloatingCTA({ heroRef }: FloatingCTAProps) {
               className="flex-1 flex items-center justify-center gap-2 bg-[#1A9CB0] text-white font-semibold py-3 rounded-full shadow-md active:bg-[#147384]"
             >
               <FaCalendarCheck />
-              Book Now
+              Submit a Request
             </Link>
           </motion.div>
         </>
