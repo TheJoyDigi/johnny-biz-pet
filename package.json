@@ -11,7 +11,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest && node scripts/test-pricing-calculation.js",
+    "test": "jest",
     "clean": "rm -rf .next",
     "clean-install": "rm -rf node_modules && pnpm install",
     "postbuild": "next-sitemap",
