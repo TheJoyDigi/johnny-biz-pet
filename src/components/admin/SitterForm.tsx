@@ -1,8 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { User, MapPin, DollarSign, Shield, Image as ImageIcon, Plus, Trash2, Upload, Eye } from 'lucide-react';
+import { User, MapPin, DollarSign, Shield, Image as ImageIcon, Plus, Trash2, Upload } from 'lucide-react';
+import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+
+const libraries: ("places")[] = ["places"];
 
 // Zod Schema
 const sitterSchema = z.object({
@@ -12,8 +17,12 @@ const sitterSchema = z.object({
   slug: z.string().min(1, "Slug is required"),
   tagline: z.string().optional(),
   address: z.string().optional(),
-  county: z.string().optional(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+  isActive: z.boolean(),
   baseRate: z.number().min(0),
+  avatarUrl: z.string().optional(),
+  heroImageUrl: z.string().optional(),
   bio: z.array(z.object({ text: z.string() })),
   skills: z.array(z.object({ text: z.string() })),
   homeEnvironment: z.array(z.object({ text: z.string() })),
@@ -49,10 +58,43 @@ interface SitterFormProps {
     isSubmitting: boolean;
 }
 
+// Helper for centering crop
+function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: '%',
+        width: 90,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight,
+    ),
+    mediaWidth,
+    mediaHeight,
+  )
+}
+
 export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFormProps) {
     const [activeTab, setActiveTab] = useState('profile');
     const [galleryImages, setGalleryImages] = useState<{name: string, url: string}[]>([]);
     const [isUploading, setIsUploading] = useState(false);
+
+    // Google Maps
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+        libraries
+    });
+    const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+    // Cropper State
+    const [crop, setCrop] = useState<Crop>();
+    const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+    const [imgSrc, setImgSrc] = useState('');
+    const [showCropModal, setShowCropModal] = useState(false);
+    const [cropType, setCropType] = useState<'avatar' | 'hero' | null>(null);
+    const imgRef = useRef<HTMLImageElement>(null);
 
     // Initialize default values
     const sp = sitter.sitter_profile || {};
@@ -63,8 +105,12 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
         slug: sp.slug || '',
         tagline: sp.tagline || '',
         address: sp.address || '',
-        county: sp.county || '',
+        lat: sp.lat || 0,
+        lng: sp.lng || 0,
+        isActive: sp.is_active ?? false,
         baseRate: (sp.base_rate_cents || 0) / 100,
+        avatarUrl: sp.avatar_url || '',
+        heroImageUrl: sp.hero_image_url || '',
         bio: (sp.bio || []).map((t: string) => ({ text: t })),
         skills: (sp.skills || []).map((t: string) => ({ text: t })),
         homeEnvironment: (sp.home_environment || []).map((t: string) => ({ text: t })),
@@ -83,7 +129,7 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
         })),
     };
 
-    const { control, register, handleSubmit, watch, formState: { errors } } = useForm<SitterFormValues>({
+    const { control, register, handleSubmit, watch, setValue, formState: { errors } } = useForm<SitterFormValues>({
         resolver: zodResolver(sitterSchema),
         defaultValues
     });
@@ -98,6 +144,8 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
     const discountFields = useFieldArray({ control, name: "discounts" });
 
     const currentSlug = watch('slug');
+    const avatarUrl = watch('avatarUrl');
+    const heroImageUrl = watch('heroImageUrl');
 
     // Fetch Gallery
     useEffect(() => {
@@ -111,29 +159,130 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
         }
     }, [activeTab, currentSlug]);
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files?.length || !currentSlug) return;
+    // Google Maps Handlers
+    const onPlaceChanged = () => {
+        if (autocompleteRef.current) {
+            const place = autocompleteRef.current.getPlace();
+            if (place.formatted_address) {
+                setValue('address', place.formatted_address);
+            }
+            if (place.geometry && place.geometry.location) {
+                setValue('lat', place.geometry.location.lat());
+                setValue('lng', place.geometry.location.lng());
+            }
+        }
+    };
+
+    const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'hero') => {
+        if (e.target.files && e.target.files.length > 0) {
+            setCropType(type);
+            setCrop(undefined); // Reset crop
+            const reader = new FileReader();
+            reader.addEventListener('load', () => setImgSrc(reader.result?.toString() || ''));
+            reader.readAsDataURL(e.target.files[0]);
+            setShowCropModal(true);
+            // Reset input value so same file can be selected again if needed
+            e.target.value = '';
+        }
+    };
+
+    const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+        const { width, height } = e.currentTarget;
+        const aspect = cropType === 'avatar' ? 1 : 16 / 9;
+        setCrop(centerAspectCrop(width, height, aspect));
+    };
+
+    const getCroppedImg = async (image: HTMLImageElement, crop: PixelCrop): Promise<Blob> => {
+        const canvas = document.createElement('canvas');
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
+        canvas.width = crop.width;
+        canvas.height = crop.height;
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) throw new Error('No 2d context');
+
+        ctx.drawImage(
+            image,
+            crop.x * scaleX,
+            crop.y * scaleY,
+            crop.width * scaleX,
+            crop.height * scaleY,
+            0,
+            0,
+            crop.width,
+            crop.height,
+        );
+
+        return new Promise((resolve, reject) => {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    reject(new Error('Canvas is empty'));
+                    return;
+                }
+                resolve(blob);
+            }, 'image/jpeg');
+        });
+    };
+
+    const handleCropSave = async () => {
+        if (completedCrop && imgRef.current && cropType) {
+            try {
+                const blob = await getCroppedImg(imgRef.current, completedCrop);
+                await handleImageUpload(blob, cropType);
+                setShowCropModal(false);
+                setImgSrc('');
+            } catch (e) {
+                console.error('Error cropping image:', e);
+                alert('Error creating cropped image');
+            }
+        }
+    };
+
+    const handleImageUpload = async (fileOrEvent: React.ChangeEvent<HTMLInputElement> | Blob, type: 'gallery' | 'avatar' | 'hero' = 'gallery') => {
+        if (!currentSlug) return;
+        
+        let file: File | Blob;
+        if (fileOrEvent instanceof Blob) {
+            file = fileOrEvent;
+        } else {
+            // This is for gallery direct upload
+            if (!fileOrEvent.target.files?.length) return;
+            file = fileOrEvent.target.files[0];
+        }
+
         setIsUploading(true);
-        const file = e.target.files[0];
         const formData = new FormData();
         formData.append('slug', currentSlug);
-        formData.append('file', file);
+        // Use a generic name for blob, the server/handler should rename it or we append type
+        // For avatars/heroes, we might want specific filenames like 'avatar.jpg' or 'hero.jpg'
+        // The API should handle this logic based on 'type'
+        formData.append('file', file, 'upload.jpg'); 
+        formData.append('type', type);
 
         try {
             const res = await fetch('/api/admin/gallery', { method: 'POST', body: formData });
             if (!res.ok) throw new Error('Upload failed');
             
-            // Refresh gallery
-            const galleryRes = await fetch(`/api/admin/gallery?slug=${currentSlug}`);
-            const data = await galleryRes.json();
-            if (data.images) setGalleryImages(data.images);
+            const data = await res.json();
+            if (data.url) {
+                if (type === 'avatar') setValue('avatarUrl', data.url);
+                else if (type === 'hero') setValue('heroImageUrl', data.url);
+                else if (type === 'gallery') {
+                    // Refresh gallery
+                    const galleryRes = await fetch(`/api/admin/gallery?slug=${currentSlug}`);
+                    const gData = await galleryRes.json();
+                    if (gData.images) setGalleryImages(gData.images);
+                }
+            }
         } catch (err) {
             console.error(err);
             alert('Failed to upload image');
         } finally {
             setIsUploading(false);
-            // Reset input
-            e.target.value = '';
+            if (!(fileOrEvent instanceof Blob) && fileOrEvent.target) {
+                 fileOrEvent.target.value = '';
+            }
         }
     };
 
@@ -160,7 +309,43 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
     ];
 
     return (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-lg shadow overflow-hidden relative">
+            {/* Crop Modal */}
+            {showCropModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
+                    <div className="bg-white rounded-lg p-4 max-w-2xl w-full max-h-[90vh] flex flex-col">
+                        <h3 className="text-lg font-medium mb-4">Crop {cropType === 'avatar' ? 'Avatar' : 'Hero Image'}</h3>
+                        <div className="flex-1 overflow-auto flex justify-center bg-gray-100 rounded mb-4">
+                            <ReactCrop
+                                crop={crop}
+                                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                                onComplete={(c) => setCompletedCrop(c)}
+                                aspect={cropType === 'avatar' ? 1 : 16 / 9}
+                            >
+                                <img ref={imgRef} alt="Crop me" src={imgSrc} onLoad={onImageLoad} />
+                            </ReactCrop>
+                        </div>
+                        <div className="flex justify-end gap-2 pt-2 border-t">
+                            <button
+                                type="button"
+                                onClick={() => { setShowCropModal(false); setImgSrc(''); }}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCropSave}
+                                disabled={isUploading}
+                                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                {isUploading ? 'Saving...' : 'Save & Upload'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header with Tabs and Actions */}
             <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50">
                 <div className="flex overflow-x-auto">
@@ -179,21 +364,6 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
                         </button>
                     ))}
                 </div>
-                
-                {currentSlug && (
-                    <div className="pr-6">
-                        <a 
-                            href={`/sitters/${currentSlug}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-                            title="View public profile"
-                        >
-                            <Eye className="w-4 h-4 mr-2" />
-                            <span className="hidden sm:inline">Preview</span>
-                        </a>
-                    </div>
-                )}
             </div>
 
             {/* Form Content */}
@@ -201,6 +371,22 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
                 {/* Profile Tab */}
                 <div className={activeTab === 'profile' ? 'block' : 'hidden'}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Active Status Toggle */}
+                        <div className="col-span-2 flex items-center mb-4">
+                            <div className="flex items-center h-5">
+                                <input
+                                    id="isActive"
+                                    type="checkbox"
+                                    {...register('isActive')}
+                                    className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                />
+                            </div>
+                            <div className="ml-3 text-sm">
+                                <label htmlFor="isActive" className="font-medium text-gray-700">Active Profile</label>
+                                <p className="text-gray-500">When disabled, this sitter will not be visible to the public.</p>
+                            </div>
+                        </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700">First Name</label>
                             <input {...register('firstName')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
@@ -222,14 +408,64 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
                             <label className="block text-sm font-medium text-gray-700">Tagline</label>
                             <input {...register('tagline')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
                         </div>
+                        
+                        {/* Avatar Upload */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Profile Photo (Avatar)</label>
+                            <div className="flex items-center space-x-4">
+                                {avatarUrl ? (
+                                    <div className="relative w-20 h-20 rounded-full overflow-hidden border border-gray-200">
+                                        <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200">
+                                        <ImageIcon className="w-8 h-8" />
+                                    </div>
+                                )}
+                                <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                                    Change
+                                    <input type="file" className="hidden" onChange={(e) => onSelectFile(e, 'avatar')} accept="image/*" />
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Hero Upload */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Hero Image</label>
+                            <div className="flex items-center space-x-4">
+                                {heroImageUrl ? (
+                                    <div className="relative w-32 h-20 rounded-md overflow-hidden border border-gray-200">
+                                        <img src={heroImageUrl} alt="Hero" className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className="w-32 h-20 rounded-md bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200">
+                                        <ImageIcon className="w-8 h-8" />
+                                    </div>
+                                )}
+                                <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                                    Change
+                                    <input type="file" className="hidden" onChange={(e) => onSelectFile(e, 'hero')} accept="image/*" />
+                                </label>
+                            </div>
+                        </div>
+
                         <div className="col-span-2">
                             <label className="block text-sm font-medium text-gray-700">Address</label>
-                            <input {...register('address')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
+                            {isLoaded ? (
+                                <Autocomplete
+                                    onLoad={(autocomplete) => { autocompleteRef.current = autocomplete; }}
+                                    onPlaceChanged={onPlaceChanged}
+                                >
+                                    <input {...register('address')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Start typing address..." />
+                                </Autocomplete>
+                            ) : (
+                                <input {...register('address')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
+                            )}
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">County</label>
-                            <input {...register('county')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
-                        </div>
+                        
+                        {/* Hidden Inputs for Lat/Lng */}
+                        <input type="hidden" {...register('lat', { valueAsNumber: true })} />
+                        <input type="hidden" {...register('lng', { valueAsNumber: true })} />
                     </div>
                 </div>
 
@@ -393,7 +629,7 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
                                     {isUploading ? 'Uploading...' : 'Drop files to Attach, or browse'}
                                 </span>
                             </span>
-                            <input type="file" name="file_upload" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
+                            <input type="file" name="file_upload" className="hidden" onChange={(e) => handleImageUpload(e, 'gallery')} disabled={isUploading} />
                         </label>
                     </div>
 
