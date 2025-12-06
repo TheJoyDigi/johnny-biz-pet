@@ -67,9 +67,10 @@ The following custom commands are available for this project:
 
 ## Database Access & Migrations
 
--   **Development Database:** `supabase_rrr_dev`
-    -   Accessed via MCP.
--   **Production Database:** `supabase_rrr_prod`
+-   **Development Database (rrr-dev):** ID `dsnjzdtfezcsctdjlsje`
+    -   Accessed via Supabase CLI (`npx supabase ...`)
+-   **Production Database (rrr-prod):** ID `vzbvjshrhtrdunlkfadf`
+    -   Accessed via Supabase CLI (`npx supabase ...`)
     -   **Rule:** Access is strictly read-only.
 
 ### Migration Workflow

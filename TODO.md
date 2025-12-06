@@ -1,24 +1,26 @@
-# Phase 3: Admin & Sitter Profile Management
+# Phase 3: Admin & Sitter Profile Management Enhancements
 
-## Admin Sitter Profile Management Page
-- [x] **Page Setup**
-  - Create a new page: `src/pages/admin/sitters/[id]/edit.tsx` (or similar route).
-  - Implement role-based access control (Admin or the Sitter themselves).
-- [x] **UI/UX Design**
-  - Design a comprehensive form using a tabbed or stepper layout to handle dense data:
-    - **Basic Info**: Name, Tagline, Bio, Avatar, Hero Image.
-    - **Location**: Address, Service Radius, Google Maps integration for Lat/Lng.
-    - **Services & Rates**: Base rates, Primary Services editor.
-    - **Add-ons**: List editor for add-ons (name, price, description).
-    - **Discounts**: Discount rules editor.
-    - **Policies**: Cancellation & Extended Care policies.
-    - **Gallery**: Image uploader for the gallery (drag & drop, preview, delete).
-    - **Badges**: Admin-only toggle for assigning badges.
-- [x] **Functionality**
-  - **Data Fetching**: Load existing sitter data from Supabase.
-  - **Image Upload**: Integrate with Supabase Storage for Avatar, Hero, and Gallery images. Implement image resizing/optimization on upload if possible.
-  - **Form Handling**: Use `react-hook-form` and `zod` for validation.
-  - **Persistence**: Implement save/update logic to `public.sitters`, `public.sitter_addons`, and `public.sitter_discounts`.
-- [x] **Validation & Error Handling**
-  - Add success/error toasts notifications.
-  - Ensure data integrity (e.g., preventing deletion of active services with bookings).
+## 1. Sitter Schema & Data Structure
+- [ ] **Schema Update**:
+  - Add `care_style` (jsonb) and `parent_expectations` (jsonb) columns to `public.sitters` table.
+  - Migrate existing data from `bio` text fields to these new columns where applicable.
+- [ ] **Sitter Form Update**:
+  - Add dedicated array inputs for "My Care Style" and "What Pet Parents Can Expect" in the `SitterForm` component (similar to Skills/Home Environment).
+
+## 2. Admin Invite Sitter Flow
+- [ ] **Update Invite Page**:
+  - Modify `src/pages/admin/sitters/new.tsx` (or create it).
+  - Add toggle/option: "Send Invitation Email Now" vs "Create Profile Only" (link user later).
+  - Implement logic to create `users` and `sitters` records without triggering auth email if requested.
+
+## 3. Profile Preview
+- [ ] **Preview Feature**:
+  - Add "Preview Profile" button to `EditSitterPage`.
+  - Link to `/sitters/[slug]` or open a modal rendering `SitterDetail` with current form data (live preview).
+
+## 4. Admin UI/UX Overhaul
+- [ ] **Dashboard Layout**:
+  - Refactor `AdminLayout` to use a modern sidebar navigation, responsive header, and clean typography (Tailwind).
+  - Ensure mobile-first responsiveness for table views (cards on mobile).
+- [ ] **Page Styling**:
+  - Polish `sitters.tsx` (list), `bookings/index.tsx` (if exists), and other admin pages to match the new design system.
