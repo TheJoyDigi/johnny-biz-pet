@@ -4,17 +4,23 @@ import Link from "next/link";
 import { FaStar, FaTimes, FaQuestionCircle } from "react-icons/fa";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { GetStaticProps } from "next";
 
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { sitters, SitterBadge, SitterReview } from "@/data/sitters";
+import { Sitter, SitterBadge } from "@/data/sitters";
 import { BADGE_DEFINITIONS, BadgeDefinition } from "@/constants/badges";
+import { fetchSittersFromDb } from "@/lib/sitters-db";
 
 const TOTAL_BADGES = Object.keys(BADGE_DEFINITIONS).length;
 
 type BadgeWithDef = SitterBadge & { definition: BadgeDefinition | undefined };
 
-function SittersPage() {
+interface SittersPageProps {
+  sitters: Sitter[];
+}
+
+function SittersPage({ sitters }: SittersPageProps) {
   const [selectedBadge, setSelectedBadge] = useState<BadgeWithDef | null>(null);
 
   return (
@@ -145,7 +151,7 @@ function SittersPage() {
                       <Link
                         href={{
                           pathname: "/book",
-                          query: { sitter: sitter.uid },
+                          query: { sitter: sitter.id }, // Changed from uid to id for consistency with fetchSittersFromDb slug
                         }}
                         className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#1A9CB0] text-white font-semibold hover:bg-[#157c8d] transition-colors"
                       >
@@ -220,5 +226,15 @@ function SittersPage() {
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps<SittersPageProps> = async () => {
+  const sitters = await fetchSittersFromDb();
+  return {
+    props: {
+      sitters,
+    },
+    revalidate: 60, // Revalidate every 1 minute
+  };
+};
 
 export default SittersPage;

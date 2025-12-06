@@ -1,9 +1,6 @@
 import { RefObject, useRef } from "react";
 
-import AboutSection from "./landing/AboutSection";
 import BenefitsSection from "./landing/BenefitsSection";
-import BadgeSystemSection from "./landing/BadgeSystemSection";
-
 
 import CallToActionSection from "./landing/CallToActionSection";
 import HowItWorksSection from "./landing/HowItWorksSection";
@@ -11,10 +8,8 @@ import HeroSection from "./landing/HeroSection";
 
 import RatesTransparencySection from "./landing/RatesTransparencySection";
 import SafetyTrustSection from "./landing/SafetyTrustSection";
-import VacationAddOnsSection from "./landing/VacationAddOnsSection";
 import FloatingCTA from "./landing/FloatingCTA";
 import { Location } from "./landing/types";
-import { sitters } from "@/data/sitters";
 
 const locations: Location[] = [
   {

@@ -1,9 +1,15 @@
 import Head from "next/head";
 import { useRef } from "react";
+import { GetServerSideProps } from "next";
 import BookingSection from "@/components/landing/BookingSection";
-import { sitters } from "@/data/sitters";
+import { Sitter } from "@/data/sitters";
+import { fetchSittersFromDb } from "@/lib/sitters-db";
 
-export default function BookPage() {
+interface BookPageProps {
+  sitters: Sitter[];
+}
+
+export default function BookPage({ sitters }: BookPageProps) {
   const bookingRef = useRef<HTMLElement>(null);
 
   return (
@@ -21,3 +27,12 @@ export default function BookPage() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const sitters = await fetchSittersFromDb();
+  return {
+    props: {
+      sitters,
+    },
+  };
+};

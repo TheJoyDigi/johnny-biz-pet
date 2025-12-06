@@ -7,7 +7,8 @@ import path from "path";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import SitterDetail from "@/components/sitters/SitterDetail";
-import { getSitterById, Sitter, sitters, SitterGalleryPhoto } from "@/data/sitters";
+import { Sitter, SitterGalleryPhoto } from "@/data/sitters";
+import { fetchSittersFromDb } from "@/lib/sitters-db";
 
 type SitterPageProps = {
   sitter: Sitter;
@@ -48,24 +49,27 @@ const SitterPage = ({ sitter }: SitterPageProps) => {
   );
 };
 
-export const getStaticPaths: GetStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  const sitters = await fetchSittersFromDb();
   const paths = sitters.map((sitter) => ({ params: { id: sitter.id } }));
-  return { paths, fallback: false };
+  return { paths, fallback: "blocking" };
 };
 
-export const getStaticProps: GetStaticProps<SitterPageProps> = ({ params }) => {
+export const getStaticProps: GetStaticProps<SitterPageProps> = async ({ params }) => {
   const id = params?.id;
   if (typeof id !== "string") {
     return { notFound: true };
   }
 
-  const sitter = getSitterById(id);
+  const sitters = await fetchSittersFromDb();
+  const sitter = sitters.find((s) => s.id === id);
 
   if (!sitter) {
     return { notFound: true };
   }
 
   let gallery: SitterGalleryPhoto[] = [];
+  // sitter.uid is now "sr-001" or "sr-002" based on lib/sitters-db.ts
   const galleryDir = path.join(process.cwd(), "public", "sitters", sitter.uid, "gallery");
   try {
     if (fs.existsSync(galleryDir)) {
@@ -90,6 +94,7 @@ export const getStaticProps: GetStaticProps<SitterPageProps> = ({ params }) => {
     props: {
       sitter: sitterWithGallery,
     },
+    revalidate: 60,
   };
 };
 

@@ -1,5 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import nodemailer from "nodemailer";
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Define response type
 type ResponseData = {
@@ -27,6 +33,7 @@ export default async function handler(
 
   try {
     const {
+      sitterId, // This is likely the slug (e.g., "johnny-irvine") from the frontend
       sitterName,
       locationName,
       serviceId,
@@ -81,6 +88,149 @@ export default async function handler(
     // Calculate number of nights
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // --- Database Operations ---
+
+    // 1. Get Sitter UUID from slug (sitterId from frontend)
+    const { data: sitterData, error: sitterError } = await supabase
+      .from("sitters")
+      .select("id, base_rate_cents")
+      .eq("slug", sitterId)
+      .single();
+
+    if (sitterError || !sitterData) {
+      console.error("Error finding sitter:", sitterError?.message);
+      // Fallback or error? For now, we log and proceed with email, or fail?
+      // Let's fail if DB is critical, but maybe soft fail if we want email to go through?
+      // Phase 2 requirements imply DB is central. Let's throw to ensure data consistency.
+      throw new Error("Sitter not found in database");
+    }
+    const sitterUuid = sitterData.id;
+
+    // 2. Upsert Customer
+    const { data: customerData, error: customerError } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("email", email)
+      .single();
+    
+    let customerId;
+    if (customerData) {
+        customerId = customerData.id;
+        // Optionally update name/phone
+        await supabase.from("customers").update({ name: `${firstName} ${lastName}` }).eq("id", customerId);
+    } else {
+        const { data: newCustomer, error: createCustomerError } = await supabase
+            .from("customers")
+            .insert({ email, name: `${firstName} ${lastName}` })
+            .select("id")
+            .single();
+        if (createCustomerError) throw createCustomerError;
+        customerId = newCustomer.id;
+    }
+
+    // 3. Upsert Pet
+    // Check if pet exists for this customer
+    const { data: petData } = await supabase
+        .from("pets")
+        .select("id")
+        .eq("customer_id", customerId)
+        .eq("name", petName)
+        .single();
+    
+    let petId;
+    if (petData) {
+        petId = petData.id;
+        // update details
+         await supabase.from("pets").update({ breed: petType }).eq("id", petId);
+    } else {
+        const { data: newPet, error: createPetError } = await supabase
+            .from("pets")
+            .insert({ customer_id: customerId, name: petName, breed: petType })
+            .select("id")
+            .single();
+        if (createPetError) throw createPetError;
+        petId = newPet.id;
+    }
+
+    // 4. Create Booking Request
+    const { data: bookingRequest, error: bookingError } = await supabase
+      .from("booking_requests")
+      .insert({
+        customer_id: customerId,
+        assigned_sitter_id: sitterUuid,
+        start_date: startDate,
+        end_date: endDate,
+        county: locationName, // Approximate mapping
+        status: "PENDING_SITTER_ACCEPTANCE",
+        base_rate_at_booking_cents: sitterData.base_rate_cents,
+        // total_cost_cents: ... calculation logic could go here or DB function
+      })
+      .select("id")
+      .single();
+
+    if (bookingError) throw bookingError;
+    const bookingId = bookingRequest.id;
+
+    // 5. Link Pet
+    await supabase.from("booking_pets").insert({
+        booking_request_id: bookingId,
+        pet_id: petId
+    });
+
+    // 6. Add Booking Note
+    if (notes) {
+        await supabase.from("booking_notes").insert({
+            booking_request_id: bookingId,
+            note: notes
+            // user_id is null for guest booking notes or could be linked if we had auth user
+        });
+    }
+
+    // 7. Add Booking Addons
+    // addons is { "Addon Name": quantity }
+    // Need to lookup addon IDs from sitter_addons table
+    if (addons && Object.keys(addons).length > 0) {
+        const addonNames = Object.keys(addons).filter(k => addons[k] > 0);
+        if (addonNames.length > 0) {
+            const { data: sitterAddons } = await supabase
+                .from("sitter_addons")
+                .select("id, name, price_cents")
+                .eq("sitter_id", sitterUuid)
+                .in("name", addonNames);
+            
+            if (sitterAddons) {
+                const bookingAddonsToInsert = [];
+                for (const sa of sitterAddons) {
+                    const qty = addons[sa.name];
+                    // Support multiple quantities? Schema booking_addons is (booking_request_id, sitter_addon_id) PK.
+                    // So it supports only 1 entry per addon type per booking. 
+                    // If quantity > 1, schema might need update or we just store it once.
+                    // For now, assuming 1 per type or just presence.
+                    // Wait, Phase 2 requirements might specify quantity.
+                    // Schema check: booking_addons has no quantity column.
+                    // For MVP Phase 2, we'll just link it.
+                    bookingAddonsToInsert.push({
+                        booking_request_id: bookingId,
+                        sitter_addon_id: sa.id,
+                        price_cents_at_booking: sa.price_cents
+                    });
+                }
+                if (bookingAddonsToInsert.length) {
+                    await supabase.from("booking_addons").insert(bookingAddonsToInsert);
+                }
+            }
+        }
+    }
+
+    // 8. Create Sitter Recipient
+    await supabase.from("booking_sitter_recipients").insert({
+        booking_request_id: bookingId,
+        sitter_id: sitterUuid,
+        status: "NOTIFIED"
+    });
+
+    // --- End Database Operations ---
 
     // Format addons for email
     const selectedAddons = Object.entries(addons)
