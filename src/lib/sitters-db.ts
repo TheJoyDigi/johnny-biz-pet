@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { Sitter, SitterServices, SitterDiscounts, SitterAddOnCategory, SitterReview } from "@/data/sitters";
+import { Sitter, SitterServices, SitterDiscounts, SitterAddOnCategory, SitterReview, SitterGalleryPhoto } from "@/data/sitters";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -21,7 +21,7 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
     return [];
   }
 
-  return sittersData.map((dbSitter: any) => {
+  return Promise.all(sittersData.map(async (dbSitter: any) => {
     const primaryServices = [
         {
             name: "Dog Boarding",
@@ -70,7 +70,7 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
         client: r.client_name,
         pet: r.pet_name || "",
         rating: r.rating,
-        date: new Date(r.date).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: '2-digit' }), // Format: Oct 04, 2025
+        date: new Date(r.date).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: '2-digit' }), 
         text: r.text,
         image: r.image_url,
         source: r.source
@@ -81,9 +81,21 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
     if (dbSitter.slug === "trudy-wildomar") legacyUid = "sr-002";
     else if (dbSitter.slug === "johnny-irvine") legacyUid = "sr-001";
 
+    // Fetch Gallery Images from Storage
+    let gallery: SitterGalleryPhoto[] = [];
+    const { data: galleryFiles } = await supabase.storage.from('sitter-images').list(`${legacyUid}/gallery`);
+    if (galleryFiles) {
+        gallery = galleryFiles
+            .filter(f => f.name !== '.DS_Store')
+            .map(f => ({
+                src: `${supabaseUrl}/storage/v1/object/public/sitter-images/${legacyUid}/gallery/${f.name}`,
+                alt: f.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ")
+            }));
+    }
+
     return {
         id: dbSitter.slug || dbSitter.id, 
-        uid: legacyUid, // Use legacy UID for compatibility
+        uid: legacyUid, 
         name: dbSitter.users?.first_name || "Sitter", 
         tagline: dbSitter.tagline,
         avatar: dbSitter.avatar_url,
@@ -96,11 +108,9 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
         services: services,
         policies: dbSitter.policies,
         discounts: discounts,
-        reviews: reviews, 
+        reviews: reviews,
+        gallery: gallery,
         contactEmail: "bookings@ruhrohretreat.com"
     } as Sitter;
-  });
+  }));
 }
-
-
-    

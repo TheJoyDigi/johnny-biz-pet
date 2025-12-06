@@ -1,13 +1,11 @@
-import fs from "fs";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import path from "path";
 
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import SitterDetail from "@/components/sitters/SitterDetail";
-import { Sitter, SitterGalleryPhoto } from "@/data/sitters";
+import { Sitter } from "@/data/sitters";
 import { fetchSittersFromDb } from "@/lib/sitters-db";
 
 type SitterPageProps = {
@@ -68,31 +66,9 @@ export const getStaticProps: GetStaticProps<SitterPageProps> = async ({ params }
     return { notFound: true };
   }
 
-  let gallery: SitterGalleryPhoto[] = [];
-  // sitter.uid is now "sr-001" or "sr-002" based on lib/sitters-db.ts
-  const galleryDir = path.join(process.cwd(), "public", "sitters", sitter.uid, "gallery");
-  try {
-    if (fs.existsSync(galleryDir)) {
-      const files = fs.readdirSync(galleryDir);
-      gallery = files
-        .filter((file) => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
-        .map((file) => ({
-          src: `/sitters/${sitter.uid}/gallery/${file}`,
-          alt: file.replace(/\.[^/.]+$/, "").replace(/-/g, " "),
-        }));
-    }
-  } catch (error) {
-    console.error(`Error loading gallery for sitter ${sitter.id}:`, error);
-  }
-
-  const sitterWithGallery: Sitter = {
-    ...sitter,
-    gallery,
-  };
-
   return {
     props: {
-      sitter: sitterWithGallery,
+      sitter,
     },
     revalidate: 60,
   };
