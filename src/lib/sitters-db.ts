@@ -11,6 +11,14 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
     .select(`
       *,
       users (first_name),
+      sitter_primary_services (
+        price_cents,
+        service_types (
+            name,
+            description,
+            slug
+        )
+      ),
       sitter_addons (*),
       sitter_discounts (*),
       sitter_reviews (*)
@@ -23,18 +31,17 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
   }
 
   return Promise.all(sittersData.map(async (dbSitter: any) => {
-    const primaryServices = [
-        {
-            name: "Dog Boarding",
-            description: "Boutique overnight stays with cozy suites, hourly wellness checks, and 24/7 supervision.",
-            price: `$${dbSitter.base_rate_cents / 100}/night`
-        },
-        {
-            name: "Doggy Daycare",
-            description: "Structured daytime care with enrichment walks, rest dens, and constant communication.",
-            price: `$${dbSitter.base_rate_cents / 100}/night`
-        }
-    ];
+    // Map primary services from DB relation
+    const primaryServices = dbSitter.sitter_primary_services.map((ps: any) => ({
+        name: ps.service_types.name,
+        description: ps.service_types.description,
+        price: `$${ps.price_cents / 100}/night`
+    })).sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+    // Fallback if no services found (shouldn't happen for migrated data)
+    if (primaryServices.length === 0) {
+        // Keep empty loop or default?
+    }
 
     const addOnItems = dbSitter.sitter_addons.map((addon: any) => ({
         name: addon.name,
@@ -77,7 +84,7 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
         source: r.source
     }));
 
-    // Map legacy UID for reviews and gallery
+    // Map legacy UID for reviews and gallery (Temporary logic for migration)
     let legacyUid = "sr-001";
     if (dbSitter.slug === "trudy-wildomar") legacyUid = "sr-002";
     else if (dbSitter.slug === "johnny-irvine") legacyUid = "sr-001";

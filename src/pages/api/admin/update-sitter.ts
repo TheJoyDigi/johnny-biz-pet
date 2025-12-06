@@ -15,9 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { 
     userId, 
     firstName, lastName, phone, 
-    slug, tagline, address, county, lat, lng, baseRate, isActive,
+    slug, tagline, address, county, lat, lng, isActive,
     bio, skills, homeEnvironment, careStyle, parentExpectations,
-    addons, discounts 
+    addons, discounts, services
   } = req.body;
 
   if (!userId) {
@@ -63,7 +63,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         lat, 
         lng,
         is_active: isActive,
-        base_rate_cents: Math.round(baseRate * 100),
         bio: bio.map((b: any) => b.text),
         skills: skills.map((s: any) => s.text),
         home_environment: homeEnvironment.map((h: any) => h.text),
@@ -73,6 +72,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .eq('id', sitterId);
 
     if (sitterError) throw new Error(`Sitter update error: ${sitterError.message}`);
+
+    // Update Primary Services
+    if (services && Array.isArray(services)) {
+        const servicesToUpsert = services
+            .filter((s: any) => s.enabled)
+            .map((s: any) => ({
+                sitter_id: sitterId,
+                service_type_id: s.serviceTypeId,
+                price_cents: Math.round(s.price * 100)
+            }));
+            
+        const servicesToDelete = services
+            .filter((s: any) => !s.enabled)
+            .map((s: any) => s.serviceTypeId);
+
+        if (servicesToUpsert.length > 0) {
+            const { error: upsertError } = await supabaseAdmin
+                .from('sitter_primary_services')
+                .upsert(servicesToUpsert, { onConflict: 'sitter_id, service_type_id' });
+            if (upsertError) throw new Error(`Services upsert error: ${upsertError.message}`);
+        }
+
+        if (servicesToDelete.length > 0) {
+             const { error: deleteError } = await supabaseAdmin
+                .from('sitter_primary_services')
+                .delete()
+                .eq('sitter_id', sitterId)
+                .in('service_type_id', servicesToDelete);
+             if (deleteError) throw new Error(`Services delete error: ${deleteError.message}`);
+        }
+    }
 
     // 3. Manage Addons
     const { data: existingAddons } = await supabaseAdmin.from('sitter_addons').select('id').eq('sitter_id', sitterId);

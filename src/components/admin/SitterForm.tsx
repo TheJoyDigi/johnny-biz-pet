@@ -20,7 +20,6 @@ const sitterSchema = z.object({
   lat: z.number().optional(),
   lng: z.number().optional(),
   isActive: z.boolean(),
-  baseRate: z.number().min(0),
   avatarUrl: z.string().optional(),
   heroImageUrl: z.string().optional(),
   bio: z.array(z.object({ text: z.string() })),
@@ -39,6 +38,11 @@ const sitterSchema = z.object({
     minDays: z.number().min(1),
     percentage: z.number().min(0).max(100)
   })),
+  services: z.array(z.object({
+    serviceTypeId: z.string(),
+    price: z.number().min(0),
+    enabled: z.boolean()
+  })),
 });
 
 type SitterFormValues = z.infer<typeof sitterSchema>;
@@ -54,6 +58,7 @@ interface SitterProfile {
 
 interface SitterFormProps {
     sitter: SitterProfile;
+    serviceTypes: any[];
     onSubmit: (data: SitterFormValues) => Promise<void>;
     isSubmitting: boolean;
 }
@@ -75,7 +80,7 @@ function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: numbe
   )
 }
 
-export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFormProps) {
+export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmitting }: SitterFormProps) {
     const [activeTab, setActiveTab] = useState('profile');
     const [galleryImages, setGalleryImages] = useState<{name: string, url: string}[]>([]);
     const [isUploading, setIsUploading] = useState(false);
@@ -108,7 +113,6 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
         lat: sp.lat || 0,
         lng: sp.lng || 0,
         isActive: sp.is_active ?? false,
-        baseRate: (sp.base_rate_cents || 0) / 100,
         avatarUrl: sp.avatar_url || '',
         heroImageUrl: sp.hero_image_url || '',
         bio: (sp.bio || []).map((t: string) => ({ text: t })),
@@ -127,6 +131,14 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
             minDays: d.min_days,
             percentage: d.percentage
         })),
+        services: serviceTypes.map((st: any) => {
+            const existing = (sp.sitter_primary_services || []).find((s: any) => s.service_types && s.service_types.id === st.id);
+            return {
+                serviceTypeId: st.id,
+                price: existing ? existing.price_cents / 100 : 0,
+                enabled: !!existing
+            };
+        }),
     };
 
     const { control, register, handleSubmit, watch, setValue, formState: { errors } } = useForm<SitterFormValues>({
@@ -142,6 +154,7 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
     const parentExpectationsFields = useFieldArray({ control, name: "parentExpectations" });
     const addonFields = useFieldArray({ control, name: "addons" });
     const discountFields = useFieldArray({ control, name: "discounts" });
+    const { fields: serviceFields } = useFieldArray({ control, name: "services" });
 
     const currentSlug = watch('slug');
     const avatarUrl = watch('avatarUrl');
@@ -472,9 +485,41 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
                 {/* Services Tab */}
                 <div className={activeTab === 'services' ? 'block' : 'hidden'}>
                     <div className="space-y-6">
+
+
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Base Nightly Rate ($)</label>
-                            <input type="number" {...register('baseRate', { valueAsNumber: true })} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">Service Rates</h3>
+                            <div className="space-y-4">
+                                {serviceFields.map((field, index) => {
+                                    const st = serviceTypes.find(t => t.id === field.serviceTypeId);
+                                    return (
+                                        <div key={field.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    {...register(`services.${index}.enabled`)}
+                                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                                />
+                                                <div className="ml-3">
+                                                    <span className="block text-sm font-medium text-gray-700">{st?.name || 'Unknown Service'}</span>
+                                                    {st?.description && <span className="block text-xs text-gray-500">{st.description}</span>}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <span className="text-gray-500 mr-2">$</span>
+                                                <input
+                                                    type="number"
+                                                    {...register(`services.${index}.price`, { valueAsNumber: true })}
+                                                    className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                                    placeholder="0.00"
+                                                />
+                                            </div>
+                                            {/* Hidden input to keep serviceTypeId bound */}
+                                            <input type="hidden" {...register(`services.${index}.serviceTypeId`)} />
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         <div>

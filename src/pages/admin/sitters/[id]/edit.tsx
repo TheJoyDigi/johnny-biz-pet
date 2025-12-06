@@ -12,38 +12,31 @@ interface SitterProfile {
   last_name: string | null;
   email: string;
   phone_number: string | null;
-  sitter_profile: {
+    sitter_profile: {
     id: string;
     slug: string | null;
     tagline: string | null;
     avatar_url: string | null;
     hero_image_url: string | null;
     address: string | null;
+    lat: number | null;
+    lng: number | null;
     county: string | null;
-    base_rate_cents: number | null;
-    bio: string[] | null; // JSONB
-    skills: string[] | null; // JSONB
-    home_environment: string[] | null; // JSONB
-    badges: any[] | null; // JSONB
-    policies: any | null; // JSONB
-    location_details: any | null; // JSONB
-    gallery_urls: string[] | null; // JSONB
-    sitter_addons: {
-        id: string;
-        name: string;
-        price_cents: number;
-        description: string | null;
-    }[];
-    sitter_discounts: {
-        id: string;
-        min_days: number;
-        percentage: number;
-    }[];
+    is_active: boolean | null;
+    bio: any[] | null;
+    skills: any[] | null;
+    home_environment: any[] | null;
+    care_style: any[] | null;
+    parent_expectations: any[] | null;
+    sitter_addons: any[];
+    sitter_primary_services: any[];
+    sitter_discounts: any[];
   } | null;
 }
 
 interface EditSitterPageProps {
     sitter: SitterProfile;
+    serviceTypes: any[];
 }
 
 export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async (context) => {
@@ -78,6 +71,9 @@ export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async
     return { notFound: true };
   }
 
+  // Fetch Service Types
+  const { data: serviceTypes } = await supabase.from('service_types').select('*').order('name');
+
   // Correctly fetch user and their related sitter profile with all relations
   const { data: sitter, error } = await supabase
     .from('users')
@@ -90,7 +86,11 @@ export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async
       sitter_profile:sitters!user_id (
         *,
         sitter_addons(*),
-        sitter_discounts(*)
+        sitter_discounts(*),
+        sitter_primary_services(
+            price_cents,
+            service_types(*)
+        )
       )
     `)
     .eq('id', id)
@@ -111,10 +111,10 @@ export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async
     sitter_profile: Array.isArray(sitterProfile) ? sitterProfile[0] : sitterProfile,
   };
 
-  return { props: { sitter: finalSitter } };
+  return { props: { sitter: finalSitter, serviceTypes: serviceTypes || [] } };
 };
 
-export default function EditSitterPage({ sitter }: EditSitterPageProps) {
+export default function EditSitterPage({ sitter, serviceTypes }: EditSitterPageProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -168,7 +168,7 @@ export default function EditSitterPage({ sitter }: EditSitterPageProps) {
                 </div>
             )}
 
-            <SitterForm sitter={sitter} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+            <SitterForm sitter={sitter} serviceTypes={serviceTypes} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
         </div>
       </div>
     </AdminLayout>

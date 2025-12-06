@@ -94,18 +94,38 @@ export default async function handler(
     // 1. Get Sitter UUID from slug (sitterId from frontend)
     const { data: sitterData, error: sitterError } = await supabase
       .from("sitters")
-      .select("id, base_rate_cents")
+      .select(`
+        id, 
+        sitter_primary_services (
+            price_cents,
+            service_types ( slug, name )
+        )
+      `)
       .eq("slug", sitterId)
       .single();
 
     if (sitterError || !sitterData) {
       console.error("Error finding sitter:", sitterError?.message);
-      // Fallback or error? For now, we log and proceed with email, or fail?
-      // Let's fail if DB is critical, but maybe soft fail if we want email to go through?
-      // Phase 2 requirements imply DB is central. Let's throw to ensure data consistency.
       throw new Error("Sitter not found in database");
     }
     const sitterUuid = sitterData.id;
+
+    // Find the matching service price
+    // serviceId from body could be name or slug. Try to match both.
+    let _baseRateCents = 0;
+    if (sitterData.sitter_primary_services && Array.isArray(sitterData.sitter_primary_services)) {
+        const found = sitterData.sitter_primary_services.find((s: any) => 
+            s.service_types.slug === serviceId || s.service_types.name === serviceId
+        );
+        // If not found, default to first service or remain 0 (maybe 'Dog Boarding' default?)
+        if (found) {
+            _baseRateCents = found.price_cents;
+        } else {
+             // Fallback to Dog Boarding if specific service not matched
+             const defaultService = sitterData.sitter_primary_services.find((s: any) => s.service_types.slug === 'dog-boarding');
+             if (defaultService) _baseRateCents = defaultService.price_cents;
+        }
+    }
 
     // 2. Upsert Customer
     const { data: customerData, error: customerError } = await supabase
@@ -163,7 +183,7 @@ export default async function handler(
         end_date: endDate,
         county: locationName, // Approximate mapping
         status: "PENDING_SITTER_ACCEPTANCE",
-        base_rate_at_booking_cents: sitterData.base_rate_cents,
+        base_rate_at_booking_cents: _baseRateCents,
         // total_cost_cents: ... calculation logic could go here or DB function
       })
       .select("id")

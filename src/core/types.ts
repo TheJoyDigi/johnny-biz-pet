@@ -38,7 +38,12 @@ export type Sitter = {
         first_name: string;
         last_name: string;
     };
-    base_rate_cents: number;
+    sitter_primary_services?: {
+        service_types: {
+            slug: string;
+        };
+        price_cents: number;
+    }[];
     sitter_addons: {
         id: string;
         name: string;

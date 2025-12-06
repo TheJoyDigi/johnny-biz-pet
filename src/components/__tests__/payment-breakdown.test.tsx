@@ -18,7 +18,12 @@ describe('PaymentBreakdown', () => {
         first_name: 'Sitter',
         last_name: 'One',
     },
-    base_rate_cents: 5000,
+    sitter_primary_services: [
+        {
+            service_types: { slug: 'dog-boarding' },
+            price_cents: 5000
+        }
+    ],
     sitter_addons: [
       { id: 'addon-1', name: 'Walk', price_cents: 1000 },
     ],

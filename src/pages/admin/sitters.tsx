@@ -6,8 +6,13 @@ import AdminLayout from './_layout';
 interface Sitter {
   id: string;
   address: string;
-  base_rate_cents: number;
   is_active: boolean;
+  sitter_primary_services: {
+    price_cents: number;
+    service_types: {
+      slug: string;
+    }
+  }[];
   user: {
     id: string;
     email: string;
@@ -61,8 +66,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { data: sitters } = await supabase.from('sitters').select(`
       id,
       address,
-      base_rate_cents,
       is_active,
+      sitter_primary_services (
+        price_cents,
+        service_types (slug)
+      ),
       user:users (
         id,
         email
@@ -76,6 +84,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 function SittersPage({ sitters }: { sitters: Sitter[] }) {
   const handleDelete = async (userId: string) => {
+    // ... code truncated ...
     const adminPassword = window.prompt(
       'Please enter your admin password to confirm.'
     );
@@ -96,6 +105,12 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
       }
     }
   };
+
+  const getSitterPrice = (sitter: Sitter) => {
+      const boarding = sitter.sitter_primary_services?.find(s => s.service_types?.slug === 'dog-boarding');
+      return boarding ? boarding.price_cents / 100 : 0;
+  };
+
   return (
     <AdminLayout>
       <div className="p-4 md:p-8">
@@ -141,7 +156,7 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
                       {sitter.address || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {sitter.base_rate_cents / 100}
+                      {getSitterPrice(sitter)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {sitter.is_active ? 'Yes' : 'No'}
@@ -179,7 +194,7 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
                   <div>{sitter.is_active ? 'Active' : 'Inactive'}</div>
                 </div>
                 <div>Address: {sitter.address || 'N/A'}</div>
-                <div>Base Rate: ${sitter.base_rate_cents / 100}</div>
+                <div>Base Rate: ${getSitterPrice(sitter)}</div>
                 <div className="mt-2 space-x-4">
                   <Link
                     href={`/admin/sitters/${sitter.user.id}/edit`}

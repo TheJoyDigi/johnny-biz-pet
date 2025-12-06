@@ -34,7 +34,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 3. Clear existing data
-TRUNCATE TABLE public.users, public.sitters, public.customers, public.pets, public.signed_waivers, public.sitter_addons, public.sitter_discounts, public.booking_requests, public.booking_sitter_recipients, public.booking_pets, public.booking_addons RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.users, public.sitters, public.customers, public.pets, public.signed_waivers, public.sitter_addons, public.sitter_discounts, public.booking_requests, public.booking_sitter_recipients, public.booking_pets, public.booking_addons, public.service_types, public.sitter_primary_services RESTART IDENTITY CASCADE;
 
 -- 4. Seed data
 DO $$
@@ -68,7 +68,15 @@ DECLARE
   booking_request8_id uuid;
   booking_request9_id uuid;
   booking_request10_id uuid;
+  boarding_id uuid;
+  daycare_id uuid;
 BEGIN
+  -- Create Service Types
+  INSERT INTO service_types (name, slug, description)
+  VALUES ('Dog Boarding', 'dog-boarding', 'Overnight stays') RETURNING id INTO boarding_id;
+  INSERT INTO service_types (name, slug, description)
+  VALUES ('Doggy Daycare', 'doggy-daycare', 'Daytime care') RETURNING id INTO daycare_id;
+
   -- Create users and get their IDs
   admin_id := create_user('admin@mailinator.com', 'password', 'ADMIN');
   sitter1_id := create_user('sitter1@mailinator.com', 'password', 'SITTER');
@@ -80,10 +88,16 @@ BEGIN
   UPDATE public.users SET first_name = 'Sitter', last_name = 'Two' WHERE id = sitter2_id;
 
   -- Create sitters
-  INSERT INTO sitters (user_id, address, county, base_rate_cents, signature_url, is_active)
-  VALUES (sitter1_id, '123 Sitter Lane', 'County One', 5000, 'https://www.mailinator.com/signature1.png', true) RETURNING id INTO sitter_profile1_id;
-  INSERT INTO sitters (user_id, address, county, base_rate_cents, signature_url, is_active)
-  VALUES (sitter2_id, '456 Sitter Street', 'County Two', 6000, 'https://www.mailinator.com/signature2.png', true) RETURNING id INTO sitter_profile2_id;
+  INSERT INTO sitters (user_id, address, county, signature_url, is_active)
+  VALUES (sitter1_id, '123 Sitter Lane', 'County One', 'https://www.mailinator.com/signature1.png', true) RETURNING id INTO sitter_profile1_id;
+  INSERT INTO sitters (user_id, address, county, signature_url, is_active)
+  VALUES (sitter2_id, '456 Sitter Street', 'County Two', 'https://www.mailinator.com/signature2.png', true) RETURNING id INTO sitter_profile2_id;
+
+  -- Create Sitter Primary Services
+  INSERT INTO sitter_primary_services (sitter_id, service_type_id, price_cents)
+  VALUES (sitter_profile1_id, boarding_id, 5000);
+  INSERT INTO sitter_primary_services (sitter_id, service_type_id, price_cents)
+  VALUES (sitter_profile2_id, boarding_id, 6000);
 
   -- Create Sitter Add-ons
   INSERT INTO sitter_addons (sitter_id, name, price_cents, description)

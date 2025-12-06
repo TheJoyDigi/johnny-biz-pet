@@ -8,7 +8,6 @@ import AdminLayout from '../../_layout';
 interface Sitter {
   id: string;
   county: string;
-  base_rate_cents: number;
   is_active: boolean;
   user: {
     email: string;
@@ -88,7 +87,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .select(`
       id,
       county,
-      base_rate_cents,
       is_active,
       user:users (
         email
@@ -113,7 +111,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 function SitterRatesPage({ sitter, addons, discounts }: { sitter: Sitter; addons: Addon[]; discounts: Discount[] }) {
-  const [baseRate, setBaseRate] = useState('');
   const [addonName, setAddonName] = useState('');
   const [addonPrice, setAddonPrice] = useState('');
   const [addonDescription, setAddonDescription] = useState('');
@@ -123,32 +120,6 @@ function SitterRatesPage({ sitter, addons, discounts }: { sitter: Sitter; addons
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const supabase = createClient();
-
-  useEffect(() => {
-    if (sitter) {
-      setBaseRate((sitter.base_rate_cents / 100).toString());
-    }
-  }, [sitter]);
-
-  const handleUpdateRate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsSubmitting(true);
-
-    const { error: sitterError } = await supabase
-      .from('sitters')
-      .update({
-        base_rate_cents: parseInt(baseRate) * 100,
-      })
-      .eq('id', sitter.id);
-
-    if (sitterError) {
-      setError(sitterError.message);
-    } else {
-      // Optionally, show a success message
-    }
-    setIsSubmitting(false);
-  };
 
   const handleCreateAddon = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,45 +174,7 @@ function SitterRatesPage({ sitter, addons, discounts }: { sitter: Sitter; addons
       <div className="p-4 md:p-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8">Manage Rates for {sitter.user.email}</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-bold mb-4">Base Rate</h2>
-              <form onSubmit={handleUpdateRate} className="space-y-6">
-                <div>
-                  <label htmlFor="baseRate" className="block text-sm font-medium text-gray-700">
-                    Base Rate (in dollars)
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="number"
-                      name="baseRate"
-                      id="baseRate"
-                      required
-                      value={baseRate}
-                      onChange={(e) => setBaseRate(e.target.value)}
-                      className="block w-full px-4 py-3 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-                    />
-                  </div>
-                </div>
 
-                {error && (
-                  <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
-                    {error}
-                  </div>
-                )}
-
-                <div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex justify-center w-full px-4 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400"
-                  >
-                    {isSubmitting ? 'Updating...' : 'Update Rate'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
           <div className="lg:col-span-2">
             <div className="bg-white p-6 rounded-lg shadow mb-8">
               <h2 className="text-xl font-bold mb-4">Add-ons</h2>
