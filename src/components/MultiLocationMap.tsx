@@ -6,6 +6,8 @@ const containerStyle = {
   height: '100%'
 };
 
+const libraries: ("places")[] = ["places"];
+
 // Define the type for a single location
 interface Location {
   id: string;
@@ -22,7 +24,8 @@ interface MultiLocationMapProps {
 const MultiLocationMap: React.FC<MultiLocationMapProps> = ({ locations }) => {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries
   });
 
   const mapRef = React.useRef<google.maps.Map | null>(null);

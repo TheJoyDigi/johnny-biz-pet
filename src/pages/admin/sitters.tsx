@@ -5,7 +5,7 @@ import AdminLayout from './_layout';
 
 interface Sitter {
   id: string;
-  county: string;
+  address: string;
   base_rate_cents: number;
   is_active: boolean;
   user: {
@@ -60,7 +60,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const { data: sitters } = await supabase.from('sitters').select(`
       id,
-      county,
+      address,
       base_rate_cents,
       is_active,
       user:users (
@@ -118,7 +118,7 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
                     Email
                   </th>
                   <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                    County
+                    Address
                   </th>
                   <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                     Base Rate
@@ -138,7 +138,7 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
                       {sitter.user ? sitter.user.email : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {sitter.county}
+                      {sitter.address || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {sitter.base_rate_cents / 100}
@@ -148,16 +148,10 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-4">
                       <Link
-href={`/admin/sitters/${sitter.user.id}/edit`}
+                        href={`/admin/sitters/${sitter.user.id}/edit`}
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         Edit
-                      </Link>
-                      <Link
-                        href={`/admin/sitters/${sitter.id}/rates`}
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Manage Rates
                       </Link>
                       <button
                         onClick={() => handleDelete(sitter.user.id)}
@@ -184,7 +178,7 @@ href={`/admin/sitters/${sitter.user.id}/edit`}
                   </div>
                   <div>{sitter.is_active ? 'Active' : 'Inactive'}</div>
                 </div>
-                <div>County: {sitter.county}</div>
+                <div>Address: {sitter.address || 'N/A'}</div>
                 <div>Base Rate: ${sitter.base_rate_cents / 100}</div>
                 <div className="mt-2 space-x-4">
                   <Link
@@ -192,12 +186,6 @@ href={`/admin/sitters/${sitter.user.id}/edit`}
                     className="text-indigo-600 hover:text-indigo-900"
                   >
                     Edit
-                  </Link>
-                  <Link
-                    href={`/admin/sitters/${sitter.id}/rates`}
-                    className="text-indigo-600 hover:text-indigo-900"
-                  >
-                    Manage Rates
                   </Link>
                   <button
                     onClick={() => handleDelete(sitter.user.id)}

@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { 
     userId, 
     firstName, lastName, phone, 
-    slug, tagline, address, county, baseRate,
+    slug, tagline, address, county, lat, lng, baseRate, isActive,
     bio, skills, homeEnvironment, careStyle, parentExpectations,
     addons, discounts 
   } = req.body;
@@ -60,6 +60,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         tagline,
         address,
         county,
+        lat, 
+        lng,
+        is_active: isActive,
         base_rate_cents: Math.round(baseRate * 100),
         bio: bio.map((b: any) => b.text),
         skills: skills.map((s: any) => s.text),

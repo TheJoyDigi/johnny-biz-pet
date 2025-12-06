@@ -41,15 +41,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ message: 'User not created' });
   }
 
-  // 2. Update the public.users table with the name
+  // 2. Create or update the public.users table
   const { error: updateUserError } = await supabaseAdmin
     .from('users')
-    .update({ 
+    .upsert({ 
+      id: user.id,
+      email: email,
       first_name: firstName,
       last_name: lastName,
       role: 'SITTER'
-    })
-    .eq('id', user.id);
+    });
 
   if (updateUserError) {
     await supabaseAdmin.auth.admin.deleteUser(user.id);
