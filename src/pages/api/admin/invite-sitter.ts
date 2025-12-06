@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { email, firstName, lastName } = req.body;
+  const { email, firstName, lastName, sendInvite = true } = req.body;
 
   if (!email || !firstName || !lastName) {
     return res.status(400).json({ message: 'Email, first name, and last name are required.' });
@@ -24,9 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   );
 
   // 1. Create the auth user
+  // Providing a temporary random password to ensure creation works without sending a magic link immediately
+  const tempPassword = Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12);
+  
   const { data: { user }, error: createUserError } = await supabaseAdmin.auth.admin.createUser({
     email,
+    password: tempPassword,
     email_confirm: true,
+    user_metadata: { first_name: firstName, last_name: lastName }
   });
 
   if (createUserError) {
@@ -61,15 +66,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ message: `Failed to create sitter profile: ${sitterError.message}` });
   }
 
-  // 4. Send the password setup email
-  const { error: resetError } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/set-password`,
-  });
+  // 4. Send the password setup email ONLY if requested
+  if (sendInvite) {
+    const { error: resetError } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/set-password`,
+    });
 
-  if (resetError) {
-    await supabaseAdmin.auth.admin.deleteUser(user.id);
-    return res.status(500).json({ message: `Failed to send invite email: ${resetError.message}` });
+    if (resetError) {
+        // Don't delete user here, just report error, as profile is created
+        return res.status(200).json({ message: `Sitter created but failed to send email: ${resetError.message}` });
+    }
   }
 
-  res.status(200).json({ message: 'Sitter invited successfully' });
+  res.status(200).json({ message: sendInvite ? 'Sitter invited successfully' : 'Sitter profile created successfully (no email sent)' });
 }

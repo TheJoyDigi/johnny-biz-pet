@@ -6,6 +6,7 @@ export default function NewSitterPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [sendInvite, setSendInvite] = useState(true);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function NewSitterPage() {
       const response = await fetch('/api/admin/invite-sitter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, firstName, lastName }),
+        body: JSON.stringify({ email, firstName, lastName, sendInvite }),
       });
 
       const data = await response.json();
@@ -79,6 +80,21 @@ export default function NewSitterPage() {
             />
           </div>
 
+          <div className="flex items-center">
+            <input
+              id="sendInvite"
+              name="sendInvite"
+              type="checkbox"
+              checked={sendInvite}
+              onChange={(e) => setSendInvite(e.target.checked)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="sendInvite" className="ml-2 block text-sm text-gray-900">
+              Send invitation email now?
+            </label>
+          </div>
+          {!sendInvite && <p className="text-xs text-gray-500 ml-6">The user will be created but won't receive an email. You can verify them manually.</p>}
+
           {error && (
             <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
               {error}
@@ -91,7 +107,7 @@ export default function NewSitterPage() {
               disabled={isSubmitting}
               className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400"
             >
-              {isSubmitting ? 'Inviting...' : 'Send Invitation'}
+              {isSubmitting ? 'Processing...' : (sendInvite ? 'Send Invitation' : 'Create Profile')}
             </button>
           </div>
         </form>

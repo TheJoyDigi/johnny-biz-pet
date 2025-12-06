@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { User, MapPin, DollarSign, Shield, Image as ImageIcon, Plus, Trash2, Upload } from 'lucide-react';
+import { User, MapPin, DollarSign, Shield, Image as ImageIcon, Plus, Trash2, Upload, Eye } from 'lucide-react';
 
 // Zod Schema
 const sitterSchema = z.object({
@@ -17,6 +17,8 @@ const sitterSchema = z.object({
   bio: z.array(z.object({ text: z.string() })),
   skills: z.array(z.object({ text: z.string() })),
   homeEnvironment: z.array(z.object({ text: z.string() })),
+  careStyle: z.array(z.object({ text: z.string() })),
+  parentExpectations: z.array(z.object({ text: z.string() })),
   addons: z.array(z.object({
     id: z.string().optional(),
     name: z.string().min(1),
@@ -66,6 +68,8 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
         bio: (sp.bio || []).map((t: string) => ({ text: t })),
         skills: (sp.skills || []).map((t: string) => ({ text: t })),
         homeEnvironment: (sp.home_environment || []).map((t: string) => ({ text: t })),
+        careStyle: (sp.care_style || []).map((t: string) => ({ text: t })),
+        parentExpectations: (sp.parent_expectations || []).map((t: string) => ({ text: t })),
         addons: (sp.sitter_addons || []).map((a: any) => ({
             id: a.id,
             name: a.name,
@@ -88,6 +92,8 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
     const bioFields = useFieldArray({ control, name: "bio" });
     const skillsFields = useFieldArray({ control, name: "skills" });
     const homeFields = useFieldArray({ control, name: "homeEnvironment" });
+    const careStyleFields = useFieldArray({ control, name: "careStyle" });
+    const parentExpectationsFields = useFieldArray({ control, name: "parentExpectations" });
     const addonFields = useFieldArray({ control, name: "addons" });
     const discountFields = useFieldArray({ control, name: "discounts" });
 
@@ -155,22 +161,39 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
 
     return (
         <div className="bg-white rounded-lg shadow overflow-hidden">
-            {/* Tabs Header */}
-            <div className="flex border-b border-gray-200 overflow-x-auto">
-                {tabs.map(tab => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center px-6 py-4 text-sm font-medium whitespace-nowrap focus:outline-none ${
-                            activeTab === tab.id
-                                ? 'border-b-2 border-indigo-600 text-indigo-600'
-                                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                        }`}
-                    >
-                        <tab.icon className="w-4 h-4 mr-2" />
-                        {tab.label}
-                    </button>
-                ))}
+            {/* Header with Tabs and Actions */}
+            <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50">
+                <div className="flex overflow-x-auto">
+                    {tabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center px-6 py-4 text-sm font-medium whitespace-nowrap focus:outline-none border-b-2 transition-colors ${
+                                activeTab === tab.id
+                                    ? 'border-indigo-600 text-indigo-600 bg-white'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                            }`}
+                        >
+                            <tab.icon className="w-4 h-4 mr-2" />
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+                
+                {currentSlug && (
+                    <div className="pr-6">
+                        <a 
+                            href={`/sitters/${currentSlug}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
+                            title="View public profile"
+                        >
+                            <Eye className="w-4 h-4 mr-2" />
+                            <span className="hidden sm:inline">Preview</span>
+                        </a>
+                    </div>
+                )}
             </div>
 
             {/* Form Content */}
@@ -280,6 +303,42 @@ export default function SitterForm({ sitter, onSubmit, isSubmitting }: SitterFor
                                 <div key={field.id} className="flex gap-2 mb-2">
                                     <textarea {...register(`bio.${index}.text`)} rows={3} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
                                     <button type="button" onClick={() => bioFields.remove(index)} className="text-red-500 p-2 h-fit mt-2 hover:bg-red-50 rounded">
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Care Style */}
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="block text-sm font-medium text-gray-700">My Care Style</label>
+                                <button type="button" onClick={() => careStyleFields.append({ text: '' })} className="text-sm text-indigo-600 hover:text-indigo-900 flex items-center">
+                                    <Plus className="w-4 h-4 mr-1" /> Add Detail
+                                </button>
+                            </div>
+                            {careStyleFields.fields.map((field, index) => (
+                                <div key={field.id} className="flex gap-2 mb-2">
+                                    <input {...register(`careStyle.${index}.text`)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
+                                    <button type="button" onClick={() => careStyleFields.remove(index)} className="text-red-500 p-2 hover:bg-red-50 rounded">
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Parent Expectations */}
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="block text-sm font-medium text-gray-700">What Pet Parents Can Expect</label>
+                                <button type="button" onClick={() => parentExpectationsFields.append({ text: '' })} className="text-sm text-indigo-600 hover:text-indigo-900 flex items-center">
+                                    <Plus className="w-4 h-4 mr-1" /> Add Detail
+                                </button>
+                            </div>
+                            {parentExpectationsFields.fields.map((field, index) => (
+                                <div key={field.id} className="flex gap-2 mb-2">
+                                    <input {...register(`parentExpectations.${index}.text`)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
+                                    <button type="button" onClick={() => parentExpectationsFields.remove(index)} className="text-red-500 p-2 hover:bg-red-50 rounded">
                                         <Trash2 className="w-4 h-4" />
                                     </button>
                                 </div>

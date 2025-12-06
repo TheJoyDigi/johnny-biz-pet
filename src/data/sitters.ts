@@ -87,6 +87,8 @@ export type Sitter = {
   heroImage: string;
   locations: SitterLocation[];
   bio: string[];
+  careStyle?: string[];
+  parentExpectations?: string[];
   skills?: string[];
   homeEnvironment: string[];
   badges: SitterBadge[];

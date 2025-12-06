@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     userId, 
     firstName, lastName, phone, 
     slug, tagline, address, county, baseRate,
-    bio, skills, homeEnvironment,
+    bio, skills, homeEnvironment, careStyle, parentExpectations,
     addons, discounts 
   } = req.body;
 
@@ -63,7 +63,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         base_rate_cents: Math.round(baseRate * 100),
         bio: bio.map((b: any) => b.text),
         skills: skills.map((s: any) => s.text),
-        home_environment: homeEnvironment.map((h: any) => h.text)
+        home_environment: homeEnvironment.map((h: any) => h.text),
+        care_style: careStyle.map((c: any) => c.text),
+        parent_expectations: parentExpectations.map((p: any) => p.text)
       })
       .eq('id', sitterId);
 

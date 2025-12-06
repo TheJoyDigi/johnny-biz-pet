@@ -102,6 +102,8 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
         heroImage: dbSitter.hero_image_url,
         locations: [dbSitter.location_details],
         bio: dbSitter.bio,
+        careStyle: dbSitter.care_style || [],
+        parentExpectations: dbSitter.parent_expectations || [],
         skills: dbSitter.skills,
         homeEnvironment: dbSitter.home_environment,
         badges: dbSitter.badges,
