@@ -120,7 +120,7 @@ function VacationAddOnsSection() {
         {/* Scrollable Carousel Container */}
         <div
           ref={scrollContainerRef}
-          className={`flex overflow-x-auto snap-x snap-mandatory pb-12 pt-4 gap-6 scrollbar-hide ${
+          className={`flex overflow-x-auto snap-x snap-mandatory pb-12 pt-12 gap-6 scrollbar-hide ${
             isDragging ? "cursor-grabbing" : "cursor-grab"
           } px-4 md:px-[calc(50%-200px)]`}
           onMouseDown={handleMouseDown}

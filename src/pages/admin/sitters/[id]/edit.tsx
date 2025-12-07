@@ -74,41 +74,75 @@ export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async
   // Fetch Service Types
   const { data: serviceTypes } = await supabase.from('service_types').select('*').order('name');
 
-  // Correctly fetch user and their related sitter profile with all relations
-  const { data: sitter, error } = await supabase
-    .from('users')
-    .select(`
-      id,
-      first_name,
-      last_name,
-      email,
-      phone_number,
-      sitter_profile:sitters!user_id (
+  // Fetch Sitter Data (Try by ID first, then by user_id)
+  const sitterQuery = supabase
+      .from('sitters')
+      .select(`
         *,
+        user:users (
+          id,
+          first_name,
+          last_name,
+          email,
+          phone_number
+        ),
         sitter_addons(*),
         sitter_discounts(*),
         sitter_primary_services(
             price_cents,
             service_types(*)
         )
-      )
-    `)
-    .eq('id', id)
-    .single();
+      `);
 
-  if (error || !sitter) {
-    console.error('Error fetching sitter:', error);
+  // We don't know if 'id' is sitter.id or user.id. 
+  // We'll try to match ID against sitter.id OR sitter.user_id
+  // RLS might prevent this efficiently, but admin access is fine.
+  // Actually, we can fetch all sitters where id=id OR user_id=id.
+  
+  const { data: sitterById, error: errorById } = await sitterQuery.eq('id', id).maybeSingle();
+  
+  let sitterData = sitterById;
+
+  if (!sitterData) {
+      const { data: sitterByUserId, error: errorByUserId } = await supabase
+        .from('sitters')
+        .select(`
+            *,
+            user:users (
+            id,
+            first_name,
+            last_name,
+            email,
+            phone_number
+            ),
+            sitter_addons(*),
+            sitter_discounts(*),
+            sitter_primary_services(
+                price_cents,
+                service_types(*)
+            )
+        `)
+        .eq('user_id', id)
+        .maybeSingle();
+      
+      if (sitterByUserId) {
+          sitterData = sitterByUserId;
+      }
+  }
+
+  if (!sitterData) {
     return { notFound: true };
   }
 
-  // Safely handle the sitter_profile which can be an array
-  const sitterProfile = Array.isArray(sitter.sitter_profile) && sitter.sitter_profile.length > 0
-    ? sitter.sitter_profile[0]
-    : sitter.sitter_profile;
-
+  // Construct the object structure expected by SitterForm
+  // SitterForm expects a 'user-like' object with a nested 'sitter_profile'
   const finalSitter: SitterProfile = {
-    ...sitter,
-    sitter_profile: Array.isArray(sitterProfile) ? sitterProfile[0] : sitterProfile,
+    id: sitterData.user?.id || null, // Put User ID here if exists
+    first_name: sitterData.user?.first_name || sitterData.first_name,
+    last_name: sitterData.user?.last_name || sitterData.last_name,
+    email: sitterData.user?.email || sitterData.contact_email || '',
+    phone_number: sitterData.user?.phone_number || null,
+    sitter_profile: sitterData
   };
 
   return { props: { sitter: finalSitter, serviceTypes: serviceTypes || [] } };
@@ -126,10 +160,16 @@ export default function EditSitterPage({ sitter, serviceTypes }: EditSitterPageP
     setIsSubmitting(true);
 
     try {
+        const payload = {
+            ...formData,
+            userId: sitter.id, 
+            sitterId: sitter.sitter_profile?.id
+        };
+
         const response = await fetch('/api/admin/update-sitter', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: sitter.id, ...formData }),
+            body: JSON.stringify(payload),
         });
 
         const data = await response.json();

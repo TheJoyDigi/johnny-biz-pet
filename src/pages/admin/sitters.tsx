@@ -1,12 +1,16 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
+import { useState } from 'react';
 import AdminLayout from './_layout';
 
 interface Sitter {
   id: string;
   address: string;
   is_active: boolean;
+  first_name: string | null;
+  last_name: string | null;
+  contact_email: string | null;
   sitter_primary_services: {
     price_cents: number;
     service_types: {
@@ -16,7 +20,7 @@ interface Sitter {
   user: {
     id: string;
     email: string;
-  };
+  } | null;
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -67,6 +71,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       id,
       address,
       is_active,
+      first_name,
+      last_name,
+      contact_email,
       sitter_primary_services (
         price_cents,
         service_types (slug)
@@ -83,18 +90,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 function SittersPage({ sitters }: { sitters: Sitter[] }) {
-  const handleDelete = async (userId: string) => {
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [invitingSitterId, setInvitingSitterId] = useState<string | null>(null);
+  
+  const handleDelete = async (sitter: Sitter) => {
     // ... code truncated ...
     const adminPassword = window.prompt(
       'Please enter your admin password to confirm.'
     );
     if (adminPassword) {
+      const payload: any = { adminPassword };
+      if (sitter.user?.id) {
+          payload.user_id = sitter.user.id;
+      } else {
+          payload.sitter_id = sitter.id;
+      }
+
       const response = await fetch('/api/admin/delete-sitter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ user_id: userId, adminPassword }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -106,9 +123,42 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
     }
   };
 
+  const handleInvite = async (sitter: Sitter) => {
+      const email = prompt('Enter email to invite:', sitter.contact_email || '');
+      if(!email) return;
+      
+      try {
+          const res = await fetch('/api/admin/invite-existing-sitter', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  sitterId: sitter.id,
+                  email: email,
+                  firstName: sitter.first_name || 'Sitter',
+                  lastName: sitter.last_name || 'User'
+              })
+          });
+          const data = await res.json();
+          if(res.ok) {
+              alert(data.message);
+              window.location.reload();
+          } else {
+              alert('Error: ' + data.message);
+          }
+      } catch(e: any) {
+          alert('Error: ' + e.message);
+      }
+  };
+
   const getSitterPrice = (sitter: Sitter) => {
       const boarding = sitter.sitter_primary_services?.find(s => s.service_types?.slug === 'dog-boarding');
       return boarding ? boarding.price_cents / 100 : 0;
+  };
+
+  const getSitterName = (sitter: Sitter) => {
+      if(sitter.user?.email) return sitter.user.email;
+      if(sitter.first_name || sitter.last_name) return `${sitter.first_name || ''} ${sitter.last_name || ''}`.trim() + ' (No Account)';
+      return sitter.contact_email || 'Unnamed';
   };
 
   return (
@@ -130,7 +180,7 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                    Email
+                    Name / Email
                   </th>
                   <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                     Address
@@ -150,7 +200,7 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
                 {sitters.map((sitter) => (
                   <tr key={sitter.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {sitter.user ? sitter.user.email : 'N/A'}
+                      {getSitterName(sitter)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {sitter.address || 'N/A'}
@@ -162,18 +212,26 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
                       {sitter.is_active ? 'Yes' : 'No'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-4">
-                      <Link
-                        href={`/admin/sitters/${sitter.user.id}/edit`}
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(sitter.user.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
+                        <Link
+                            href={`/admin/sitters/${sitter.user?.id || sitter.id}/edit`}
+                            className="text-indigo-600 hover:text-indigo-900"
+                        >
+                            Edit
+                        </Link>
+                        <button
+                            onClick={() => handleDelete(sitter)}
+                            className="text-red-600 hover:text-red-900"
+                        >
+                            Delete
+                        </button>
+                        {!sitter.user && (
+                            <button
+                                onClick={() => handleInvite(sitter)}
+                                className="text-green-600 hover:text-green-900 font-medium"
+                            >
+                                Invite User
+                            </button>
+                        )}
                     </td>
                   </tr>
                 ))}
@@ -189,25 +247,33 @@ function SittersPage({ sitters }: { sitters: Sitter[] }) {
               >
                 <div className="flex justify-between">
                   <div className="font-bold">
-                    {sitter.user ? sitter.user.email : 'N/A'}
+                    {getSitterName(sitter)}
                   </div>
                   <div>{sitter.is_active ? 'Active' : 'Inactive'}</div>
                 </div>
                 <div>Address: {sitter.address || 'N/A'}</div>
                 <div>Base Rate: ${getSitterPrice(sitter)}</div>
-                <div className="mt-2 space-x-4">
+                <div className="mt-2 flex items-center space-x-4">
                   <Link
-                    href={`/admin/sitters/${sitter.user.id}/edit`}
+                    href={`/admin/sitters/${sitter.user?.id || sitter.id}/edit`}
                     className="text-indigo-600 hover:text-indigo-900"
                   >
                     Edit
                   </Link>
                   <button
-                    onClick={() => handleDelete(sitter.user.id)}
+                    onClick={() => handleDelete(sitter)}
                     className="text-red-600 hover:text-red-900"
                   >
                     Delete
                   </button>
+                  {!sitter.user && (
+                      <button
+                        onClick={() => handleInvite(sitter)}
+                        className="text-green-600 hover:text-green-900 font-medium"
+                      >
+                        Invite User
+                      </button>
+                  )}
                 </div>
               </div>
             ))}

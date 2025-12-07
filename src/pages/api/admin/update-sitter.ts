@@ -13,15 +13,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { 
-    userId, 
-    firstName, lastName, phone, 
+    userId, sitterId,
+    firstName, lastName, phone, email,
     slug, tagline, address, county, lat, lng, isActive,
     bio, skills, homeEnvironment, careStyle, parentExpectations,
-    addons, discounts, services
+    addons, discounts, services, locationDetails
   } = req.body;
 
-  if (!userId) {
-    return res.status(400).json({ message: 'User ID is required.' });
+  if (!userId && !sitterId) {
+    return res.status(400).json({ message: 'User ID or Sitter ID is required.' });
   }
 
   const supabaseAdmin = createClient(
@@ -30,32 +30,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   );
 
   try {
-    // 1. Update the users table
-    const { error: userError } = await supabaseAdmin
-      .from('users')
-      .update({ 
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phone,
-      })
-      .eq('id', userId);
+    let targetSitterId = sitterId;
 
-    if (userError) throw new Error(`User update error: ${userError.message}`);
+    if (userId) {
+        // 1. Update the users table
+        const { error: userError } = await supabaseAdmin
+          .from('users')
+          .update({ 
+            first_name: firstName,
+            last_name: lastName,
+            phone_number: phone,
+          })
+          .eq('id', userId);
 
-    // Get Sitter ID
-    const { data: sitter, error: getSitterError } = await supabaseAdmin
-        .from('sitters')
-        .select('id')
-        .eq('user_id', userId)
-        .single();
-    
-    if (getSitterError) throw new Error(`Sitter not found: ${getSitterError.message}`);
-    const sitterId = sitter.id;
+        if (userError) throw new Error(`User update error: ${userError.message}`);
+
+        if (!targetSitterId) {
+            // Get Sitter ID if not provided
+            const { data: sitter, error: getSitterError } = await supabaseAdmin
+                .from('sitters')
+                .select('id')
+                .eq('user_id', userId)
+                .single();
+            
+            if (getSitterError) throw new Error(`Sitter not found: ${getSitterError.message}`);
+            targetSitterId = sitter.id;
+        }
+    }
+
+    if (!targetSitterId) throw new Error("Could not resolve Sitter ID");
 
     // 2. Update the sitters table
-    const { error: sitterError } = await supabaseAdmin
-      .from('sitters')
-      .update({ 
+    const sitterUpdate: any = { 
         slug,
         tagline,
         address,
@@ -67,9 +73,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         skills: skills.map((s: any) => s.text),
         home_environment: homeEnvironment.map((h: any) => h.text),
         care_style: careStyle.map((c: any) => c.text),
-        parent_expectations: parentExpectations.map((p: any) => p.text)
-      })
-      .eq('id', sitterId);
+        parent_expectations: parentExpectations.map((p: any) => p.text),
+        location_details: locationDetails // Add this
+    };
+
+    // If no user linked, update profile fields on sitter table
+    if (!userId) {
+        sitterUpdate.first_name = firstName;
+        sitterUpdate.last_name = lastName;
+        sitterUpdate.contact_email = email;
+    }
+
+    const { error: sitterError } = await supabaseAdmin
+      .from('sitters')
+      .update(sitterUpdate)
+      .eq('id', targetSitterId);
 
     if (sitterError) throw new Error(`Sitter update error: ${sitterError.message}`);
 
@@ -78,7 +96,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const servicesToUpsert = services
             .filter((s: any) => s.enabled)
             .map((s: any) => ({
-                sitter_id: sitterId,
+                sitter_id: targetSitterId,
                 service_type_id: s.serviceTypeId,
                 price_cents: Math.round(s.price * 100)
             }));
@@ -98,14 +116,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
              const { error: deleteError } = await supabaseAdmin
                 .from('sitter_primary_services')
                 .delete()
-                .eq('sitter_id', sitterId)
+                .eq('sitter_id', targetSitterId)
                 .in('service_type_id', servicesToDelete);
              if (deleteError) throw new Error(`Services delete error: ${deleteError.message}`);
         }
     }
 
     // 3. Manage Addons
-    const { data: existingAddons } = await supabaseAdmin.from('sitter_addons').select('id').eq('sitter_id', sitterId);
+    const { data: existingAddons } = await supabaseAdmin.from('sitter_addons').select('id').eq('sitter_id', targetSitterId);
     const existingAddonIds = existingAddons?.map(a => a.id) || [];
     const payloadAddonIds = addons.filter((a: any) => a.id).map((a: any) => a.id);
     
@@ -116,7 +134,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const addonsToUpsert = addons.map((a: any) => ({
         id: a.id, // If undefined, Supabase generates new UUID
-        sitter_id: sitterId,
+        sitter_id: targetSitterId,
         name: a.name,
         price_cents: Math.round(a.price * 100),
         description: a.description
@@ -127,7 +145,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // 4. Manage Discounts
-    const { data: existingDiscounts } = await supabaseAdmin.from('sitter_discounts').select('id').eq('sitter_id', sitterId);
+    const { data: existingDiscounts } = await supabaseAdmin.from('sitter_discounts').select('id').eq('sitter_id', targetSitterId);
     const existingDiscountIds = existingDiscounts?.map(d => d.id) || [];
     const payloadDiscountIds = discounts.filter((d: any) => d.id).map((d: any) => d.id);
 
@@ -138,7 +156,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const discountsToUpsert = discounts.map((d: any) => ({
         id: d.id,
-        sitter_id: sitterId,
+        sitter_id: targetSitterId,
         min_days: d.minDays,
         percentage: d.percentage
     }));

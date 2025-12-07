@@ -23,7 +23,8 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
       sitter_discounts (*),
       sitter_reviews (*)
     `)
-    .order('slug', { ascending: true });
+    .order('slug', { ascending: true })
+    .eq('is_active', true);
 
   if (error) {
     console.error("Error fetching sitters from DB:", error);

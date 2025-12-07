@@ -38,6 +38,13 @@ const sitterSchema = z.object({
     minDays: z.number().min(1),
     percentage: z.number().min(0).max(100)
   })),
+  locationDetails: z.object({
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zip: z.string().optional(),
+    country: z.string().optional(),
+    formattedAddress: z.string().optional()
+  }).optional(),
   services: z.array(z.object({
     serviceTypeId: z.string(),
     price: z.number().min(0),
@@ -131,6 +138,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
             minDays: d.min_days,
             percentage: d.percentage
         })),
+        locationDetails: sp.location_details || {},
         services: serviceTypes.map((st: any) => {
             const existing = (sp.sitter_primary_services || []).find((s: any) => s.service_types && s.service_types.id === st.id);
             return {
@@ -176,12 +184,43 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
     const onPlaceChanged = () => {
         if (autocompleteRef.current) {
             const place = autocompleteRef.current.getPlace();
+            
             if (place.formatted_address) {
                 setValue('address', place.formatted_address);
             }
             if (place.geometry && place.geometry.location) {
                 setValue('lat', place.geometry.location.lat());
                 setValue('lng', place.geometry.location.lng());
+            }
+
+            // Extract location details (City, State, Zip)
+            if (place.address_components) {
+                let city = '';
+                let state = '';
+                let zip = '';
+                let country = '';
+
+                place.address_components.forEach(component => {
+                    const types = component.types;
+                    if (types.includes('locality')) {
+                        city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        state = component.short_name;
+                    }
+                    if (types.includes('postal_code')) {
+                        zip = component.long_name;
+                    }
+                    if (types.includes('country')) {
+                        country = component.long_name;
+                    }
+                });
+                
+                // Fallback for City if locality is missing (e.g. some obscure places)
+                // Sublocality or administrative_area_level_2 might be needed?
+                // Keeping it simple for now as requested.
+
+                setValue('locationDetails', { city, state, zip, country, formattedAddress: place.formatted_address });
             }
         }
     };
