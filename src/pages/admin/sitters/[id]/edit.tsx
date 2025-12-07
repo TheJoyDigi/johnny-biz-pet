@@ -21,7 +21,6 @@ interface SitterProfile {
     address: string | null;
     lat: number | null;
     lng: number | null;
-    county: string | null;
     is_active: boolean | null;
     bio: any[] | null;
     skills: any[] | null;

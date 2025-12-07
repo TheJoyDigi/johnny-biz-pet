@@ -7,7 +7,6 @@ import AdminLayout from '../../_layout';
 
 interface Sitter {
   id: string;
-  county: string;
   is_active: boolean;
   user: {
     email: string;
@@ -86,7 +85,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .from('sitters')
     .select(`
       id,
-      county,
       is_active,
       user:users (
         email

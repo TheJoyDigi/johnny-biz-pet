@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { 
     userId, sitterId,
     firstName, lastName, phone, email,
-    slug, tagline, address, county, lat, lng, isActive,
+    slug, tagline, address, lat, lng, isActive,
     bio, skills, homeEnvironment, careStyle, parentExpectations,
     addons, discounts, services, locationDetails
   } = req.body;
@@ -60,12 +60,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!targetSitterId) throw new Error("Could not resolve Sitter ID");
 
-    // 2. Update the sitters table
     const sitterUpdate: any = { 
         slug,
         tagline,
         address,
-        county,
         lat, 
         lng,
         is_active: isActive,
