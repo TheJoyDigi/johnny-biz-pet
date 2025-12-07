@@ -30,6 +30,10 @@ echo "----------------------------------------------------------------"
 npx supabase link --project-ref "$PROD_REF"
 
 # Push Migrations (includes the admin_nuke_data function)
+# Push Migrations (includes the admin_nuke_data function)
+if [ -z "$SUPABASE_DB_PASSWORD" ]; then
+    echo "⚠️  SUPABASE_DB_PASSWORD is not set. You may be prompted for the database password."
+fi
 npx supabase db push
 
 echo "Waiting for schema cache to refresh..."
