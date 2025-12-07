@@ -41,6 +41,11 @@ echo "STEP 2: SEEDING DATA (WIPE & RECREATE)"
 echo "----------------------------------------------------------------"
 echo "Wiping production database and re-creating users/sitters from data/sitters.json..."
 
+# Fetch latest reviews from Dev
+echo "Fetching latest reviews from Dev..."
+node scripts/fetch_reviews.js
+
+echo "Starting Remote Seed..."
 # Run remote seeder with env vars
 PROD_SUPABASE_URL="$PROD_URL" PROD_SUPABASE_SERVICE_KEY="$PROD_KEY" node scripts/seed_prod_remote.js
 

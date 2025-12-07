@@ -189,7 +189,46 @@ async function seed() {
         }
     }
 
-    console.log('Seed Complete!');
+    // 5. Reviews
+    const REVIEWS_FILE = path.join(__dirname, '../data/reviews.json');
+    if (fs.existsSync(REVIEWS_FILE)) {
+        console.log('Seeding Reviews from data/reviews.json...');
+        const reviewsData = JSON.parse(fs.readFileSync(REVIEWS_FILE, 'utf-8'));
+        
+        // Lookup map for sitter slug -> id
+        const { data: sitters } = await supabase.from('sitters').select('id, slug');
+        const sitterMap = {};
+        sitters.forEach(s => sitterMap[s.slug] = s.id);
+
+        const reviewsToInsert = reviewsData.map(r => {
+            const sitterId = sitterMap[r.sitter_slug];
+            if (!sitterId) {
+                console.warn(`Skipping review for unknown sitter slug: ${r.sitter_slug}`);
+                return null;
+            }
+            return {
+                sitter_id: sitterId,
+                client_name: r.client_name,
+                pet_name: r.pet_name,
+                rating: r.rating,
+                date: r.date,
+                text: r.text,
+                image_url: r.image_url,
+                created_at: r.created_at
+            };
+        }).filter(r => r !== null);
+
+        if (reviewsToInsert.length > 0) {
+            const { error: reviewError } = await supabase.from('sitter_reviews').insert(reviewsToInsert);
+            if (reviewError) {
+                console.error('Error inserting reviews:', reviewError.message);
+            } else {
+                console.log(`Inserted ${reviewsToInsert.length} reviews.`);
+            }
+        }
+    } else {
+        console.log('No data/reviews.json found, skipping review seeding.');
+    }
 }
 
 seed().catch(err => {
