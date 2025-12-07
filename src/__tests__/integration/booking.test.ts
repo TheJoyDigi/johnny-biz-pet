@@ -43,10 +43,21 @@ describe('/api/booking Integration Test', () => {
   });
 
   it('should send emails and persist data to Supabase', async () => {
+    // Fetch Johnny's UUID for the test
+    const { data: sitter } = await supabase
+        .from('sitters')
+        .select('id')
+        .eq('slug', 'johnny-irvine')
+        .single();
+    
+    if (!sitter) {
+        throw new Error('Test prerequisite failed: Johnny sitter not found in DB');
+    }
+
     const { req, res } = createMocks({
       method: 'POST',
       body: {
-        sitterId: 'johnny-irvine',
+        sitterId: sitter.id, // Use UUID
         sitterName: 'Johnny',
         locationName: 'Irvine',
         serviceId: 'Dog Boarding',

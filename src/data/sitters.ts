@@ -80,6 +80,7 @@ export type SitterReview = {
 
 export type Sitter = {
   id: string;
+  slug: string;
   uid: string;
   name: string;
   tagline: string;
@@ -101,10 +102,11 @@ export type Sitter = {
   contactEmail?: string;
 };
 
-const parsedSitters = sitterData as Sitter[];
+const parsedSitters = sitterData as any[];
 
 export const sitters: Sitter[] = parsedSitters.map((sitter) => ({
   ...sitter,
+  slug: sitter.id, // Map legacy ID to slug
   reviews: testimonialsBySitter[sitter.uid] ?? sitter.reviews ?? [],
 }));
 

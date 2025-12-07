@@ -98,8 +98,9 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
     }
 
     return {
-        id: dbSitter.slug || dbSitter.id, 
-        uid: dbSitter.id, // Use UUID as UID 
+        id: dbSitter.id, // ID is now UUID
+        slug: dbSitter.slug, // Explicit slug property
+        uid: dbSitter.id, // UID alias for UUID 
         name: dbSitter.users?.first_name || "Sitter", 
         tagline: dbSitter.tagline,
         avatar: dbSitter.avatar_url,

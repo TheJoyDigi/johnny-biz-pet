@@ -91,7 +91,7 @@ export default async function handler(
 
     // --- Database Operations ---
 
-    // 1. Get Sitter UUID from slug (sitterId from frontend)
+    // 1. Get Sitter details from UUID (sitterId from frontend)
     const { data: sitterData, error: sitterError } = await supabase
       .from("sitters")
       .select(`
@@ -101,7 +101,7 @@ export default async function handler(
             service_types ( slug, name )
         )
       `)
-      .eq("slug", sitterId)
+      .eq("id", sitterId)
       .single();
 
     if (sitterError || !sitterData) {

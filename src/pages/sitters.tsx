@@ -57,11 +57,11 @@ function SittersPage({ sitters: initialSitters }: SittersPageProps) {
             // Note: initialSitters uses 'slug' as the 'id' property if it exists.
             // The RPC returns { id, slug, dist_meters ... }.
             
-            // We use (slug || id) as the common key
-            const nearbyKeys = new Set(nearbySitters.map((ns: any) => ns.slug || ns.id));
+            // We use UUID (id) as the common key
+            const nearbyKeys = new Set(nearbySitters.map((ns: any) => ns.id));
             
             // Create a map of key -> distance for sorting
-            const distanceMap = new Map(nearbySitters.map((ns: any) => [ns.slug || ns.id, ns.dist_meters]));
+            const distanceMap = new Map(nearbySitters.map((ns: any) => [ns.id, ns.dist_meters]));
 
             const filtered = initialSitters
                 .filter(s => nearbyKeys.has(s.id))
@@ -213,7 +213,7 @@ function SittersPage({ sitters: initialSitters }: SittersPageProps) {
 
                     <div className="mt-8 flex items-center gap-3">
                       <Link
-                        href={`/sitters/${sitter.id}`}
+                        href={`/sitters/${sitter.slug}`}
                         className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#F28C38] text-white font-semibold hover:bg-[#e07a26] transition-colors"
                       >
                         View Details
@@ -221,7 +221,7 @@ function SittersPage({ sitters: initialSitters }: SittersPageProps) {
                       <Link
                         href={{
                           pathname: "/book",
-                          query: { sitter: sitter.id }, // Changed from uid to id for consistency with fetchSittersFromDb slug
+                          query: { sitter: sitter.id }, // Passing UUID (sitter.id) is correct now
                         }}
                         className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#1A9CB0] text-white font-semibold hover:bg-[#157c8d] transition-colors"
                       >

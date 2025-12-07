@@ -49,18 +49,19 @@ const SitterPage = ({ sitter }: SitterPageProps) => {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const sitters = await fetchSittersFromDb();
-  const paths = sitters.map((sitter) => ({ params: { id: sitter.id } }));
+  // Generate paths based on SLUG (to keep URLs pretty)
+  const paths = sitters.map((sitter) => ({ params: { id: sitter.slug } }));
   return { paths, fallback: "blocking" };
 };
 
 export const getStaticProps: GetStaticProps<SitterPageProps> = async ({ params }) => {
-  const id = params?.id;
-  if (typeof id !== "string") {
+  const slug = params?.id; // The param is still named 'id' from filename [id].tsx, but it holds the slug
+  if (typeof slug !== "string") {
     return { notFound: true };
   }
 
   const sitters = await fetchSittersFromDb();
-  const sitter = sitters.find((s) => s.id === id);
+  const sitter = sitters.find((s) => s.slug === slug);
 
   if (!sitter) {
     return { notFound: true };

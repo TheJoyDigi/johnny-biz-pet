@@ -116,6 +116,7 @@ async function seed() {
                 lat: s.locations?.[0]?.lat,
                 lng: s.locations?.[0]?.lng,
                 location: s.locations?.[0] ? `POINT(${s.locations[0].lng} ${s.locations[0].lat})` : null, // PostGIS
+                location_details: s.locations?.[0] || {},
                 is_active: true
             })
             .select()
