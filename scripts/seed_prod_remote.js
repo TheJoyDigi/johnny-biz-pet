@@ -109,6 +109,8 @@ async function seed() {
                 avatar_url: s.avatar, // Placeholder, will be updated by image migration
                 hero_image_url: s.heroImage,
                 bio: s.bio,
+                care_style: s.careStyle,
+                parent_expectations: s.parentExpectations,
                 skills: s.skills,
                 home_environment: s.homeEnvironment,
                 badges: s.badges,

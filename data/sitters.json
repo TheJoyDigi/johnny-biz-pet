@@ -20,20 +20,22 @@
       "Hi! I’m Johnny, and I offer boutique-style staycations where your pup gets to enjoy luxury, calm, and personalized care in a home that feels like their own little retreat.",
       "I’m all about creating a calm, structured environment where dogs actually feel safe and can relax from the moment they walk in. My home is set up with their comfort in mind—peaceful spaces to chill, cozy spots for naps, a fully fenced patio for outdoor time, and I keep everything clean and tidy throughout their stay.",
       "I’ve been working with dogs for over 15 years, including time as a vet assistant, so I’m comfortable with medication, special needs, and senior pups. I recently left my corporate job to do this full time, which means your dog gets my full attention all day long.",
-      "Whether your pup is shy, super energetic, or somewhere in between, I meet them where they are. I build my day around what your dog needs—not the other way around. That means gentle introductions, consistent routines, calm group play, and lots of love and fun activities.",
-      "My Care Style",
-      "• Gentle, low-stress introductions to help dogs settle in",
-      "• Clear, consistent routines tailored to your pup’s comfort",
-      "• Calm group dynamics with close supervision",
-      "• Reading & supporting dog body language to keep interactions positive",
-      "• A peaceful environment with plenty of affection, enrichment, and relaxation",
-      "What Pet Parents Can Expect",
-      "• A warm, upscale home environment — never chaotic like a kennel",
-      "• Predictable daily rhythms that help dogs relax",
-      "• Thoughtful group play with close oversight",
-      "• Clean, tidy spaces (I deep-clean after every stay)",
-      "• Optional add-ons for enrichment, outings, or vacation-style fun",
-      "• Reliable photo/video updates so you always know how your pup is doing"
+      "Whether your pup is shy, super energetic, or somewhere in between, I meet them where they are. I build my day around what your dog needs—not the other way around. That means gentle introductions, consistent routines, calm group play, and lots of love and fun activities."
+    ],
+    "careStyle": [
+      "Gentle, low-stress introductions to help dogs settle in",
+      "Clear, consistent routines tailored to your pup’s comfort",
+      "Calm group dynamics with close supervision",
+      "Reading & supporting dog body language to keep interactions positive",
+      "A peaceful environment with plenty of affection, enrichment, and relaxation"
+    ],
+    "parentExpectations": [
+      "A warm, upscale home environment — never chaotic like a kennel",
+      "Predictable daily rhythms that help dogs relax",
+      "Thoughtful group play with close oversight",
+      "Clean, tidy spaces (I deep-clean after every stay)",
+      "Optional add-ons for enrichment, outings, or vacation-style fun",
+      "Reliable photo/video updates so you always know how your pup is doing"
     ],
     "skills": [
       "15 years of experience",
@@ -162,26 +164,28 @@
     "bio": [
       "Hi, I’m Trudy — a lifelong dog person with years of hands-on experience caring for pups of all breeds, ages, and personalities.",
       "As a full-time stay-at-home mom, caring for dogs has become one of my greatest joys. Over the years, friends, neighbors, and family naturally began turning to me as their “go-to” sitter because of my calm approach, gentle presence, and the way dogs settle in easily around me. Whether your pup is energetic, anxious, or brand new to being away from home, my goal is always the same: to help them feel safe, relaxed, and completely at ease during their stay.",
-      "My Care Style",
-      "I take a patient, loving, and attentive approach with every dog:",
-      "• Gentle, low-stress introductions that help pups settle in confidently",
-      "• Clear, comforting routines for meals, potty breaks, naps, and play",
-      "• Calm group dynamics—supervised closely and always based on each dog’s comfort",
-      "• Understanding each dog’s cues, personality, and energy level",
-      "• A peaceful home environment where shy, senior, or first-time-away pups feel secure",
-      "• Plenty of affection, enrichment, and relaxation time",
-      "• Whether your pup is outgoing, mellow, or somewhere in between, I adjust the pace so they feel understood and safe",
-      "What Pet Parents Can Expect",
-      "• A warm, family-style home environment—never chaotic like a kennel",
-      "• Predictable daily rhythms that help dogs relax",
-      "• Thoughtful, low-stress dog introductions",
-      "• Clean, comfort-focused spaces with cozy resting spots",
-      "• A secure outdoor area for fresh-air breaks and lounging",
-      "• Attentive supervision and companionship all day long",
-      "• Reliable photo/video updates (1–2 per day) so you always know how your pup is doing",
-      "• Optional add-ons, such as nature walks, cuddles, brushing, and treat outings",
+      "I take a patient, loving, and attentive approach with every dog.",
       "I genuinely treat every dog like they’re part of my own family. Whether your pup loves to trot around the yard or prefers cozy naps and gentle cuddles, I meet them exactly where they are so they feel loved, supported, and right at home.",
       "I can’t wait to welcome your pup into my home and give them the care, comfort, and warmth they deserve. ✨🐾"
+    ],
+    "careStyle": [
+      "Gentle, low-stress introductions that help pups settle in confidently",
+      "Clear, comforting routines for meals, potty breaks, naps, and play",
+      "Calm group dynamics—supervised closely and always based on each dog’s comfort",
+      "Understanding each dog’s cues, personality, and energy level",
+      "A peaceful home environment where shy, senior, or first-time-away pups feel secure",
+      "Plenty of affection, enrichment, and relaxation time",
+      "Whether your pup is outgoing, mellow, or somewhere in between, I adjust the pace so they feel understood and safe"
+    ],
+    "parentExpectations": [
+      "A warm, family-style home environment—never chaotic like a kennel",
+      "Predictable daily rhythms that help dogs relax",
+      "Thoughtful, low-stress dog introductions",
+      "Clean, comfort-focused spaces with cozy resting spots",
+      "A secure outdoor area for fresh-air breaks and lounging",
+      "Attentive supervision and companionship all day long",
+      "Reliable photo/video updates (1–2 per day) so you always know how your pup is doing",
+      "Optional add-ons, such as nature walks, cuddles, brushing, and treat outings"
     ],
     "skills": [
       "40 years of experience",
