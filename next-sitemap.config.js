@@ -3,7 +3,7 @@ module.exports = {
   generateRobotsTxt: true,
   sitemapSize: 5000,
   changefreq: "weekly",
-  exclude: ["/blog/_layout"],
+  exclude: ["/blog/_layout", "/admin/*"],
   robotsTxtOptions: {
     policies: [
       { userAgent: "*", allow: "/" },

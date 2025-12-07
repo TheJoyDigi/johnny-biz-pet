@@ -221,6 +221,16 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                 // Keeping it simple for now as requested.
 
                 setValue('locationDetails', { city, state, zip, country, formattedAddress: place.formatted_address });
+
+                // Auto-generate slug if empty
+                const currentSlug = watch('slug');
+                const firstName = watch('firstName');
+                const lastName = watch('lastName');
+
+                if (!currentSlug && city && firstName) {
+                    const generated = `${firstName}-${lastName || ''}-${city}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                    setValue('slug', generated);
+                }
             }
         }
     };

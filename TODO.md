@@ -1,1 +1,4 @@
-- [] sitter details gallery, remake the gallery to be more intuitive and easy to use, focus on mobile first design and mobile experience of swipe, allow user to swipe left or right to navigate through the gallery, have options for user to see all the images at once, allow user to click on the image to navigate to the specific image, allow user to swipe left or right to navigate through the gallery
+- [ ] we still using /sitters/[sitter-slug] to display the sitter details, please account for pros and cos using sitter uuid instead of slug to display the sitter details, we have to. aking sure it SEO friendly, while avoid duplciate if we have same sitter name with the same city, chooose the best approach
+
+- [ ] revisit site SEO to making sure landing SEO and sitter details SEO are optimized, best to for SEO based on city
+- [ ] site map generator please exlcude admin pages

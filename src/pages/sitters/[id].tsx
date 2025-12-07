@@ -13,11 +13,45 @@ type SitterPageProps = {
 };
 
 const SitterPage = ({ sitter }: SitterPageProps) => {
+  const primaryLocation = sitter.locations[0]?.city 
+    ? `${sitter.locations[0].city}, ${sitter.locations[0].state}` 
+    : "Southern California";
+    
+  const metaTitle = `${sitter.name} | Dog Sitter in ${primaryLocation} | Ruh-Roh Retreat`;
+  const metaDescription = `Book ${sitter.name}, a verified dog sitter in ${primaryLocation}. ${sitter.tagline}. Read reviews, view photos, and request a booking at Ruh-Roh Retreat.`;
+
   return (
     <>
       <Head>
-        <title>{`${sitter.name} | Ruh-Roh Retreat Sitter Profile`}</title>
-        <meta name="description" content={`Meet ${sitter.name}, a Ruh-Roh Retreat sitter serving ${sitter.locations[0]?.city ?? "Southern California"}.`} />
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        {/* Open Graph */}
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={sitter.heroImage} />
+        <meta property="og:type" content="profile" />
+        
+        {/* Structured Data for Sitter */}
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ProfilePage",
+                "mainEntity": {
+                    "@type": "Person",
+                    "name": sitter.name,
+                    "image": sitter.avatar || sitter.heroImage,
+                    "description": sitter.bio[0],
+                    "homeLocation": {
+                        "@type": "Place",
+                        "name": primaryLocation
+                    },
+                    "jobTitle": "Pet Sitter"
+                }
+            }),
+            }}
+        />
       </Head>
       <Header />
       <main className="bg-[#F4F4F9] min-h-screen py-10 sm:py-16">
