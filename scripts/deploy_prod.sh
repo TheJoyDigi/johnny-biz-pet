@@ -36,16 +36,31 @@ echo "Pushing migrations..."
 npx supabase db push --db-url "$DB_URL"
 
 echo ""
+
 echo "Applying seed data..."
 # Use psql to execute the file. 
-# Check if psql is available, if not try supabase db execute if linked? 
-# Usually psql is the most reliable for running a script file remotely if we have the URL.
 if command -v psql &> /dev/null; then
     psql "$DB_URL" -f supabase/seed_prod.sql
 else
     echo "Error: 'psql' command not found. Cannot apply seed data."
     echo "Please install PostgreSQL client tools or run the SQL in 'supabase/seed_prod.sql' manually via the Supabase Dashboard SQL Editor."
     exit 1
+fi
+
+echo ""
+echo "----------------------------------------------------------------"
+echo "MIGRATING SITTER IMAGES TO PRODUCTION STORAGE"
+echo "----------------------------------------------------------------"
+echo "This will check public/sitters/ and upload missing images to your production bucket."
+read -p "Enter Production Project URL (e.g. https://xyz.supabase.co): " PROD_PROJECT_URL
+read -p "Enter Production Service Role Key: " PROD_SERVICE_KEY
+
+if [ -n "$PROD_PROJECT_URL" ] && [ -n "$PROD_SERVICE_KEY" ]; then
+    echo "Starting image migration..."
+    # Run the node script with explicit environment variables
+    PROD_SUPABASE_URL="$PROD_PROJECT_URL" PROD_SUPABASE_SERVICE_KEY="$PROD_SERVICE_KEY" node scripts/migrate_sitter_images.js
+else
+    echo "Skipping image migration (missing URL or Key)."
 fi
 
 echo ""
