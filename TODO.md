@@ -1,1 +1,2 @@
-- [] /sitters should not show inactive sitters
+- [] sitter page, current sytem don't have alot of sitter, we want to provide more simple but effective way to find sitter just based on sitter data to give a list of City, State to choose from, UI/UX much be intuitive and easy to use, we still keep the current locaiton search feature as it is and introduce a new  environment variable to show the more existing search or the new one, default to the new one
+![alt text](image-1.png)

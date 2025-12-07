@@ -13,6 +13,7 @@ import { BADGE_DEFINITIONS, BadgeDefinition } from "@/constants/badges";
 import { fetchSittersFromDb } from "@/lib/sitters-db";
 import { createClient } from "@supabase/supabase-js";
 import SitterSearch from "@/components/sitters/SitterSearch";
+import SimpleSitterFilter from "@/components/sitters/SimpleSitterFilter";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,11 +32,31 @@ function SittersPage({ sitters: initialSitters }: SittersPageProps) {
   const [filteredSitters, setFilteredSitters] = useState<Sitter[]>(initialSitters);
   const [selectedBadge, setSelectedBadge] = useState<BadgeWithDef | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+
+  // Feature flag for Geolocation Search
+  const useGeoSearch = process.env.NEXT_PUBLIC_ENABLE_GEOLOCATION_SEARCH === 'true';
+
+  // Compute unique locations for Simple Filter
+  const availableLocations = Array.from(new Set(
+    initialSitters.flatMap(s => s.locations.map(l => `${l.city}, ${l.state}`))
+  )).filter(Boolean).sort();
 
   // Re-hydrate initial sitters if prop changes (not common in static props but good practice)
   useEffect(() => {
     setFilteredSitters(initialSitters);
   }, [initialSitters]);
+
+  const handleLocationFilter = (loc: string | null) => {
+    setSelectedLocation(loc);
+    if (!loc) {
+        setFilteredSitters(initialSitters);
+    } else {
+        setFilteredSitters(initialSitters.filter(s => 
+            s.locations.some(l => `${l.city}, ${l.state}` === loc)
+        ));
+    }
+  };
 
   const handleSearch = async (lat: number, lng: number) => {
     setIsSearching(true);
@@ -98,7 +119,15 @@ function SittersPage({ sitters: initialSitters }: SittersPageProps) {
             </p>
           </div>
 
-          <SitterSearch onSearch={handleSearch} isLoading={isSearching} />
+          {useGeoSearch ? (
+            <SitterSearch onSearch={handleSearch} isLoading={isSearching} />
+          ) : (
+            <SimpleSitterFilter 
+                locations={availableLocations} 
+                selectedLocation={selectedLocation} 
+                onSelect={handleLocationFilter} 
+            />
+          )}
 
           {filteredSitters.length === 0 ? (
              <div className="text-center py-12">
