@@ -15,17 +15,17 @@ export default async function handler(req: any, res: any) {
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
     const bucket = 'sitter-images';
 
-    const getFolder = (slug: string) => {
-        if (slug === 'johnny-irvine') return 'sr-001';
-        if (slug === 'trudy-wildomar') return 'sr-002';
-        return slug;
+    const getSitterId = async (slug: string) => {
+        const { data, error } = await supabase.from('sitters').select('id').eq('slug', slug).single();
+        if (error || !data) throw new Error(`Sitter not found for slug: ${slug}`);
+        return data.id;
     };
 
     if (req.method === 'GET') {
         const { slug } = req.query;
         if (!slug) return res.status(400).json({ error: 'Slug required' });
 
-        const folder = getFolder(slug as string);
+        const folder = await getSitterId(slug as string);
         const { data, error } = await supabase.storage.from(bucket).list(`${folder}/gallery`);
         
         if (error) return res.status(500).json({ error: error.message });
@@ -54,7 +54,7 @@ export default async function handler(req: any, res: any) {
             
             if (!slug || !file) return res.status(400).json({ error: 'Missing slug or file' });
 
-            const folder = getFolder(slug);
+            const folder = await getSitterId(slug);
             const fileContent = fs.readFileSync(file.filepath);
             
             const { error } = await supabase.storage
@@ -83,7 +83,7 @@ export default async function handler(req: any, res: any) {
 
         if (!slug || !filename) return res.status(400).json({ error: 'Missing slug or filename' });
 
-        const folder = getFolder(slug);
+        const folder = await getSitterId(slug);
         const { error } = await supabase.storage
             .from(bucket)
             .remove([`${folder}/gallery/${filename}`]);

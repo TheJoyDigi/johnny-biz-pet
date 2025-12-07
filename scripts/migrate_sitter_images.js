@@ -96,7 +96,8 @@ async function migrateImages() {
                 if (file.includes('hero')) type = 'hero';
                 
                 const contentType = ext === '.png' ? 'image/png' : 'image/jpeg'; // Simple mime check
-                const storagePath = `${uid}/${type}${ext}`;
+                // USE SITTER ID AS FOLDER NAME
+                const storagePath = `${sitterId}/${type}${ext}`;
                 
                 console.log(`Uploading ${file} to ${storagePath}...`);
                 const publicUrl = await uploadFile(filePath, storagePath, contentType);
@@ -107,7 +108,7 @@ async function migrateImages() {
                     if (type === 'hero') updateData.hero_image_url = publicUrl;
 
                     await supabase.from('sitters').update(updateData).eq('id', sitterId);
-                    console.log(`Updated ${type} URL for ${slug}`);
+                    console.log(`Updated ${type} URL for ${slug} (${sitterId})`);
                 }
             }
         }
@@ -121,7 +122,7 @@ async function migrateImages() {
                 const filePath = path.join(galleryDir, file);
                 const ext = path.extname(file).toLowerCase();
                 const contentType = ext === '.png' ? 'image/png' : 'image/jpeg';
-                const storagePath = `${uid}/gallery/${file}`;
+                const storagePath = `${sitterId}/gallery/${file}`;
 
                 console.log(`Uploading gallery/${file} to ${storagePath}...`);
                 await uploadFile(filePath, storagePath, contentType);

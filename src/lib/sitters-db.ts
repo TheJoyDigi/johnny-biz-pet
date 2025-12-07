@@ -84,26 +84,22 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
         source: r.source
     }));
 
-    // Map legacy UID for reviews and gallery (Temporary logic for migration)
-    let legacyUid = "sr-001";
-    if (dbSitter.slug === "trudy-wildomar") legacyUid = "sr-002";
-    else if (dbSitter.slug === "johnny-irvine") legacyUid = "sr-001";
-
-    // Fetch Gallery Images from Storage
+    // Fetch Gallery Images from Storage using UUID
     let gallery: SitterGalleryPhoto[] = [];
-    const { data: galleryFiles } = await supabase.storage.from('sitter-images').list(`${legacyUid}/gallery`);
+    // Use dbSitter.id for the folder name
+    const { data: galleryFiles } = await supabase.storage.from('sitter-images').list(`${dbSitter.id}/gallery`);
     if (galleryFiles) {
         gallery = galleryFiles
             .filter(f => f.name !== '.DS_Store')
             .map(f => ({
-                src: `${supabaseUrl}/storage/v1/object/public/sitter-images/${legacyUid}/gallery/${f.name}`,
+                src: `${supabaseUrl}/storage/v1/object/public/sitter-images/${dbSitter.id}/gallery/${f.name}`,
                 alt: f.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ")
             }));
     }
 
     return {
         id: dbSitter.slug || dbSitter.id, 
-        uid: legacyUid, 
+        uid: dbSitter.id, // Use UUID as UID 
         name: dbSitter.users?.first_name || "Sitter", 
         tagline: dbSitter.tagline,
         avatar: dbSitter.avatar_url,
