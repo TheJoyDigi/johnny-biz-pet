@@ -9,11 +9,11 @@ echo "It uses the Supabase CLI to push migrations and the API to seed data."
 echo ""
 
 # 1. Credentials
-read -p "Enter Production Project Reference ID (default: qwbudrbxqyztytftzbfv): " PROD_REF
-PROD_REF=${PROD_REF:-qwbudrbxqyztytftzbfv}
+read -p "Enter Production Project Reference ID (default: gqrbrrticbnibvnglwvs): " PROD_REF
+PROD_REF=${PROD_REF:-gqrbrrticbnibvnglwvs}
 
-read -p "Enter Production Project URL (default: https://qwbudrbxqyztytftzbfv.supabase.co): " PROD_URL
-PROD_URL=${PROD_URL:-https://qwbudrbxqyztytftzbfv.supabase.co}
+read -p "Enter Production Project URL (default: https://gqrbrrticbnibvnglwvs.supabase.co): " PROD_URL
+PROD_URL=${PROD_URL:-https://gqrbrrticbnibvnglwvs.supabase.co}
 
 read -p "Enter Production Service Role Key: " PROD_KEY
 
