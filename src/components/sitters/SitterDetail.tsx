@@ -4,10 +4,10 @@ import Link from "next/link";
 import { FaChevronDown, FaStar, FaQuestionCircle } from "react-icons/fa";
 
 import { Sitter, SitterReview } from "@/data/sitters";
-import PhotoGallerySection from "../landing/PhotoGallerySection";
 import { Photo } from "../photo-gallery";
 import { BADGE_DEFINITIONS } from "@/constants/badges";
 import ReviewsDialog from "./ReviewsDialog";
+import SitterGallery from "./SitterGallery";
 
 type SitterDetailProps = {
   sitter: Sitter;
@@ -110,11 +110,9 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
 
         {/* Photo Gallery (Moved here) */}
         {galleryPhotos.length > 0 && (
-            <PhotoGallerySection
+            <SitterGallery
                 photos={galleryPhotos}
                 title={`Inside ${sitter.name}'s Retreat`}
-                description={`A peek at daily life with ${sitter.name}.`}
-                variant="profile"
             />
         )}
 
