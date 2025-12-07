@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { type GetServerSideProps } from 'next';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import AdminLayout from '../../_layout';
+import SitterForm from '@/components/admin/SitterForm';
 
 // Define a more complete Sitter type for the page props
 interface SitterProfile {
@@ -11,14 +12,30 @@ interface SitterProfile {
   last_name: string | null;
   email: string;
   phone_number: string | null;
-  sitter_profile: {
+    sitter_profile: {
+    id: string;
+    slug: string | null;
+    tagline: string | null;
+    avatar_url: string | null;
+    hero_image_url: string | null;
     address: string | null;
-    county: string | null;
+    lat: number | null;
+    lng: number | null;
+    is_active: boolean | null;
+    bio: any[] | null;
+    skills: any[] | null;
+    home_environment: any[] | null;
+    care_style: any[] | null;
+    parent_expectations: any[] | null;
+    sitter_addons: any[];
+    sitter_primary_services: any[];
+    sitter_discounts: any[];
   } | null;
 }
 
 interface EditSitterPageProps {
     sitter: SitterProfile;
+    serviceTypes: any[];
 }
 
 export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async (context) => {
@@ -53,79 +70,116 @@ export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async
     return { notFound: true };
   }
 
-  // Correctly fetch user and their related sitter profile
-  const { data: sitter, error } = await supabase
-    .from('users')
-    .select(`
-      id,
-      first_name,
-      last_name,
-      email,
-      phone_number,
-      sitter_profile:sitters!user_id (
-        address,
-        county
-      )
-    `)
-    .eq('id', id)
-    .single();
+  // Fetch Service Types
+  const { data: serviceTypes } = await supabase.from('service_types').select('*').order('name');
 
-  if (error || !sitter) {
+  // Fetch Sitter Data (Try by ID first, then by user_id)
+  const sitterQuery = supabase
+      .from('sitters')
+      .select(`
+        *,
+        user:users (
+          id,
+          first_name,
+          last_name,
+          email,
+          phone_number
+        ),
+        sitter_addons(*),
+        sitter_discounts(*),
+        sitter_primary_services(
+            price_cents,
+            service_types(*)
+        )
+      `);
+
+  // We don't know if 'id' is sitter.id or user.id. 
+  // We'll try to match ID against sitter.id OR sitter.user_id
+  // RLS might prevent this efficiently, but admin access is fine.
+  // Actually, we can fetch all sitters where id=id OR user_id=id.
+  
+  const { data: sitterById, error: errorById } = await sitterQuery.eq('id', id).maybeSingle();
+  
+  let sitterData = sitterById;
+
+  if (!sitterData) {
+      const { data: sitterByUserId, error: errorByUserId } = await supabase
+        .from('sitters')
+        .select(`
+            *,
+            user:users (
+            id,
+            first_name,
+            last_name,
+            email,
+            phone_number
+            ),
+            sitter_addons(*),
+            sitter_discounts(*),
+            sitter_primary_services(
+                price_cents,
+                service_types(*)
+            )
+        `)
+        .eq('user_id', id)
+        .maybeSingle();
+      
+      if (sitterByUserId) {
+          sitterData = sitterByUserId;
+      }
+  }
+
+  if (!sitterData) {
     return { notFound: true };
   }
 
-  // Safely handle the sitter_profile which can be an array
-  const sitterProfile = Array.isArray(sitter.sitter_profile) && sitter.sitter_profile.length > 0
-    ? sitter.sitter_profile[0]
-    : null;
-
+  // Construct the object structure expected by SitterForm
+  // SitterForm expects a 'user-like' object with a nested 'sitter_profile'
   const finalSitter: SitterProfile = {
-    ...sitter,
-    sitter_profile: sitterProfile,
+    id: sitterData.user?.id || null, // Put User ID here if exists
+    first_name: sitterData.user?.first_name || sitterData.first_name,
+    last_name: sitterData.user?.last_name || sitterData.last_name,
+    email: sitterData.user?.email || sitterData.contact_email || '',
+    phone_number: sitterData.user?.phone_number || null,
+    sitter_profile: sitterData
   };
 
-  return { props: { sitter: finalSitter } };
+  return { props: { sitter: finalSitter, serviceTypes: serviceTypes || [] } };
 };
 
-export default function EditSitterPage({ sitter }: EditSitterPageProps) {
-  const [formData, setFormData] = useState({
-    firstName: sitter.first_name || '',
-    lastName: sitter.last_name || '',
-    phone: sitter.phone_number || '',
-    address: sitter.sitter_profile?.address || '',
-    county: sitter.sitter_profile?.county || '',
-  });
+export default function EditSitterPage({ sitter, serviceTypes }: EditSitterPageProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleUpdateSitter = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: any) => {
     setError('');
     setSuccess('');
     setIsSubmitting(true);
 
     try {
+        const payload = {
+            ...formData,
+            userId: sitter.id, 
+            sitterId: sitter.sitter_profile?.id
+        };
+
         const response = await fetch('/api/admin/update-sitter', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: sitter.id, ...formData }),
+            body: JSON.stringify(payload),
         });
 
         const data = await response.json();
         if (!response.ok) throw new Error(data.message);
 
         setSuccess('Sitter profile updated successfully!');
-        router.replace(router.asPath); // Refreshes server-side props to get fresh data
+        router.replace(router.asPath);
 
     } catch (err: any) {
         setError(err.message);
+        window.scrollTo(0, 0);
     } finally {
         setIsSubmitting(false);
     }
@@ -133,44 +187,27 @@ export default function EditSitterPage({ sitter }: EditSitterPageProps) {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-8">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Edit Sitter</h1>
-        <p className="text-gray-600 mb-6">Editing profile for <span className="font-medium">{sitter.email}</span></p>
-        
-        <div className="max-w-2xl bg-white p-6 md:p-8 rounded-lg shadow">
-          <form onSubmit={handleUpdateSitter} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                      <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
-                      <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3" />
-                  </div>
-                  <div>
-                      <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
-                      <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3" />
-                  </div>
-              </div>
-              <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
-                  <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3" />
-              </div>
-              <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
-                  <input type="text" id="address" name="address" value={formData.address} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3" />
-              </div>
-              <div>
-                  <label htmlFor="county" className="block text-sm font-medium text-gray-700">County</label>
-                  <input type="text" id="county" name="county" value={formData.county} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3" />
-              </div>
-
-            {error && <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">{error}</div>}
-            {success && <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">{success}</div>}
-
-            <div>
-              <button type="submit" disabled={isSubmitting} className="flex justify-center w-full px-4 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400">
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </button>
+      <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
+        <div className="max-w-5xl mx-auto">
+            <div className="mb-6">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Edit Sitter Profile</h1>
+                <p className="text-gray-600">Managing profile for <span className="font-medium">{sitter.email}</span></p>
             </div>
-          </form>
+
+            {error && (
+                <div className="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200 flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                    {error}
+                </div>
+            )}
+            {success && (
+                <div className="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg border border-green-200 flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                    {success}
+                </div>
+            )}
+
+            <SitterForm sitter={sitter} serviceTypes={serviceTypes} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
         </div>
       </div>
     </AdminLayout>

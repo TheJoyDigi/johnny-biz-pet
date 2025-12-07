@@ -1,0 +1,98 @@
+commit 48930f1e0af1e45ea8cee64641627761d5b2da85
+Author: longla-cd <long.la@consumerdirect.com>
+Date:   Thu Dec 4 22:02:13 2025 -0800
+
+    Dev preview (#28)
+    
+    * feat: Refactor BenefitsSection to an accordion UI and integrate new image assets.
+    
+    * feat: implement a horizontal scrollable carousel for vacation add-ons, including new images, drag-to-scroll functionality, and hide scrollbars.
+    
+    * Refine landing page images, update navigation, and add new pages for badges and vacation add-ons
+    
+    * Move booking form to dedicated /book page, move Our Story and Legal Transparency to new pages, and update navigation
+    
+    * Remove duplicated Header and Footer from book, our-story, and legal-transparency pages
+    
+    * Update FloatingCTA button text to 'Submit a Request'
+    
+    * Swap Find Sitter and Submit a Request buttons in FloatingCTA, making Find Sitter primary
+    
+    * Update site navigation to show Find Sitter and Submit a Request buttons instead of Book Now
+    
+    * Remove pt-20 from main tag in book, our-story, and legal-transparency pages to fix extra top spacing
+    
+    * Restore pt-20 to legal-transparency and our-story pages to fix missing top spacing
+    
+    * Empty sitter reviews
+    
+    * Update Johnny's reviews and refine review UI
+    
+    * Add Google Tag Manager script
+
+diff --git a/data/sitters.json b/data/sitters.json
+index ad05a83..544014d 100644
+--- a/data/sitters.json
++++ b/data/sitters.json
+@@ -17,25 +17,23 @@
+       }
+     ],
+     "bio": [
+-      "Hi! I’m Johnny — a lifelong dog person with over 15 years of hands-on experience caring for dogs of all ages, temperaments, and personalities. I specialize in providing a calm, structured, small-group environment that helps pups feel safe and relaxed from the moment they arrive.",
+-      "My home is set up intentionally for comfort: peaceful spaces, cozy resting spots, a fully fenced patio for outdoor breaks, and a clean, well-kept environment that stays tidy throughout your dog’s stay. I host only friendly, house-trained pups so every dog enjoys a smooth, low-stress experience.",
++      "Hi! I’m Johnny, and I offer boutique-style staycations where your pup gets to enjoy luxury, calm, and personalized care in a home that feels like their own little retreat.",
++      "I’m all about creating a calm, structured environment where dogs actually feel safe and can relax from the moment they walk in. My home is set up with their comfort in mind—peaceful spaces to chill, cozy spots for naps, a fully fenced patio for outdoor time, and I keep everything clean and tidy throughout their stay.",
++      "I’ve been working with dogs for over 15 years, including time as a vet assistant, so I’m comfortable with medication, special needs, and senior pups. I recently left my corporate job to do this full time, which means your dog gets my full attention all day long.",
++      "Whether your pup is shy, super energetic, or somewhere in between, I meet them where they are. I build my day around what your dog needs—not the other way around. That means gentle introductions, consistent routines, calm group play, and lots of love and fun activities.",
+       "My Care Style",
+-      "I take a thoughtful, attentive approach with every dog:",
+       "• Gentle, low-stress introductions to help dogs settle in",
+       "• Clear, consistent routines tailored to your pup’s comfort",
+       "• Calm group dynamics with close supervision",
+       "• Reading & supporting dog body language to keep interactions positive",
+       "• A peaceful environment with plenty of affection, enrichment, and relaxation",
+-      "Whether your pup is shy, energetic, or somewhere in between, I adjust the pace so they feel understood and safe.",
+       "What Pet Parents Can Expect",
+       "• A warm, upscale home environment — never chaotic like a kennel",
+       "• Predictable daily rhythms that help dogs relax",
+       "• Thoughtful group play with close oversight",
+       "• Clean, tidy spaces (I deep-clean after every stay)",
+       "• Optional add-ons for enrichment, outings, or vacation-style fun",
+-      "• Reliable photo/video updates so you always know how your pup is doing",
+-      "Your dog becomes part of my family during their stay — cared for with patience, presence, and the same attention I give my own pets.",
+-      "I’m here to give your pup a retreat of their own — calm, structured, and filled with genuine care. I can’t wait to welcome them into my home. 🐾✨"
++      "• Reliable photo/video updates so you always know how your pup is doing"
+     ],
+     "skills": [
+       "15 years of experience",
+@@ -86,12 +84,12 @@
+           "category": "Enrichment Activities",
+           "items": [
+             { "name": "Sniffari Walk", "description": "structured scent, exploration walk", "price": "$15" },
++            { "name": "PAW-casso Painting", "description": "dog-safe art", "price": "$20" },
+             { "name": "Bubble Play Session", "description": "dog-safe bubbles — super easy & fun", "price": "$10" },
+             { "name": "Extended Walk", "description": "20 min longer neighborhood walk", "price": "$15" },
+             { "name": "Jogging Session", "description": "light jog for active dogs", "price": "$15" },
+             { "name": "Dog Park Trip", "description": "supervised dog park visit", "price": "$15" },
+             { "name": "Puzzle Feeder / Frozen Kong", "description": "custom stuffed frozen kong, puzzle feeder", "price": "$5" },
+-            { "name": "PAW-cassio Painting", "description": "dog-safe art", "price": "$20" },
+             { "name": "Puppuccino & Treat Outing", "price": "$15" },
+             { "name": "One-On-One Fetch", "price": "$10" }
+           ]
+@@ -101,7 +99,6 @@
+           "items": [
+             { "name": "Bath & Blow Dry", "price": "$40" },
+             { "name": "Massage & Brushing", "price": "$15" },
+-            { "name": "Calming Aromatherapy", "price": "$10" },
+             { "name": "Warm Towel Cuddle", "price": "$5" },
+             { "name": "Teeth Brushing", "price": "$5" },
+             { "name": "Ear Cleaning", "description": "gentle ear wipe/clean", "price": "$5" },
+@@ -131,7 +128,7 @@
+     "discounts": {
+       "lengthOfStay": [
+         { "label": "1–6 nights", "detail": "Full price" },
+-        { "label": "7–13 nights", "detail": "5% off" },
++        { "label": "7–13 nights", "detail": "8% off" },
+         { "label": "14+ nights", "detail": "10% off" },
+         { "label": "30+ nights", "detail": "15% off" }
+       ],

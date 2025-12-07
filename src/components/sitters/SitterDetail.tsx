@@ -4,10 +4,10 @@ import Link from "next/link";
 import { FaChevronDown, FaStar, FaQuestionCircle } from "react-icons/fa";
 
 import { Sitter, SitterReview } from "@/data/sitters";
-import PhotoGallerySection from "../landing/PhotoGallerySection";
 import { Photo } from "../photo-gallery";
 import { BADGE_DEFINITIONS } from "@/constants/badges";
 import ReviewsDialog from "./ReviewsDialog";
+import SitterGallery from "./SitterGallery";
 
 type SitterDetailProps = {
   sitter: Sitter;
@@ -56,27 +56,6 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
     </div>
   );
 
-  // Parse Bio for Sections
-  const bioIntro = [];
-  const bioCareStyle = [];
-  const bioExpect = [];
-  let currentSection = "intro";
-
-  for (const line of sitter.bio) {
-    if (line === "My Care Style") {
-      currentSection = "careStyle";
-      continue;
-    }
-    if (line === "What Pet Parents Can Expect") {
-      currentSection = "expect";
-      continue;
-    }
-
-    if (currentSection === "intro") bioIntro.push(line);
-    else if (currentSection === "careStyle") bioCareStyle.push(line);
-    else if (currentSection === "expect") bioExpect.push(line);
-  }
-
   return (
     <section className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden max-w-5xl mx-auto">
       {/* Hero Image */}
@@ -124,18 +103,16 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
 
         {/* Bio Intro */}
         <div className="space-y-4">
-            {bioIntro.map((paragraph, index) => (
+            {sitter.bio.map((paragraph, index) => (
                 <p key={index} className="text-gray-700 leading-relaxed">{paragraph}</p>
             ))}
         </div>
 
         {/* Photo Gallery (Moved here) */}
         {galleryPhotos.length > 0 && (
-            <PhotoGallerySection
+            <SitterGallery
                 photos={galleryPhotos}
                 title={`Inside ${sitter.name}'s Retreat`}
-                description={`A peek at daily life with ${sitter.name}.`}
-                variant="profile"
             />
         )}
 
@@ -226,19 +203,19 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
 
         {/* Accordion Sections */}
         <div className="space-y-4">
-            {bioCareStyle.length > 0 && (
+            {sitter.careStyle && sitter.careStyle.length > 0 && (
                 <AccordionItem title="My Care Style" id="careStyle">
-                    <div className="space-y-2">
-                        {bioCareStyle.map((p, i) => <p key={i} className="text-gray-700 leading-relaxed">{p}</p>)}
-                    </div>
+                    <ul className="list-disc list-inside space-y-2 text-gray-700">
+                        {sitter.careStyle.map((item, i) => <li key={i}>{item}</li>)}
+                    </ul>
                 </AccordionItem>
             )}
 
-            {bioExpect.length > 0 && (
+            {sitter.parentExpectations && sitter.parentExpectations.length > 0 && (
                 <AccordionItem title="What Pet Parents Can Expect" id="expect">
-                    <div className="space-y-2">
-                        {bioExpect.map((p, i) => <p key={i} className="text-gray-700 leading-relaxed">{p}</p>)}
-                    </div>
+                    <ul className="list-disc list-inside space-y-2 text-gray-700">
+                        {sitter.parentExpectations.map((item, i) => <li key={i}>{item}</li>)}
+                    </ul>
                 </AccordionItem>
             )}
 

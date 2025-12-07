@@ -97,6 +97,35 @@ function BookingDetailsPage({
   const [isEditing, setIsEditing] = useState(false);
   const [editedBooking, setEditedBooking] =
     useState<Partial<BookingRequest>>(initialBooking);
+  const [paymentLink, setPaymentLink] = useState("");
+
+  const handleGeneratePaymentLink = async () => {
+    setError("");
+    setIsSubmitting(true);
+    setPaymentLink("");
+
+    try {
+      const response = await fetch("/api/bookings/create-payment-link", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ bookingId: bookingRequest.id }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Failed to generate payment link");
+      }
+
+      const data = await response.json();
+      setPaymentLink(data.url);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const calculateNights = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
@@ -225,6 +254,29 @@ function BookingDetailsPage({
             </div>
             <div className="bg-white rounded-lg shadow p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-700 mb-4 border-b pb-2">
+                Financials
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                 <div>
+                    <span className="block text-gray-500 text-sm">Total Cost</span>
+                    <span className="text-lg font-bold">${(bookingRequest.total_cost_cents || 0) / 100}</span>
+                 </div>
+                 <div>
+                    <span className="block text-gray-500 text-sm">Platform Fee</span>
+                    <span className="text-lg font-bold text-blue-600">${(bookingRequest.platform_fee_cents || 0) / 100}</span>
+                 </div>
+                 <div>
+                    <span className="block text-gray-500 text-sm">Sitter Payout</span>
+                    <span className="text-lg font-bold text-green-600">${(bookingRequest.sitter_payout_cents || 0) / 100}</span>
+                 </div>
+                  <div>
+                    <span className="block text-gray-500 text-sm">Add-ons Total</span>
+                    <span className="text-lg font-semibold">${(bookingRequest.addons_total_cost_cents || 0) / 100}</span>
+                 </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6 mb-6">
+              <h2 className="text-xl font-bold text-gray-700 mb-4 border-b pb-2">
                 Customer
               </h2>
               <p>
@@ -348,6 +400,13 @@ function BookingDetailsPage({
                   Mark as Paid
                 </button>
                 <button
+                  onClick={handleGeneratePaymentLink}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-gray-400"
+                >
+                  Generate Payment Link
+                </button>
+                <button
                   onClick={handleCancelBooking}
                   disabled={
                     isSubmitting ||
@@ -358,6 +417,14 @@ function BookingDetailsPage({
                   Cancel Booking
                 </button>
               </div>
+              {paymentLink && (
+                <div className="mt-4 p-4 text-sm bg-green-50 rounded-lg break-all">
+                  <p className="font-bold text-green-800 mb-1">Payment Link Generated:</p>
+                  <a href={paymentLink} target="_blank" rel="noopener noreferrer" className="text-green-700 underline">
+                    {paymentLink}
+                  </a>
+                </div>
+              )}
               {error && (
                 <div className="mt-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
                   {error}
@@ -467,6 +534,38 @@ function BookingDetailsPage({
                           setEditedBooking({
                             ...editedBooking,
                             total_cost_cents: parseInt(e.target.value),
+                          })
+                        }
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Platform Fee (Cents)
+                      </label>
+                      <input
+                        type="number"
+                        value={editedBooking.platform_fee_cents || ""}
+                        onChange={(e) =>
+                          setEditedBooking({
+                            ...editedBooking,
+                            platform_fee_cents: parseInt(e.target.value),
+                          })
+                        }
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                     <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Sitter Payout (Cents)
+                      </label>
+                      <input
+                        type="number"
+                        value={editedBooking.sitter_payout_cents || ""}
+                        onChange={(e) =>
+                          setEditedBooking({
+                            ...editedBooking,
+                            sitter_payout_cents: parseInt(e.target.value),
                           })
                         }
                         className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

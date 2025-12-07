@@ -18,7 +18,12 @@ describe('PaymentBreakdown', () => {
         first_name: 'Sitter',
         last_name: 'One',
     },
-    base_rate_cents: 5000,
+    sitter_primary_services: [
+        {
+            service_types: { slug: 'dog-boarding' },
+            price_cents: 5000
+        }
+    ],
     sitter_addons: [
       { id: 'addon-1', name: 'Walk', price_cents: 1000 },
     ],
@@ -45,7 +50,8 @@ describe('PaymentBreakdown', () => {
     render(<PaymentBreakdown booking={mockBooking} sitter={mockSitter} nights={2} />);
 
     expect(bookingUtils.calculateBookingCost).toHaveBeenCalledWith(mockBooking, mockSitter);
-    expect(screen.getByText('$100')).toBeInTheDocument(); // Base Rate
+    // baseRate is 10000 ($100), nights is 2 -> 2 nights * $100 = $200
+    expect(screen.getByText('2 nights × $100 = $200')).toBeInTheDocument(); 
     expect(screen.getByText('$10')).toBeInTheDocument(); // Add-ons
     expect(screen.getByText('-$1')).toBeInTheDocument(); // Discount
     expect(screen.getByText('$109')).toBeInTheDocument(); // Total
@@ -68,7 +74,8 @@ describe('PaymentBreakdown', () => {
 
     render(<PaymentBreakdown booking={mockBooking} nights={2} />);
 
-    expect(screen.getByText('$120')).toBeInTheDocument(); // Base Rate
+    // base_rate_at_booking_cents 12000 ($120) * 2 nights = $240
+    expect(screen.getByText('2 nights × $120 = $240')).toBeInTheDocument();
     expect(screen.getByText(/Add-on: Walk/)).toBeInTheDocument();
     expect(screen.getByText('$15')).toBeInTheDocument(); // Add-ons
     expect(screen.getByText('-$2')).toBeInTheDocument(); // Discount

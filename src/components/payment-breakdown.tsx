@@ -44,7 +44,11 @@ export default function PaymentBreakdown({ booking, sitter, nights }: PaymentBre
       <div className="space-y-3">
         <InfoRow
           label="Base Rate"
-          value={`$${cost.baseRate ? cost.baseRate / 100 : 'N/A'}`}
+          value={
+            cost.baseRate
+              ? `${nights} nights × $${cost.baseRate / 100} = $${(cost.baseRate * nights) / 100}`
+              : 'N/A'
+          }
         />
         {booking.booking_addons?.map((addon) => {
           let price;

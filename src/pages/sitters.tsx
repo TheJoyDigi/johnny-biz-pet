@@ -2,20 +2,104 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { FaStar, FaTimes, FaQuestionCircle } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Merged
 import { motion, AnimatePresence } from "framer-motion";
+import { GetStaticProps } from "next";
 
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { sitters, SitterBadge, SitterReview } from "@/data/sitters";
+import { Sitter, SitterBadge } from "@/data/sitters";
 import { BADGE_DEFINITIONS, BadgeDefinition } from "@/constants/badges";
+import { fetchSittersFromDb } from "@/lib/sitters-db";
+import { createClient } from "@supabase/supabase-js";
+import SitterSearch from "@/components/sitters/SitterSearch";
+import SimpleSitterFilter from "@/components/sitters/SimpleSitterFilter";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 const TOTAL_BADGES = Object.keys(BADGE_DEFINITIONS).length;
 
 type BadgeWithDef = SitterBadge & { definition: BadgeDefinition | undefined };
 
-function SittersPage() {
+interface SittersPageProps {
+  sitters: Sitter[];
+}
+
+function SittersPage({ sitters: initialSitters }: SittersPageProps) {
+  const [filteredSitters, setFilteredSitters] = useState<Sitter[]>(initialSitters);
   const [selectedBadge, setSelectedBadge] = useState<BadgeWithDef | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+
+  // Feature flag for Geolocation Search
+  const useGeoSearch = process.env.NEXT_PUBLIC_ENABLE_GEOLOCATION_SEARCH === 'true';
+
+  // Compute unique locations for Simple Filter
+  const availableLocations = Array.from(new Set(
+    initialSitters.flatMap(s => s.locations.map(l => `${l.city}, ${l.state}`))
+  )).filter(Boolean).sort();
+
+  // Re-hydrate initial sitters if prop changes (not common in static props but good practice)
+  useEffect(() => {
+    setFilteredSitters(initialSitters);
+  }, [initialSitters]);
+
+  const handleLocationFilter = (loc: string | null) => {
+    setSelectedLocation(loc);
+    if (!loc) {
+        setFilteredSitters(initialSitters);
+    } else {
+        setFilteredSitters(initialSitters.filter(s => 
+            s.locations.some(l => `${l.city}, ${l.state}` === loc)
+        ));
+    }
+  };
+
+  const handleSearch = async (lat: number, lng: number) => {
+    setIsSearching(true);
+    try {
+        const { data: nearbySitters, error } = await supabase.rpc('search_sitters_nearby', {
+            user_lat: lat,
+            user_lng: lng,
+            radius_meters: 50000 // 50km
+        });
+
+        if (error) {
+            console.error("Search error:", error);
+            // Fallback? or Alert?
+            return;
+        }
+
+        if (nearbySitters) {
+            // Filter the initialSitters list to only include those returned by search.
+            // Note: initialSitters uses 'slug' as the 'id' property if it exists.
+            // The RPC returns { id, slug, dist_meters ... }.
+            
+            // We use UUID (id) as the common key
+            const nearbyKeys = new Set(nearbySitters.map((ns: any) => ns.id));
+            
+            // Create a map of key -> distance for sorting
+            const distanceMap = new Map(nearbySitters.map((ns: any) => [ns.id, ns.dist_meters]));
+
+            const filtered = initialSitters
+                .filter(s => nearbyKeys.has(s.id))
+                .sort((a, b) => {
+                    const distA = Number(distanceMap.get(a.id)) || 0;
+                    const distB = Number(distanceMap.get(b.id)) || 0;
+                    return distA - distB;
+                });
+
+            setFilteredSitters(filtered);
+        }
+    } catch (e) {
+        console.error("Search exception:", e);
+    } finally {
+        setIsSearching(false);
+    }
+  };
 
   return (
     <>
@@ -26,7 +110,7 @@ function SittersPage() {
       <Header />
       <main className="bg-[#F4F4F9] min-h-screen py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-12">
             <p className="uppercase tracking-widest text-sm font-semibold text-[#1A9CB0]">Meet Available Sitters</p>
             <h1 className="text-4xl md:text-5xl font-bold text-[#333333] mt-4">Curated hosts for boutique dog vacations</h1>
             <p className="text-lg text-gray-600 mt-4">
@@ -35,8 +119,29 @@ function SittersPage() {
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2">
-            {sitters.map((sitter) => {
+          {useGeoSearch ? (
+            <SitterSearch onSearch={handleSearch} isLoading={isSearching} />
+          ) : (
+            <SimpleSitterFilter 
+                locations={availableLocations} 
+                selectedLocation={selectedLocation} 
+                onSelect={handleLocationFilter} 
+            />
+          )}
+
+          {filteredSitters.length === 0 ? (
+             <div className="text-center py-12">
+                <p className="text-xl text-gray-500">No sitters found in this area yet.</p>
+                <button 
+                    onClick={() => setFilteredSitters(initialSitters)}
+                    className="mt-4 text-[#1A9CB0] underline hover:text-[#157c8d]"
+                >
+                    View all sitters
+                </button>
+             </div>
+          ) : (
+             <div className="grid gap-8 md:grid-cols-2">
+            {filteredSitters.map((sitter) => {
               const reviews = sitter.reviews ?? [];
               const totalStars = reviews.reduce((sum, review) => sum + review.rating, 0);
               const reviewsCount = reviews.length;
@@ -137,7 +242,7 @@ function SittersPage() {
 
                     <div className="mt-8 flex items-center gap-3">
                       <Link
-                        href={`/sitters/${sitter.id}`}
+                        href={`/sitters/${sitter.slug}`}
                         className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#F28C38] text-white font-semibold hover:bg-[#e07a26] transition-colors"
                       >
                         View Details
@@ -145,7 +250,7 @@ function SittersPage() {
                       <Link
                         href={{
                           pathname: "/book",
-                          query: { sitter: sitter.uid },
+                          query: { sitter: sitter.id }, // Passing UUID (sitter.id) is correct now
                         }}
                         className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#1A9CB0] text-white font-semibold hover:bg-[#157c8d] transition-colors"
                       >
@@ -157,6 +262,7 @@ function SittersPage() {
               );
             })}
           </div>
+          )}
         </div>
       </main>
 
@@ -220,5 +326,15 @@ function SittersPage() {
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps<SittersPageProps> = async () => {
+  const sitters = await fetchSittersFromDb();
+  return {
+    props: {
+      sitters,
+    },
+    revalidate: 60, // Revalidate every 1 minute
+  };
+};
 
 export default SittersPage;

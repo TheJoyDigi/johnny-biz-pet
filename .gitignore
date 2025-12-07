@@ -44,3 +44,4 @@ supabase/.temp
 
 # Generated sitemap
 /public/sitemap-*.xml
+public/sitters

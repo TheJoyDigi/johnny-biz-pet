@@ -38,7 +38,12 @@ export type Sitter = {
         first_name: string;
         last_name: string;
     };
-    base_rate_cents: number;
+    sitter_primary_services?: {
+        service_types: {
+            slug: string;
+        };
+        price_cents: number;
+    }[];
     sitter_addons: {
         id: string;
         name: string;
@@ -84,6 +89,8 @@ export type BookingRequest = {
   base_rate_at_booking_cents: number | null;
   discount_applied_cents: number | null;
   addons_total_cost_cents: number | null;
+  platform_fee_cents: number | null;
+  sitter_payout_cents: number | null;
   payment_status: 'UNPAID' | 'PAID' | 'REFUNDED';
   amount_paid_cents: number;
   payment_method: string | null;

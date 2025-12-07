@@ -1,0 +1,9 @@
+ALTER TABLE public.sitters
+DROP COLUMN IF EXISTS county;
+
+ALTER TABLE public.sitters
+ADD COLUMN IF NOT EXISTS lat FLOAT,
+ADD COLUMN IF NOT EXISTS lng FLOAT;
+
+ALTER TABLE public.sitters
+ALTER COLUMN is_active SET DEFAULT false;
