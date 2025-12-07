@@ -7,7 +7,7 @@ export function calculateBookingCost(booking: BookingRequest, sitter: Sitter) {
   const boardingService = sitter.sitter_primary_services?.find(s => s.service_types.slug === 'dog-boarding');
   const baseRateCents = boardingService ? boardingService.price_cents : 0;
   
-  const baseRate = baseRateCents * nights;
+  const totalBaseCost = baseRateCents * nights;
 
   const addOnsCost = booking.booking_addons?.reduce((total, addon) => {
     const sitterAddon = sitter.sitter_addons?.find(sa => sa.id === addon.sitter_addons.id);
@@ -22,12 +22,12 @@ export function calculateBookingCost(booking: BookingRequest, sitter: Sitter) {
   }, null);
 
   const discountPercentage = applicableDiscount ? applicableDiscount.percentage : 0;
-  const discount = (baseRate * discountPercentage) / 100;
+  const discount = (totalBaseCost * discountPercentage) / 100;
 
-  const totalCost = baseRate + addOnsCost - discount;
+  const totalCost = totalBaseCost + addOnsCost - discount;
 
   return {
-    baseRate,
+    baseRate: baseRateCents,
     addOnsCost,
     discount,
     totalCost,

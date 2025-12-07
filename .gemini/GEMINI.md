@@ -15,6 +15,16 @@ Ruh Roh Retreat is a Next.js application for a boutique dog care service. The pr
 -   **File Storage:** Supabase Storage
 -   **SMS Notifications:** Twilio
 
+## Application Lifecycle & Deployment
+
+-   **Production Deployment:**
+    -   **Script:** `scripts/deploy_prod.sh`
+    -   **Function:** Automates migration application and database seeding. **WARNING:** This script truncates existing data and re-seeds from `supabase/seed_prod.sql`. Use with caution on production.
+    -   **Seed Generation:** `scripts/generate_prod_seed.ts` generates `supabase/seed_prod.sql` from `data/sitters.json`.
+-   **Schema Updates:**
+    -   Use `npx supabase db push` to apply schema changes without losing data.
+    -   Ensure your local `.env.local` keys match the target project (Production or Dev) when testing or running the app.
+
 ## Project Management & Planning
 
 -   **Phase 2 Requirements:** The detailed functional and technical requirements for the current project phase (Phase 2) are documented in `phase2.md`.
@@ -78,3 +88,7 @@ The following custom commands are available for this project:
 1.  **Create a Migration Script:** Create a new SQL file in the `supabase/migrations` directory. The filename must follow the `YYYYMMDDHHMMSS_description.sql` format.
 2.  **Push the Migration:** Run `npx supabase db push` to apply the migration to the remote database.
 3.  **Avoid Direct Application:** Do **not** apply SQL changes directly, as this will cause the migration history to become out of sync.
+
+### Recent Schema Changes
+-   **Geolocation:** `sitters` table now includes `lat`, `lng`, and `location` (PostGIS GEOGRAPHY) columns. `county` column has been removed.
+-   **Services:** `base_rate_cents` has been removed. Services are now normalized in `sitter_primary_services` and `service_types` tables.

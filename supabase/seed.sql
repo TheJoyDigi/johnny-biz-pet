@@ -88,10 +88,10 @@ BEGIN
   UPDATE public.users SET first_name = 'Sitter', last_name = 'Two' WHERE id = sitter2_id;
 
   -- Create sitters
-  INSERT INTO sitters (user_id, address, county, signature_url, is_active)
-  VALUES (sitter1_id, '123 Sitter Lane', 'County One', 'https://www.mailinator.com/signature1.png', true) RETURNING id INTO sitter_profile1_id;
-  INSERT INTO sitters (user_id, address, county, signature_url, is_active)
-  VALUES (sitter2_id, '456 Sitter Street', 'County Two', 'https://www.mailinator.com/signature2.png', true) RETURNING id INTO sitter_profile2_id;
+  INSERT INTO sitters (user_id, address, lat, lng, signature_url, is_active)
+  VALUES (sitter1_id, '123 Sitter Lane', 33.673033, -117.77879, 'https://www.mailinator.com/signature1.png', true) RETURNING id INTO sitter_profile1_id;
+  INSERT INTO sitters (user_id, address, lat, lng, signature_url, is_active)
+  VALUES (sitter2_id, '456 Sitter Street', 33.603568, -117.293535, 'https://www.mailinator.com/signature2.png', true) RETURNING id INTO sitter_profile2_id;
 
   -- Create Sitter Primary Services
   INSERT INTO sitter_primary_services (sitter_id, service_type_id, price_cents)

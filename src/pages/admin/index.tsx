@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import AdminLayout from './_layout';
-import { User } from '@supabase/supabase-js';
+import { createClient, User } from '@supabase/supabase-js';
 
 interface BookingRequest {
   id: string;
@@ -10,6 +10,8 @@ interface BookingRequest {
   end_date: string;
   status: string;
   total_cost_cents: number;
+  platform_fee_cents: number;
+  sitter_payout_cents: number;
   payment_status: string;
   customer: {
     name: string;
@@ -48,6 +50,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     }
   )
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -61,7 +64,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const { data: bookingRequests } = await supabase
+  // Use a dedicated admin client for data fetching to ensure RLS is bypassed and session doesn't interfere
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+  const adminSupabase = createClient(supabaseUrl, serviceRoleKey);
+
+  const { data: bookingRequests, error } = await adminSupabase
     .from('booking_requests')
     .select(
       `
@@ -70,6 +79,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       end_date,
       status,
       total_cost_cents,
+      platform_fee_cents,
+      sitter_payout_cents,
       payment_status,
       customer:customers (
         name
@@ -92,6 +103,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       )
     `
     );
+    
+  if (error) {
+    console.error('Error fetching booking requests:', error);
+  }
 
   return {
     props: { user, bookingRequests: bookingRequests || [] },
@@ -148,10 +163,16 @@ function AdminDashboard({ user, bookingRequests }: { user: User; bookingRequests
                     Status
                   </th>
                   <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                    Total Cost
+                    Total
                   </th>
                   <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                    Payment Status
+                    Fee
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    Payout
+                  </th>
+                   <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    Payment
                   </th>
                   <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                     Notified Sitters
@@ -176,10 +197,22 @@ function AdminDashboard({ user, bookingRequests }: { user: User; bookingRequests
                       {request.start_date} to {request.end_date}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {request.status}
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        request.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' : 
+                        request.status === 'PENDING_SITTER_ACCEPTANCE' ? 'bg-yellow-100 text-yellow-800' : 
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {request.status}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {request.total_cost_cents / 100}
+                      ${(request.total_cost_cents / 100).toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      ${((request.platform_fee_cents || 0) / 100).toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      ${((request.sitter_payout_cents || 0) / 100).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {request.payment_status}
@@ -187,14 +220,16 @@ function AdminDashboard({ user, bookingRequests }: { user: User; bookingRequests
                     <td className="px-6 py-4 whitespace-nowrap">
                       {request.booking_sitter_recipients.map(recipient => (
                         <div key={recipient.sitter.user.first_name}>
-                          {recipient.sitter.user.first_name} {recipient.sitter.user.last_name}: {recipient.status}
+                          {recipient.sitter.user.first_name}: {recipient.status}
                         </div>
                       ))}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-4">
                       <Link
-                        href={`/admin/bookings/${request.id}`}>
-                        View
+                        href={`/admin/bookings/${request.id}`}
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        Manage
                       </Link>
                     </td>
                   </tr>

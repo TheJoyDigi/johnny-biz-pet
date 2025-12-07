@@ -28,14 +28,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const { data: isAdmin } = await supabase
+    const { data: userRecord } = await supabase
         .from('users')
-        .select('is_admin')
+        .select('role')
         .eq('id', user.id)
         .single();
 
-    // @ts-ignore
-    if (!isAdmin || !isAdmin.is_admin) {
+    if (!userRecord || userRecord.role !== 'ADMIN') {
         return res.status(403).json({ message: 'Forbidden' });
     }
 

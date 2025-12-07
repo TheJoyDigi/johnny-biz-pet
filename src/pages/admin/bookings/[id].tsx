@@ -254,6 +254,29 @@ function BookingDetailsPage({
             </div>
             <div className="bg-white rounded-lg shadow p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-700 mb-4 border-b pb-2">
+                Financials
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                 <div>
+                    <span className="block text-gray-500 text-sm">Total Cost</span>
+                    <span className="text-lg font-bold">${(bookingRequest.total_cost_cents || 0) / 100}</span>
+                 </div>
+                 <div>
+                    <span className="block text-gray-500 text-sm">Platform Fee</span>
+                    <span className="text-lg font-bold text-blue-600">${(bookingRequest.platform_fee_cents || 0) / 100}</span>
+                 </div>
+                 <div>
+                    <span className="block text-gray-500 text-sm">Sitter Payout</span>
+                    <span className="text-lg font-bold text-green-600">${(bookingRequest.sitter_payout_cents || 0) / 100}</span>
+                 </div>
+                  <div>
+                    <span className="block text-gray-500 text-sm">Add-ons Total</span>
+                    <span className="text-lg font-semibold">${(bookingRequest.addons_total_cost_cents || 0) / 100}</span>
+                 </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6 mb-6">
+              <h2 className="text-xl font-bold text-gray-700 mb-4 border-b pb-2">
                 Customer
               </h2>
               <p>
@@ -511,6 +534,38 @@ function BookingDetailsPage({
                           setEditedBooking({
                             ...editedBooking,
                             total_cost_cents: parseInt(e.target.value),
+                          })
+                        }
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Platform Fee (Cents)
+                      </label>
+                      <input
+                        type="number"
+                        value={editedBooking.platform_fee_cents || ""}
+                        onChange={(e) =>
+                          setEditedBooking({
+                            ...editedBooking,
+                            platform_fee_cents: parseInt(e.target.value),
+                          })
+                        }
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                     <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Sitter Payout (Cents)
+                      </label>
+                      <input
+                        type="number"
+                        value={editedBooking.sitter_payout_cents || ""}
+                        onChange={(e) =>
+                          setEditedBooking({
+                            ...editedBooking,
+                            sitter_payout_cents: parseInt(e.target.value),
                           })
                         }
                         className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

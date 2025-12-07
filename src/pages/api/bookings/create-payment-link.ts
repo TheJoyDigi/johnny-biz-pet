@@ -33,19 +33,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new Error('Booking not found');
     }
 
+    // Calculate duration in nights
+    const start = new Date(booking.start_date);
+    const end = new Date(booking.end_date);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
     // Calculate amounts
     const baseRate = booking.base_rate_at_booking_cents || 0;
     const discount = booking.discount_applied_cents || 0;
-    
-    // Calculate total add-ons cost
-    let addonsCost = 0;
-    if (booking.booking_addons) {
-        addonsCost = booking.booking_addons.reduce((sum: number, item: any) => sum + (item.price_cents_at_booking || 0), 0);
-    }
-
-    // Subtotal for Platform Fee Calculation
-    const subtotal = baseRate + addonsCost - discount;
-    const platformFee = Math.round(subtotal * 0.07);
 
     // Construct Line Items
     const line_items = [];
@@ -57,11 +53,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           currency: 'usd',
           product_data: {
             name: 'Pet Sitting Service',
-            description: `Booking from ${new Date(booking.start_date).toLocaleDateString()} to ${new Date(booking.end_date).toLocaleDateString()}`,
+            description: `Booking from ${start.toLocaleDateString()} to ${end.toLocaleDateString()} (${nights} nights)`,
           },
           unit_amount: baseRate,
         },
-        quantity: 1,
+        quantity: nights,
       });
     }
 
@@ -81,20 +77,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   });
              }
         }
-    }
-
-    // 3. Platform Fee
-    if (platformFee > 0) {
-      line_items.push({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: 'Platform Fee (7%)',
-          },
-          unit_amount: platformFee,
-        },
-        quantity: 1,
-      });
     }
 
     // Handle Discounts via Coupon

@@ -38,7 +38,7 @@ describe('calculateBookingCost', () => {
 
     const cost = calculateBookingCost(mockBooking, mockSitter);
 
-    expect(cost.baseRate).toBe(10000); // 5000 * 2
+    expect(cost.baseRate).toBe(5000); // Nightly rate
     expect(cost.addOnsCost).toBe(0);
     expect(cost.discount).toBe(0);
     expect(cost.totalCost).toBe(10000);
@@ -57,7 +57,7 @@ describe('calculateBookingCost', () => {
 
     const cost = calculateBookingCost(mockBooking, mockSitter);
 
-    expect(cost.baseRate).toBe(10000);
+    expect(cost.baseRate).toBe(5000); // Nightly rate
     expect(cost.addOnsCost).toBe(3500); // 1000 + 2500
     expect(cost.discount).toBe(0);
     expect(cost.totalCost).toBe(13500);
@@ -73,7 +73,7 @@ describe('calculateBookingCost', () => {
 
     const cost = calculateBookingCost(mockBooking, mockSitter);
 
-    expect(cost.baseRate).toBe(30000); // 5000 * 6
+    expect(cost.baseRate).toBe(5000); // Nightly rate
     expect(cost.addOnsCost).toBe(0);
     expect(cost.discount).toBe(3000); // 10% of 30000
     expect(cost.totalCost).toBe(27000);
@@ -91,7 +91,7 @@ describe('calculateBookingCost', () => {
 
     const cost = calculateBookingCost(mockBooking, mockSitter);
 
-    expect(cost.baseRate).toBe(55000); // 5000 * 11
+    expect(cost.baseRate).toBe(5000); // Nightly rate
     expect(cost.addOnsCost).toBe(1000);
     expect(cost.discount).toBe(11000); // 20% of 55000
     expect(cost.totalCost).toBe(45000);
