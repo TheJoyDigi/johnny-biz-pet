@@ -97,6 +97,35 @@ function BookingDetailsPage({
   const [isEditing, setIsEditing] = useState(false);
   const [editedBooking, setEditedBooking] =
     useState<Partial<BookingRequest>>(initialBooking);
+  const [paymentLink, setPaymentLink] = useState("");
+
+  const handleGeneratePaymentLink = async () => {
+    setError("");
+    setIsSubmitting(true);
+    setPaymentLink("");
+
+    try {
+      const response = await fetch("/api/bookings/create-payment-link", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ bookingId: bookingRequest.id }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Failed to generate payment link");
+      }
+
+      const data = await response.json();
+      setPaymentLink(data.url);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const calculateNights = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
@@ -348,6 +377,13 @@ function BookingDetailsPage({
                   Mark as Paid
                 </button>
                 <button
+                  onClick={handleGeneratePaymentLink}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-gray-400"
+                >
+                  Generate Payment Link
+                </button>
+                <button
                   onClick={handleCancelBooking}
                   disabled={
                     isSubmitting ||
@@ -358,6 +394,14 @@ function BookingDetailsPage({
                   Cancel Booking
                 </button>
               </div>
+              {paymentLink && (
+                <div className="mt-4 p-4 text-sm bg-green-50 rounded-lg break-all">
+                  <p className="font-bold text-green-800 mb-1">Payment Link Generated:</p>
+                  <a href={paymentLink} target="_blank" rel="noopener noreferrer" className="text-green-700 underline">
+                    {paymentLink}
+                  </a>
+                </div>
+              )}
               {error && (
                 <div className="mt-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
                   {error}
