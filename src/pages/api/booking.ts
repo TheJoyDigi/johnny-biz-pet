@@ -33,7 +33,7 @@ export default async function handler(
 
   try {
     const {
-      sitterId, // This is likely the slug (e.g., "johnny-irvine") from the frontend
+      sitterId,
       sitterName,
       locationName,
       serviceId,
@@ -69,14 +69,14 @@ export default async function handler(
         .json({ success: false, message: "Missing required fields" });
     }
 
-    // Validate pet type (must be dog or cat)
+    // Validate pet type
     if (petType !== "dog" && petType !== "cat" && petType !== "other") {
       return res
         .status(400)
         .json({ success: false, message: "Invalid pet type" });
     }
 
-    // Validate that end date is after start date
+    // Validate dates
     const start = new Date(startDate);
     const end = new Date(endDate);
     if (end < start) {
@@ -85,18 +85,19 @@ export default async function handler(
         .json({ success: false, message: "End date must be after start date" });
     }
 
-    // Calculate number of nights
+    // Calculate nights
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     // --- Database Operations ---
 
-    // 1. Get Sitter details from UUID (sitterId from frontend)
+    // 1. Get Sitter details
     const { data: sitterData, error: sitterError } = await supabase
       .from("sitters")
       .select(`
         id, 
         sitter_primary_services (
+            id,
             price_cents,
             service_types ( id, slug, name )
         )
@@ -110,43 +111,43 @@ export default async function handler(
     }
     const sitterUuid = sitterData.id;
 
-    // Find the matching service price
-    // serviceId from body could be name or slug. Try to match both.
+    // Find service price
     let _baseRateCents = 0;
     let _serviceTypeId = null;
+    let _sitterServiceId = null;
+    let _serviceName = serviceId; // Default to input ID/Name
 
     if (sitterData.sitter_primary_services && Array.isArray(sitterData.sitter_primary_services)) {
-        const found = sitterData.sitter_primary_services.find((s: any) => {
-            // @ts-ignore
-            const st = Array.isArray(s.service_types) ? s.service_types[0] : s.service_types;
-            return st?.slug === serviceId || st?.name === serviceId;
-        });
+        let found = sitterData.sitter_primary_services.find((s: any) => s.id === serviceId);
 
-        // If not found, default to first service or remain 0 (maybe 'Dog Boarding' default?)
-        if (found) {
-            _baseRateCents = found.price_cents;
-            // @ts-ignore
-            const st = Array.isArray(found.service_types) ? found.service_types[0] : found.service_types;
-            _serviceTypeId = st?.id;
-        } else {
-             // Fallback to Dog Boarding if specific service not matched
-             const defaultService = sitterData.sitter_primary_services.find((s: any) => {
+        if (!found) {
+            found = sitterData.sitter_primary_services.find((s: any) => {
+                // @ts-ignore
+                const st = Array.isArray(s.service_types) ? s.service_types[0] : s.service_types;
+                return st?.slug === serviceId || st?.name === serviceId;
+            });
+        }
+
+        if (!found) {
+             found = sitterData.sitter_primary_services.find((s: any) => {
                 // @ts-ignore
                 const st = Array.isArray(s.service_types) ? s.service_types[0] : s.service_types;
                 return st?.slug === 'dog-boarding';
              });
-             
-             if (defaultService) {
-                 _baseRateCents = defaultService.price_cents;
-                  // @ts-ignore
-                 const st = Array.isArray(defaultService.service_types) ? defaultService.service_types[0] : defaultService.service_types;
-                 _serviceTypeId = st?.id;
-             }
+        }
+
+        if (found) {
+            _baseRateCents = found.price_cents;
+            _sitterServiceId = found.id;
+            // @ts-ignore
+            const st = Array.isArray(found.service_types) ? found.service_types[0] : found.service_types;
+            _serviceTypeId = st?.id;
+            _serviceName = st?.name || serviceId;
         }
     }
 
     // 2. Upsert Customer
-    const { data: customerData, error: customerError } = await supabase
+    const { data: customerData } = await supabase
       .from("customers")
       .select("id")
       .eq("email", email)
@@ -155,7 +156,6 @@ export default async function handler(
     let customerId;
     if (customerData) {
         customerId = customerData.id;
-        // Optionally update name/phone
         await supabase.from("customers").update({ name: `${firstName} ${lastName}` }).eq("id", customerId);
     } else {
         const { data: newCustomer, error: createCustomerError } = await supabase
@@ -168,7 +168,6 @@ export default async function handler(
     }
 
     // 3. Upsert Pet
-    // Check if pet exists for this customer
     const { data: petData } = await supabase
         .from("pets")
         .select("id")
@@ -179,8 +178,7 @@ export default async function handler(
     let petId;
     if (petData) {
         petId = petData.id;
-        // update details
-         await supabase.from("pets").update({ breed: petType }).eq("id", petId);
+        await supabase.from("pets").update({ breed: petType }).eq("id", petId);
     } else {
         const { data: newPet, error: createPetError } = await supabase
             .from("pets")
@@ -199,11 +197,10 @@ export default async function handler(
         assigned_sitter_id: sitterUuid,
         start_date: startDate,
         end_date: endDate,
-        county: locationName, // Approximate mapping
         status: "PENDING_SITTER_ACCEPTANCE",
         service_type_id: _serviceTypeId,
+        sitter_service_id: _sitterServiceId,
         base_rate_at_booking_cents: _baseRateCents,
-        // total_cost_cents: ... calculation logic could go here or DB function
       })
       .select("id")
       .single();
@@ -222,38 +219,34 @@ export default async function handler(
         await supabase.from("booking_notes").insert({
             booking_request_id: bookingId,
             note: notes
-            // user_id is null for guest booking notes or could be linked if we had auth user
         });
     }
 
-    // 7. Add Booking Addons
-    // addons is { "Addon Name": quantity }
-    // Need to lookup addon IDs from sitter_addons table
+    // 7. Add Booking Addons & Prepare Email Data
+    const formattedAddons: string[] = [];
     if (addons && Object.keys(addons).length > 0) {
-        const addonNames = Object.keys(addons).filter(k => addons[k] > 0);
-        if (addonNames.length > 0) {
+        const addonKeys = Object.keys(addons).filter(k => addons[k] > 0);
+        
+        if (addonKeys.length > 0) {
             const { data: sitterAddons } = await supabase
                 .from("sitter_addons")
                 .select("id, name, price_cents")
                 .eq("sitter_id", sitterUuid)
-                .in("name", addonNames);
+                .or(`id.in.(${addonKeys.map(k => `"${k}"`).join(',')}),name.in.(${addonKeys.map(k => `"${k}"`).join(',')})`); 
             
             if (sitterAddons) {
                 const bookingAddonsToInsert = [];
                 for (const sa of sitterAddons) {
-                    const qty = addons[sa.name];
-                    // Support multiple quantities? Schema booking_addons is (booking_request_id, sitter_addon_id) PK.
-                    // So it supports only 1 entry per addon type per booking. 
-                    // If quantity > 1, schema might need update or we just store it once.
-                    // For now, assuming 1 per type or just presence.
-                    // Wait, Phase 2 requirements might specify quantity.
-                    // Schema check: booking_addons has no quantity column.
-                    // For MVP Phase 2, we'll just link it.
-                    bookingAddonsToInsert.push({
-                        booking_request_id: bookingId,
-                        sitter_addon_id: sa.id,
-                        price_cents_at_booking: sa.price_cents
-                    });
+                    let qty = addons[sa.id] || addons[sa.name];
+                    if (qty > 0) {
+                         bookingAddonsToInsert.push({
+                            booking_request_id: bookingId,
+                            sitter_addon_id: sa.id,
+                            price_cents_at_booking: sa.price_cents,
+                            quantity: qty
+                        });
+                        formattedAddons.push(`${sa.name} (x${qty})`);
+                    }
                 }
                 if (bookingAddonsToInsert.length) {
                     await supabase.from("booking_addons").insert(bookingAddonsToInsert);
@@ -262,87 +255,60 @@ export default async function handler(
         }
     }
 
-    // 8. Create Sitter Recipient
+    // 8. Create Recipient
     await supabase.from("booking_sitter_recipients").insert({
         booking_request_id: bookingId,
         sitter_id: sitterUuid,
         status: "NOTIFIED"
     });
 
-    // --- End Database Operations ---
+    // 9. Calculate Cost
+    if (bookingId && sitterUuid) {
+       const { data: costBreakdown, error: calcError } = await supabase.rpc('calculate_booking_cost', {
+            booking_id: bookingId,
+            sitter_profile_id: sitterUuid
+       });
 
-    // Format addons for email
-    const selectedAddons = Object.entries(addons)
-      .filter(([_, quantity]) => Number(quantity) > 0)
-      .map(([name, quantity]) => `${name} (x${quantity})`);
+       if (!calcError && costBreakdown) {
+           await supabase.from("booking_requests").update({
+                total_cost_cents: costBreakdown.total_cost_cents,
+                base_rate_at_booking_cents: costBreakdown.base_rate_at_booking_cents,
+                addons_total_cost_cents: costBreakdown.addons_total_cost_cents,
+                discount_applied_cents: costBreakdown.discount_applied_cents,
+                platform_fee_cents: costBreakdown.platform_fee_cents,
+                sitter_payout_cents: costBreakdown.sitter_payout_cents
+           }).eq('id', bookingId);
+       } else {
+           console.error("Failed to calculate initial booking cost:", calcError);
+       }
+    }
 
-    // Format dates for email
+    // --- Format for Email ---
     const formattedStartDate = new Date(startDate).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
     });
-
     const formattedEndDate = new Date(endDate).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
     });
 
-    // Common booking details for both emails
     const bookingDetailsHtml = `
       <p><strong>Sitter:</strong> ${sitterName}</p>
       <p><strong>Location:</strong> ${locationName}</p>
-      <p><strong>Service:</strong> ${serviceId}</p>
+      <p><strong>Service:</strong> ${_serviceName}</p>
       <p><strong>Customer:</strong> ${firstName} ${lastName}</p>
       <p><strong>Email:</strong> ${email}</p>
       <p><strong>Phone:</strong> ${phone}</p>
       <p><strong>Pet Name:</strong> ${petName}</p>
-      <p><strong>Pet Type:</strong> ${
-        petType.charAt(0).toUpperCase() + petType.slice(1)
-      }</p>
+      <p><strong>Pet Type:</strong> ${petType.charAt(0).toUpperCase() + petType.slice(1)}</p>
       <p><strong>Drop Off:</strong> ${formattedStartDate} at ${startTime}</p>
       <p><strong>Pick Up:</strong> ${formattedEndDate} at ${endTime}</p>
       <p><strong>Number of Nights:</strong> ${nights}</p>
-      
-      ${
-        selectedAddons.length > 0
-          ? `
-        <h3>Additional Services:</h3>
-        <ul>
-          ${selectedAddons.map((addon) => `<li>${addon}</li>`).join("")}
-        </ul>
-      `
-          : ""
-      }
-      
-      ${
-        notes
-          ? `
-        <h3>Additional Notes:</h3>
-        <p>${notes}</p>
-      `
-          : ""
-      }
-
-      ${
-        referralSource
-          ? `
-        <p><strong>Referral Source:</strong> ${referralSource}</p>
-      `
-          : ""
-      }
+      ${formattedAddons.length > 0 ? `<h3>Additional Services:</h3><ul>${formattedAddons.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
+      ${notes ? `<h3>Additional Notes:</h3><p>${notes}</p>` : ""}
+      ${referralSource ? `<p><strong>Referral Source:</strong> ${referralSource}</p>` : ""}
     `;
 
-    // Create email content for the business
-    const businessEmailContent = `
-      <h2>New Booking Request</h2>
-      ${bookingDetailsHtml}
-    `;
-
-    // Create email content for the customer
+    const businessEmailContent = `<h2>New Booking Request</h2>${bookingDetailsHtml}`;
     const customerEmailContent = `
       <h2>Booking Request Confirmation</h2>
       <p>Dear ${firstName},</p>
@@ -354,50 +320,41 @@ export default async function handler(
       <p>Ruh-Roh Retreat Team</p>
     `;
 
-    // Setup nodemailer transporter
-    // IMPORTANT: EMAIL_SECURE must be set to 'false' in production
-    // Setting it to 'true' will cause email sending to fail with most SMTP providers
-    // when using port 587 with STARTTLS
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || "smtp-relay.brevo.com",
-      port: parseInt(process.env.EMAIL_PORT || "587"),
-      secure: process.env.EMAIL_SECURE === "true",
-      auth: {
-        user: process.env.EMAIL_USER || "88f0c6001@smtp-brevo.com",
-        pass: process.env.EMAIL_PASS || "wkzmLHvPc2IGSK5f",
-      },
-    });
+    // Email Sending Logic
+    const skipEmail = process.env.SKIP_BOOKING_EMAIL === 'true';
+    if (!skipEmail) {
+        const transporter = nodemailer.createTransport({
+          host: process.env.EMAIL_HOST || "smtp-relay.brevo.com",
+          port: parseInt(process.env.EMAIL_PORT || "587"),
+          secure: process.env.EMAIL_SECURE === "true",
+          auth: {
+            user: process.env.EMAIL_USER || "88f0c6001@smtp-brevo.com",
+            pass: process.env.EMAIL_PASS || "wkzmLHvPc2IGSK5f",
+          },
+        });
 
-    // Send email to business
-    await transporter.sendMail({
-      from: `"Ruh-Roh Retreat Website" <${
-        process.env.EMAIL_FROM || "hello@ruhrohretreat.com"
-      }>`,
-      to: EMAIL_CONFIG.recipientEmail,
-      subject: `${EMAIL_CONFIG.subject} - ${sitterName}`,
-      html: businessEmailContent,
-      replyTo: email,
-    });
+        await transporter.sendMail({
+          from: `"Ruh-Roh Retreat Website" <${process.env.EMAIL_FROM || "hello@ruhrohretreat.com"}>`,
+          to: EMAIL_CONFIG.recipientEmail,
+          subject: `${EMAIL_CONFIG.subject} - ${sitterName}`,
+          html: businessEmailContent,
+          replyTo: email,
+        });
 
-    // Send confirmation email to customer
-    await transporter.sendMail({
-      from: `"Ruh-Roh Retreat" <${
-        process.env.EMAIL_FROM || "hello@ruhrohretreat.com"
-      }>`,
-      to: email,
-      subject: "Booking Request Confirmation",
-      html: customerEmailContent,
-    });
+        await transporter.sendMail({
+          from: `"Ruh-Roh Retreat" <${process.env.EMAIL_FROM || "hello@ruhrohretreat.com"}>`,
+          to: email,
+          subject: "Booking Request Confirmation",
+          html: customerEmailContent,
+        });
+    } else {
+        console.log("Skipping booking email due to SKIP_BOOKING_EMAIL environment variable.");
+    }
 
-    // Return success response
-    return res
-      .status(200)
-      .json({ success: true, message: "Booking request sent successfully" });
+    return res.status(200).json({ success: true, message: "Booking request sent successfully" });
+
   } catch (error) {
     console.error("Error processing booking request:", error);
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred while processing your request",
-    });
+    return res.status(500).json({ success: false, message: "An error occurred while processing your request" });
   }
 }

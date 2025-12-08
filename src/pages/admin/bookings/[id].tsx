@@ -56,7 +56,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const sitterIds = booking.booking_sitter_recipients.map((r: NotifiedSitter) => r.sitters?.id);
     const { data: sitters, error: sittersError } = await supabase
       .from("sitters")
-      .select("*, user:users(*), sitter_addons(*), sitter_discounts(*)")
+      .select("*, user:users(*), sitter_addons(*), sitter_discounts(*), sitter_primary_services(*, service_types(*))")
       .in("id", sitterIds);
     if (sitters) {
       notifiedSitters = sitters as Sitter[];
@@ -65,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } else if (booking.assigned_sitter) {
     const { data: sitter, error: sitterError } = await supabase
       .from("sitters")
-      .select("*, users(*), sitter_addons(*), sitter_discounts(*)")
+      .select("*, users(*), sitter_addons(*), sitter_discounts(*), sitter_primary_services(*, service_types(*))")
       // @ts-ignore
       .eq("id", booking.assigned_sitter.id)
       .single();

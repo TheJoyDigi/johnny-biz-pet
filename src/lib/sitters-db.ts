@@ -12,6 +12,7 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
       *,
       users (first_name),
       sitter_primary_services (
+        id,
         price_cents,
         service_types (
             name,
@@ -34,6 +35,7 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
   return Promise.all(sittersData.map(async (dbSitter: any) => {
     // Map primary services from DB relation
     const primaryServices = dbSitter.sitter_primary_services.map((ps: any) => ({
+        id: ps.id, // Map ID
         name: ps.service_types.name,
         description: ps.service_types.description,
         price: `$${ps.price_cents / 100}/night`
@@ -45,6 +47,7 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
     }
 
     const addOnItems = dbSitter.sitter_addons.map((addon: any) => ({
+        id: addon.id,
         name: addon.name,
         description: addon.description,
         price: `$${addon.price_cents / 100}`

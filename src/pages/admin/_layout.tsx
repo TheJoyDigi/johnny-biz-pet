@@ -21,7 +21,11 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   };
 
   const NavLink = ({ href, icon: Icon, label }: NavLinkProps) => {
-    const isActive = router.pathname === href || router.pathname.startsWith(href + '/');
+    // Exact match for root admin path, prefix match for sub-routes
+    const isActive = href === '/admin' 
+      ? router.pathname === href 
+      : router.pathname.startsWith(href);
+      
     return (
       <Link
         href={href}

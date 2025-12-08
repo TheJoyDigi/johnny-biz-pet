@@ -3,6 +3,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { User, MapPin, DollarSign, Shield, Image as ImageIcon, Plus, Trash2, Upload } from 'lucide-react';
+import Image from 'next/image';
 import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
@@ -186,7 +187,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                 })
                 .catch(err => console.error('Error fetching gallery:', err));
         }
-    }, [activeTab, currentSlug]);
+    }, [activeTab, currentSlug, galleryApi]);
 
     // Google Maps Handlers
     const onPlaceChanged = () => {
@@ -503,6 +504,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                                 onComplete={(c) => setCompletedCrop(c)}
                                 aspect={cropType === 'avatar' ? 1 : 16 / 9}
                             >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img ref={imgRef} alt="Crop me" src={imgSrc} onLoad={onImageLoad} />
                             </ReactCrop>
                         </div>
@@ -622,7 +624,13 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                             <div className="flex items-center space-x-4">
                                 {avatarUrl ? (
                                     <div className="relative w-20 h-20 rounded-full overflow-hidden border border-gray-200">
-                                        <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                                        <Image 
+                                            src={avatarUrl} 
+                                            alt="Avatar" 
+                                            fill
+                                            className="object-cover" 
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        />
                                     </div>
                                 ) : (
                                     <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200">
@@ -642,7 +650,13 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                             <div className="flex items-center space-x-4">
                                 {heroImageUrl ? (
                                     <div className="relative w-32 h-20 rounded-md overflow-hidden border border-gray-200">
-                                        <img src={heroImageUrl} alt="Hero" className="w-full h-full object-cover" />
+                                        <Image 
+                                            src={heroImageUrl} 
+                                            alt="Hero" 
+                                            fill
+                                            className="object-cover" 
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        />
                                     </div>
                                 ) : (
                                     <div className="w-32 h-20 rounded-md bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200">
@@ -875,7 +889,13 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {galleryImages.map((img) => (
                             <div key={img.name} className="relative group rounded-lg overflow-hidden aspect-square bg-gray-100">
-                                <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                                <Image 
+                                    src={img.url} 
+                                    alt={img.name} 
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 50vw, 25vw"
+                                />
                                 <button
                                     type="button"
                                     onClick={() => handleDeleteImage(img.name)}

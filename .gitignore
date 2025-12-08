@@ -45,3 +45,8 @@ supabase/.temp
 # Generated sitemap
 /public/sitemap-*.xml
 public/sitters
+
+# images at root level
+*.jpg
+*.png
+*.webp

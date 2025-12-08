@@ -39,6 +39,7 @@ export type Sitter = {
         last_name: string;
     };
     sitter_primary_services?: {
+        id: string; // Add ID
         service_types: {
             slug: string;
         };
@@ -82,6 +83,8 @@ export type BookingRequest = {
   customer_id: string | null;
   start_date: string;
   end_date: string;
+  sitter_service_id?: string;
+  service_type_id?: string;
   county: string;
   status: 'PENDING_SITTER_ACCEPTANCE' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED_UNCLAIMED' | 'CANCELED_BY_ADMIN' | 'COMPLETED';
   assigned_sitter_id: string | null;

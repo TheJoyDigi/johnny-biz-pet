@@ -42,16 +42,30 @@ describe('/api/booking Integration Test', () => {
     }
   });
 
-  it('should send emails and persist data to Supabase', async () => {
-    // Fetch Johnny's UUID for the test
+  it('should send emails with resolved names and persist data to Supabase', async () => {
+    process.env.SKIP_BOOKING_EMAIL = 'false';
+    // Fetch Johnny's UUID and Services/Addons for the test
     const { data: sitter } = await supabase
         .from('sitters')
-        .select('id')
+        .select(`
+            id,
+            sitter_primary_services(id, service_types(slug, name)),
+            sitter_addons(id, name)
+        `)
         .eq('slug', 'johnny-irvine')
         .single();
     
     if (!sitter) {
         throw new Error('Test prerequisite failed: Johnny sitter not found in DB');
+    }
+
+    // @ts-ignore
+    const service = sitter.sitter_primary_services.find(s => s.service_types.slug === 'dog-boarding');
+    // @ts-ignore
+    const addon = sitter.sitter_addons.find(a => a.name === 'Sniffari Walk');
+
+    if (!service || !addon) {
+        throw new Error('Test prerequisite failed: Service or Addon not found');
     }
 
     const { req, res } = createMocks({
@@ -60,7 +74,7 @@ describe('/api/booking Integration Test', () => {
         sitterId: sitter.id, // Use UUID
         sitterName: 'Johnny',
         locationName: 'Irvine',
-        serviceId: 'Dog Boarding',
+        serviceId: service.id, // Use UUID to test resolution
         firstName: 'Integration',
         lastName: 'Tester',
         email: testEmail,
@@ -72,7 +86,7 @@ describe('/api/booking Integration Test', () => {
         endDate: '2025-12-27', // 2 nights
         endTime: '17:00',
         addons: {
-          'Sniffari Walk': 1, // Johnny has this addon
+          [addon.id]: 1, // Use UUID key
         },
         notes: 'Integration test note',
         referralSource: 'Google',
@@ -91,8 +105,14 @@ describe('/api/booking Integration Test', () => {
     const businessEmailCall = sendMailMock.mock.calls[0][0];
     const customerEmailCall = sendMailMock.mock.calls[1][0];
 
-    expect(businessEmailCall.to).toContain('hello@ruhrohretreat.com'); // Or whatever env var is set
+    expect(businessEmailCall.to).toContain('hello@ruhrohretreat.com'); 
     expect(businessEmailCall.html).toContain('Integration Tester');
+    
+    // Verify Service Name Resolution (Should NOT be UUID)
+    expect(businessEmailCall.html).toContain('Service:</strong> Dog Boarding'); 
+    expect(businessEmailCall.html).not.toContain(`Service:</strong> ${service.id}`);
+
+    // Verify Addon Name Resolution
     expect(businessEmailCall.html).toContain('Sniffari Walk (x1)');
     expect(businessEmailCall.html).toContain('Integration test note');
 
@@ -160,5 +180,75 @@ describe('/api/booking Integration Test', () => {
         .eq('booking_request_id', createdBookingId)
         .single();
     expect(savedNotes?.note).toBe('Integration test note');
+  });
+
+  it('should NOT send emails when SKIP_BOOKING_EMAIL is true', async () => {
+       // Backup env
+       const oldEnv = process.env.SKIP_BOOKING_EMAIL;
+       process.env.SKIP_BOOKING_EMAIL = 'true';
+       sendMailMock.mockClear();
+
+       // Reuse setup slightly simplified
+       const { req, res } = createMocks({
+        method: 'POST',
+        body: {
+          sitterId: 'afe64603-3fc6-42b0-a36b-aebb10092f54', // Random dummy or valid UUID doesn't matter much for email check, but needs to pass validation
+          sitterName: 'Mock',
+          locationName: 'City',
+          serviceId: 'some-uuid',
+          firstName: 'NoEmail',
+          lastName: 'User',
+          email: 'noemail@example.com',
+          phone: '1234567890',
+          petName: 'SilentPet',
+          petType: 'dog',
+          startDate: '2025-12-25',
+          endDate: '2025-12-26',
+        },
+      });
+
+      // Mock DB lookups to avoid failure before email step
+      // Ideally we should mock supabase but we are using real integration logic with real DB.
+      // So we need valid IDs or it will throw "Sitter not found".
+      // Let's use the same fetch logic or just assume the previous test data is okay.
+      // Actually, we can just skip the DB writes if we mocked the handler, but we haven't mocked the handler.
+      // We are calling the real handler. So we need valid inputs.
+      
+      // Let's use the same inputs as above but different email to avoid unique constraint if any (customer email is unique key usually)
+      
+       const { data: sitter } = await supabase
+        .from('sitters')
+        .select('id, sitter_primary_services(id, service_types(slug))')
+        .eq('slug', 'johnny-irvine')
+        .single();
+        
+       // @ts-ignore
+       const service = sitter.sitter_primary_services[0];
+       
+       const { req: req2, res: res2 } = createMocks({
+         method: 'POST',
+         body: {
+           sitterId: sitter?.id,
+           sitterName: 'Johnny',
+           locationName: 'Irvine',
+           serviceId: service.id,
+           firstName: 'Skip',
+           lastName: 'Email',
+           email: `skip-${Date.now()}@example.com`,
+           phone: '555-5555',
+           petName: 'SkipPet',
+           petType: 'dog',
+           startDate: '2025-12-25',
+           endDate: '2025-12-26',
+         }
+       });
+
+       await handler(req2, res2);
+       
+       expect(res2._getStatusCode()).toBe(200);
+       expect(sendMailMock).not.toHaveBeenCalled();
+
+       // Cleanup env
+       process.env.SKIP_BOOKING_EMAIL = oldEnv;
   });
 });

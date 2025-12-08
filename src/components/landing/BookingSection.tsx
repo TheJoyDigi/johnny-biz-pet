@@ -76,7 +76,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       sitterId: defaultSitter?.id ?? "",
-      serviceId: defaultSitter?.services.primary[0]?.name ?? "",
+      serviceId: defaultSitter?.services.primary[0]?.id || defaultSitter?.services.primary[0]?.name || "",
       firstName: "",
       lastName: "",
       email: "",
@@ -124,7 +124,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
 
     if (matchingSitter && matchingSitter.id !== selectedSitterId) {
       setValue("sitterId", matchingSitter.id);
-      setValue("serviceId", matchingSitter.services.primary[0]?.name ?? "");
+      setValue("serviceId", matchingSitter.services.primary[0]?.id || matchingSitter.services.primary[0]?.name || "");
       setValue("addons", {});
       setLastQuerySitter(sitterUid);
     }
@@ -281,7 +281,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                       const newSitterId = e.target.value;
                       const newSitter = sitters.find((s) => s.id === newSitterId);
                       if (newSitter) {
-                        setValue("serviceId", newSitter.services.primary[0]?.name ?? "");
+                        setValue("serviceId", newSitter.services.primary[0]?.id || newSitter.services.primary[0]?.name || "");
                         setValue("addons", {});
                       }
                     },
@@ -319,7 +319,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   className={getInputClasses(!!errors.serviceId)}
                 >
                   {selectedSitter?.services.primary.map((service) => (
-                    <option key={service.name} value={service.name}>
+                    <option key={service.name} value={service.id || service.name}>
                       {service.name} {service.price ? `(${service.price})` : ""}
                     </option>
                   ))}
@@ -534,7 +534,7 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   <div className="grid grid-cols-1 gap-4">
                     {selectedSitter.services.addOns.map(({ category, items }) => {
                       const isExpanded = expandedCategories[category];
-                      const selectedCount = items.reduce((acc, item) => acc + (addons[item.name] || 0), 0);
+                      const selectedCount = items.reduce((acc, item) => acc + (addons[item.id || item.name] || 0), 0);
                       
                       return (
                         <div key={category} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md">
@@ -574,22 +574,22 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                                   <div className="flex items-center space-x-3 bg-gray-50 rounded-full px-2 py-1 border border-gray-200">
                                     <button
                                       type="button"
-                                      onClick={() => handleAddonQuantityChange(addon.name, -1)}
+                                      onClick={() => handleAddonQuantityChange(addon.id || addon.name, -1)}
                                       className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                                        (addons[addon.name] || 0) > 0
+                                        (addons[addon.id || addon.name] || 0) > 0
                                           ? "text-[#F28C38] hover:bg-[#F28C38] hover:text-white"
                                           : "text-gray-300 cursor-not-allowed"
                                       }`}
-                                      disabled={(addons[addon.name] || 0) <= 0}
+                                      disabled={(addons[addon.id || addon.name] || 0) <= 0}
                                     >
                                       -
                                     </button>
                                     <span className="w-6 text-center font-bold text-gray-700">
-                                      {addons[addon.name] || 0}
+                                      {addons[addon.id || addon.name] || 0}
                                     </span>
                                     <button
                                       type="button"
-                                      onClick={() => handleAddonQuantityChange(addon.name, 1)}
+                                      onClick={() => handleAddonQuantityChange(addon.id || addon.name, 1)}
                                       className="w-8 h-8 rounded-full flex items-center justify-center text-[#F28C38] hover:bg-[#F28C38] hover:text-white transition-colors"
                                     >
                                       +

@@ -3,9 +3,19 @@ import { type BookingRequest, type Sitter } from '@/core/types';
 export function calculateBookingCost(booking: BookingRequest, sitter: Sitter) {
   const nights = (new Date(booking.end_date).getTime() - new Date(booking.start_date).getTime()) / (1000 * 60 * 60 * 24);
   
-  // Default to Dog Boarding price if available
-  const boardingService = sitter.sitter_primary_services?.find(s => s.service_types.slug === 'dog-boarding');
-  const baseRateCents = boardingService ? boardingService.price_cents : 0;
+  // Determine service rate
+  let targetService;
+  
+  if (booking.sitter_service_id && sitter.sitter_primary_services) {
+    targetService = sitter.sitter_primary_services.find(s => s.id === booking.sitter_service_id);
+  }
+
+  // Fallback to legacy behavior if not found (or if not provided)
+  if (!targetService && sitter.sitter_primary_services) {
+     targetService = sitter.sitter_primary_services.find(s => s.service_types.slug === 'dog-boarding');
+  }
+
+  const baseRateCents = targetService ? targetService.price_cents : 0;
   
   const totalBaseCost = baseRateCents * nights;
 

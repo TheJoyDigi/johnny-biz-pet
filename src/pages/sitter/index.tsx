@@ -5,6 +5,7 @@ import { User } from '@supabase/supabase-js';
 import SitterLayout from './_layout';
 import { type BookingRequest } from '@/core/types';
 import BookingCalendar from '@/components/sitter/BookingCalendar';
+import { DashboardSkeleton } from '@/components/sitter/DashboardSkeleton';
 import { Check, X, CalendarCheck, Clock, User as UserIcon } from 'lucide-react';
 
 export default function SitterDashboard() {
@@ -120,7 +121,11 @@ export default function SitterDashboard() {
   const activeBookings = bookings.filter(b => b.status === 'ACCEPTED' && b.payment_status === 'UNPAID'); 
   const calendarBookings = bookings.filter(b => (b.status === 'ACCEPTED' && b.payment_status === 'PAID') || b.status === 'COMPLETED');
 
-  if (isLoading) return <SitterLayout><div className="p-8 text-center text-gray-500">Loading dashboard...</div></SitterLayout>;
+  if (isLoading) return (
+    <SitterLayout>
+      <DashboardSkeleton />
+    </SitterLayout>
+  );
 
   return (
     <SitterLayout>

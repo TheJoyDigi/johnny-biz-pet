@@ -1,1 +1,1 @@
-- [] comprehensive investigate on how booking record rate and caclulate cost work, frontend and backend and database (supabse rrr-dev), and check if there would be any issue for cost calculation, account for scenario when user change service rate, addons rate after the booking is created
+- [x] comprehensive investigate on how booking record rate and caclulate cost work - See [INVESTIGATION_BOOKING_COST.md](./INVESTIGATION_BOOKING_COST.md)

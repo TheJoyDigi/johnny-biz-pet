@@ -20,6 +20,7 @@ describe('PaymentBreakdown', () => {
     },
     sitter_primary_services: [
         {
+            id: 'mock-id',
             service_types: { slug: 'dog-boarding' },
             price_cents: 5000
         }

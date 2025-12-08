@@ -18,6 +18,7 @@ export type SitterBadge = {
 };
 
 export type SitterAddOn = {
+  id?: string;
   name: string;
   price?: string;
   description?: string;
@@ -29,6 +30,7 @@ export type SitterAddOnCategory = {
 };
 
 export type SitterPrimaryService = {
+  id?: string; // Added ID
   name: string;
   description: string;
   price?: string;
