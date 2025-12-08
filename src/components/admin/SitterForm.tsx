@@ -56,6 +56,7 @@ type SitterFormValues = z.infer<typeof sitterSchema>;
 
 interface SitterProfile {
     id: string;
+    user_id?: string;
     first_name: string | null;
     last_name: string | null;
     email: string;
@@ -404,8 +405,36 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                 
                 const data = await res.json();
                 if (data.url) {
-                    if (type === 'avatar') setValue('avatarUrl', data.url);
-                    else if (type === 'hero') setValue('heroImageUrl', data.url);
+                    if (type === 'avatar') {
+                        setValue('avatarUrl', data.url);
+                        // Auto-save avatar URL
+                        if (sitter?.id || sitter?.user_id) {
+                            fetch('/api/admin/update-sitter', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    sitterId: sitter?.id,
+                                    userId: sitter?.user_id,
+                                    avatarUrl: data.url
+                                })
+                            }).catch(e => console.error("Auto-save avatar failed", e));
+                        }
+                    }
+                    else if (type === 'hero') {
+                        setValue('heroImageUrl', data.url);
+                         // Auto-save hero URL
+                        if (sitter?.id || sitter?.user_id) {
+                            fetch('/api/admin/update-sitter', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    sitterId: sitter?.id,
+                                    userId: sitter?.user_id,
+                                    heroImageUrl: data.url
+                                })
+                            }).catch(e => console.error("Auto-save hero failed", e));
+                        }
+                    }
                 }
             }
 

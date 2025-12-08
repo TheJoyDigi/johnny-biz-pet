@@ -17,7 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     firstName, lastName, phone, email,
     slug, tagline, address, lat, lng, isActive,
     bio, skills, homeEnvironment, careStyle, parentExpectations,
-    addons, discounts, services, locationDetails
+    addons, discounts, services, locationDetails,
+    avatarUrl, heroImageUrl
   } = req.body;
 
   if (!userId && !sitterId) {
@@ -72,7 +73,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         home_environment: homeEnvironment.map((h: any) => h.text),
         care_style: careStyle.map((c: any) => c.text),
         parent_expectations: parentExpectations.map((p: any) => p.text),
-        location_details: locationDetails // Add this
+        location_details: locationDetails, // Add this
+        avatar_url: avatarUrl,
+        hero_image_url: heroImageUrl
     };
 
     // If no user linked, update profile fields on sitter table
