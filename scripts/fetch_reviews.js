@@ -2,14 +2,18 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-// Hardcoded Dev Credentials (since .env.local might point to Prod)
-const SUPABASE_URL = 'https://dsnjzdtfezcsctdjlsje.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzbmp6ZHRmZXpjc2N0ZGpsc2plIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NjIzMTEsImV4cCI6MjA3NTQzODMxMX0.-a8GR4oTnCj9eHPddl7vHLiVeNTZle3Reqdhm4eTfl8';
+// Load .env.local if present
+require('dotenv').config({ path: '.env.local' });
+
+// Allow env vars to override, otherwise default to Hardcoded Dev Credentials
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://dsnjzdtfezcsctdjlsje.supabase.co';
+// Try Service Key first (for Prod), then Anon Key (for Dev defaults)
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzbmp6ZHRmZXpjc2N0ZGpsc2plIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NjIzMTEsImV4cCI6MjA3NTQzODMxMX0.-a8GR4oTnCj9eHPddl7vHLiVeNTZle3Reqdhm4eTfl8';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function fetchReviews() {
-  console.log('Fetching reviews from DEV...');
+  console.log(`Fetching reviews from ${SUPABASE_URL}...`);
   
   // Join with sitters to get slug
   // We explicitly select columns to match seed expectations
@@ -44,6 +48,20 @@ async function fetchReviews() {
   }).filter(r => r.sitter_slug); // Ensure we have a slug
 
   const outFile = path.join(process.cwd(), 'data', 'reviews.json');
+  
+  // Safety Check: If Prod returns 0 reviews, do NOT overwrite an existing file that has data.
+  // This prevents accidentally wiping the seed file when deploying to a fresh/empty Production env.
+  if (reviews.length === 0) {
+    if (fs.existsSync(outFile)) {
+      const existingData = JSON.parse(fs.readFileSync(outFile, 'utf-8'));
+      if (existingData.length > 0) {
+        console.warn('⚠️  Fetched 0 reviews from remote, but local data/reviews.json has ' + existingData.length + ' reviews.');
+        console.warn('⚠️  Skipping overwrite to preserve local seed data.');
+        return;
+      }
+    }
+  }
+
   fs.writeFileSync(outFile, JSON.stringify(reviews, null, 2));
   console.log(`Saved ${reviews.length} reviews to data/reviews.json`);
 }
