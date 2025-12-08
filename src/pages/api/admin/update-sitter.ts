@@ -130,13 +130,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         await supabaseAdmin.from('sitter_addons').delete().in('id', addonsToDelete);
     }
 
-    const addonsToUpsert = addons.map((a: any) => ({
-        id: a.id, // If undefined, Supabase generates new UUID
-        sitter_id: targetSitterId,
-        name: a.name,
-        price_cents: Math.round(a.price * 100),
-        description: a.description
-    }));
+    const addonsToUpsert = addons.map((a: any) => {
+        const item: any = {
+            sitter_id: targetSitterId,
+            name: a.name,
+            price_cents: Math.round(a.price * 100),
+            description: a.description
+        };
+        if (a.id) item.id = a.id;
+        return item;
+    });
     if (addonsToUpsert.length > 0) {
         const { error: addonError } = await supabaseAdmin.from('sitter_addons').upsert(addonsToUpsert);
         if (addonError) throw new Error(`Addons update error: ${addonError.message}`);

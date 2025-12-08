@@ -325,99 +325,108 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
     const handleImageUpload = async (fileOrEvent: React.ChangeEvent<HTMLInputElement> | Blob, type: 'gallery' | 'avatar' | 'hero' = 'gallery') => {
         if (!currentSlug) return;
         
-        let file: File | Blob;
+        const files: Array<File | Blob> = [];
         if (fileOrEvent instanceof Blob) {
-            file = fileOrEvent;
+            files.push(fileOrEvent);
         } else {
-            // This is for gallery direct upload
             if (!fileOrEvent.target.files?.length) return;
-            file = fileOrEvent.target.files[0];
+            // Convert FileList to Array
+            for (let i = 0; i < fileOrEvent.target.files.length; i++) {
+                files.push(fileOrEvent.target.files[i]);
+            }
         }
 
         setIsUploading(true);
 
         try {
-            // 1. HEIC/HEIF Conversion
-            let fileToProcess = file;
-            if (file instanceof File && (file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif'))) {
-                try {
-                    const heic2any = (await import('heic2any')).default;
-                    const convertedBlob = await heic2any({
-                        blob: file,
-                        toType: 'image/jpeg',
-                        quality: 0.8
-                    });
-                    
-                    // heic2any can return Blob or Blob[], we handle single file here
-                    const finalBlob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
-                    
-                    // Create a new File object from the Blob to preserve name (but with .jpg extension)
-                    const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
-                    fileToProcess = new File([finalBlob], newName, { type: 'image/jpeg' });
-                    
-                } catch (e) {
-                    console.error("HEIC conversion failed:", e);
-                    alert("Failed to process HEIC image. Please try converting to JPEG first.");
-                    setIsUploading(false);
-                    return;
+            // Process files sequentially
+            for (const originalFile of files) {
+                let fileToProcess = originalFile;
+
+                // 1. HEIC/HEIF Conversion
+                if (fileToProcess instanceof File && (fileToProcess.name.toLowerCase().endsWith('.heic') || fileToProcess.name.toLowerCase().endsWith('.heif'))) {
+                    try {
+                        const heic2any = (await import('heic2any')).default;
+                        const convertedBlob = await heic2any({
+                            blob: fileToProcess,
+                            toType: 'image/jpeg',
+                            quality: 0.8
+                        });
+                        
+                        const finalBlob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+                        const newName = fileToProcess.name.replace(/\.(heic|heif)$/i, '.jpg');
+                        fileToProcess = new File([finalBlob], newName, { type: 'image/jpeg' });
+                    } catch (err) {
+                        console.error("HEIC conversion failed", err);
+                        // Continue ensuring we try to upload original if conversion fails, or maybe skip? 
+                        // If conversion fails, likely upload will fail if backend doesn't support HEIC, but let's try proceed or fallback to original.
+                    }
+                }
+
+                // 2. Image Compression (Client-side)
+                let compressedFile = fileToProcess;
+                if (fileToProcess instanceof File || fileToProcess instanceof Blob) {
+                    try {
+                        const imageCompression = (await import('browser-image-compression')).default;
+                        // Options for compression
+                        const options = {
+                            maxSizeMB: 1,          // Max size ~1MB
+                            maxWidthOrHeight: 1920, // Max dimension 1920px (FHD)
+                            useWebWorker: true,
+                            fileType: 'image/jpeg'  // Force convert to JPEG if not already
+                        };
+                        
+                        // browser-image-compression requires a File object (or Blob)
+                        // If it's a blob from cropper, we might need to wrap it? 
+                        // The library handles File/Blob.
+                        compressedFile = await imageCompression(fileToProcess as File, options);
+                        
+                    } catch (cErr) {
+                        console.warn("Compression failed, using original file", cErr);
+                    }
+                }
+
+                // 3. Upload
+                const formData = new FormData();
+                formData.append('slug', currentSlug);
+                
+                // Use the actual filename if possible to avoid overwriting 'upload.jpg' repeatedly
+                // If it's a generic Blob (from cropper), we give it a unique name
+                const fileName = (compressedFile instanceof File) ? compressedFile.name : `upload-${Date.now()}.jpg`;
+                formData.append('file', compressedFile, fileName); 
+                formData.append('type', type);
+
+                const res = await fetch('/api/admin/gallery', { method: 'POST', body: formData });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Upload failed');
+                }
+                
+                const data = await res.json();
+                if (data.url) {
+                    if (type === 'avatar') setValue('avatarUrl', data.url);
+                    else if (type === 'hero') setValue('heroImageUrl', data.url);
                 }
             }
 
-            // 2. Image Compression
-            let compressedFile = fileToProcess;
-            // Only compress if it's an image file (skip if it's already a blob from cropper which is optimized-ish, but let's be safe)
-            // If it's a File object or Blob with image type
-            if ((fileToProcess instanceof File) || (fileToProcess.type.startsWith('image/'))) {
-                try {
-                    const imageCompression = (await import('browser-image-compression')).default;
-                    const options = {
-                        maxSizeMB: 1, // Max 1MB
-                        maxWidthOrHeight: 1920, // Max 1920px width/height
-                        useWebWorker: true,
-                        fileType: 'image/jpeg' // Force convert everything to JPEG for consistency
-                    };
-                    
-                    // browser-image-compression expects File, if Blob (from cropper), wrap it
-                    const fileForCompression = (fileToProcess instanceof File) 
-                        ? fileToProcess 
-                        : new File([fileToProcess], "image.jpg", { type: fileToProcess.type });
-
-                    compressedFile = await imageCompression(fileForCompression, options);
-                } catch (e) {
-                     console.warn("Image compression failed, uploading original:", e);
-                }
-            }
-
-            const formData = new FormData();
-            formData.append('slug', currentSlug);
-            
-            // Use the actual filename if possible to avoid overwriting 'upload.jpg' repeatedly
-            // If it was a generic Blob (from cropper), we give it a unique name
-            const fileName = (compressedFile instanceof File) ? compressedFile.name : `upload-${Date.now()}.jpg`;
-            formData.append('file', compressedFile, fileName); 
-            formData.append('type', type);
-
-            const res = await fetch('/api/admin/gallery', { method: 'POST', body: formData });
-            if (!res.ok) throw new Error('Upload failed');
-            
-            const data = await res.json();
-            if (data.url) {
-                if (type === 'avatar') setValue('avatarUrl', data.url);
-                else if (type === 'hero') setValue('heroImageUrl', data.url);
-                else if (type === 'gallery') {
-                    // Refresh gallery
+            if (type === 'gallery') {
+                 try {
                     const galleryRes = await fetch(`/api/admin/gallery?slug=${currentSlug}`);
                     const gData = await galleryRes.json();
                     if (gData.images) setGalleryImages(gData.images);
-                }
+                 } catch (fetchErr) {
+                     console.error("Failed to refresh gallery", fetchErr);
+                 }
             }
-        } catch (err) {
-            console.error(err);
-            alert('Failed to upload image');
+            
+        } catch (error: any) {
+            console.error(error);
+            alert(`Error uploading image: ${error.message}`);
         } finally {
             setIsUploading(false);
-            if (!(fileOrEvent instanceof Blob) && fileOrEvent.target) {
-                 fileOrEvent.target.value = '';
+            // Reset input if it was an event
+            if (!(fileOrEvent instanceof Blob)) {
+                fileOrEvent.target.value = '';
             }
         }
     };
@@ -797,7 +806,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                                     {isUploading ? 'Uploading...' : 'Drop files to Attach, or browse'}
                                 </span>
                             </span>
-                            <input type="file" name="file_upload" className="hidden" onChange={(e) => handleImageUpload(e, 'gallery')} disabled={isUploading} accept="image/*,.heic,.heif" />
+                            <input type="file" name="file_upload" className="hidden" onChange={(e) => handleImageUpload(e, 'gallery')} disabled={isUploading} accept="image/*,.heic,.heif" multiple />
                         </label>
                     </div>
 
