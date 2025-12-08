@@ -1,15 +1,15 @@
 import Head from "next/head";
 
 const SITE_URL = "https://www.ruhrohretreat.com";
-const SOCIAL_IMAGE = `${SITE_URL}/ruhrohretreat-social.jpg`;
+const SOCIAL_IMAGE = `${SITE_URL}/hero/landing-hero.png`;
 const META_TITLE = "Ruh-Roh Retreat | Boutique In-Home Dog Sitting in Irvine & Wildomar";
 const META_DESCRIPTION =
   "Boutique in-home dog sitting powered by Badge-Rated sitters who deliver calm, structured care, daily updates, and vacation-style add-ons throughout Irvine and Wildomar.";
 
 export const DefaultMetaData = () => (
   <Head>
-    <title>{META_TITLE}</title>
-    <meta name="description" content={META_DESCRIPTION} />
+    <title key="title">{META_TITLE}</title>
+    <meta key="description" name="description" content={META_DESCRIPTION} />
     <meta
       name="keywords"
       content="boutique dog boarding, Irvine dog sitter, Wildomar dog boarding, badge-rated sitters, calm dog care, structured dog daycare, Ruh-Roh Retreat, luxury dog add-ons"
@@ -20,17 +20,17 @@ export const DefaultMetaData = () => (
 
     {/* Twitter Card Metadata */}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={META_TITLE} />
-    <meta name="twitter:description" content={META_DESCRIPTION} />
-    <meta name="twitter:image" content={SOCIAL_IMAGE} />
+    <meta key="twitter:title" name="twitter:title" content={META_TITLE} />
+    <meta key="twitter:description" name="twitter:description" content={META_DESCRIPTION} />
+    <meta key="twitter:image" name="twitter:image" content={SOCIAL_IMAGE} />
     <meta name="twitter:site" content="@ruhrohretreat" />
 
     {/* Open Graph Metadata */}
-    <meta property="og:title" content={META_TITLE} />
-    <meta property="og:description" content={META_DESCRIPTION} />
-    <meta property="og:image" content={SOCIAL_IMAGE} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={SITE_URL} />
+    <meta key="og:title" property="og:title" content={META_TITLE} />
+    <meta key="og:description" property="og:description" content={META_DESCRIPTION} />
+    <meta key="og:image" property="og:image" content={SOCIAL_IMAGE} />
+    <meta key="og:type" property="og:type" content="website" />
+    <meta key="og:url" property="og:url" content={SITE_URL} />
     <meta property="og:site_name" content="Ruh-Roh Retreat" />
     <meta property="og:locale" content="en_US" />
 
@@ -127,7 +127,7 @@ export function BlogPostMetaData({
 }: BlogPostMetaDataProps) {
   const imageUrl = hasCoverImage
     ? `https://www.ruhrohretreat.com/posts/${slug}/cover.jpg`
-    : "https://www.ruhrohretreat.com/ruhrohretreat-social.jpg";
+    : "https://www.ruhrohretreat.com/hero/landing-hero.png";
 
   const fullTitle = `${title} - Ruh-Roh Retreat Blog`;
   const formattedDate = new Date(date).toLocaleDateString("en-US", {

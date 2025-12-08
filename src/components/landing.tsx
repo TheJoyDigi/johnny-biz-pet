@@ -65,7 +65,7 @@ function LandingComponent() {
             name: "Ruh-Roh Retreat",
             description:
               "Boutique in-home dog sitting powered by Badge-Rated sitters who specialize in calm, structured care and vacation-style add-ons for Orange County and Temecula Valley pet parents.",
-            image: "https://www.ruhrohretreat.com/ruhrohretreat-social.jpg",
+            image: "https://www.ruhrohretreat.com/hero/landing-hero.png",
             url: "https://www.ruhrohretreat.com",
             telephone: "+17143294534",
             priceRange: "$$",

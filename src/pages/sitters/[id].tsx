@@ -23,13 +23,13 @@ const SitterPage = ({ sitter }: SitterPageProps) => {
   return (
     <>
       <Head>
-        <title>{metaTitle}</title>
-        <meta name="description" content={metaDescription} />
+        <title key="title">{metaTitle}</title>
+        <meta key="description" name="description" content={metaDescription} />
         {/* Open Graph */}
-        <meta property="og:title" content={metaTitle} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:image" content={sitter.heroImage} />
-        <meta property="og:type" content="profile" />
+        <meta key="og:title" property="og:title" content={metaTitle} />
+        <meta key="og:description" property="og:description" content={metaDescription} />
+        <meta key="og:image" property="og:image" content={sitter.heroImage} />
+        <meta key="og:type" property="og:type" content="profile" />
         
         {/* Structured Data for Sitter */}
         <script

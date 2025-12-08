@@ -65,6 +65,6 @@ describe('BlogPostMetaData', () => {
   it('renders the default image URL when hasCoverImage is false', () => {
     render(<BlogPostMetaData {...mockPost} hasCoverImage={false} />, { container: document.head });
     const ogImage = document.querySelector('meta[property="og:image"]');
-    expect(ogImage).toHaveAttribute('content', 'https://www.ruhrohretreat.com/ruhrohretreat-social.jpg');
+    expect(ogImage).toHaveAttribute('content', 'https://www.ruhrohretreat.com/hero/landing-hero.png');
   });
 });
