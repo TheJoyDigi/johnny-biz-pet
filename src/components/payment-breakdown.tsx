@@ -28,8 +28,9 @@ export default function PaymentBreakdown({ booking, sitter, nights }: PaymentBre
   if (booking.status === 'PENDING_SITTER_ACCEPTANCE' && sitter) {
     cost = calculateBookingCost(booking, sitter);
   } else {
+    // For confirmed/paid bookings, use the stored snapshots
     cost = {
-      baseRate: booking.base_rate_at_booking_cents || 0,
+      baseRate: booking.base_rate_at_booking_cents || 0, // This is the nightly rate
       addOnsCost: booking.addons_total_cost_cents || 0,
       discount: booking.discount_applied_cents || 0,
       totalCost: booking.total_cost_cents || 0,

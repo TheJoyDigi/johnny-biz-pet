@@ -98,7 +98,7 @@ export default async function handler(
         id, 
         sitter_primary_services (
             price_cents,
-            service_types ( slug, name )
+            service_types ( id, slug, name )
         )
       `)
       .eq("id", sitterId)
@@ -113,17 +113,35 @@ export default async function handler(
     // Find the matching service price
     // serviceId from body could be name or slug. Try to match both.
     let _baseRateCents = 0;
+    let _serviceTypeId = null;
+
     if (sitterData.sitter_primary_services && Array.isArray(sitterData.sitter_primary_services)) {
-        const found = sitterData.sitter_primary_services.find((s: any) => 
-            s.service_types.slug === serviceId || s.service_types.name === serviceId
-        );
+        const found = sitterData.sitter_primary_services.find((s: any) => {
+            // @ts-ignore
+            const st = Array.isArray(s.service_types) ? s.service_types[0] : s.service_types;
+            return st?.slug === serviceId || st?.name === serviceId;
+        });
+
         // If not found, default to first service or remain 0 (maybe 'Dog Boarding' default?)
         if (found) {
             _baseRateCents = found.price_cents;
+            // @ts-ignore
+            const st = Array.isArray(found.service_types) ? found.service_types[0] : found.service_types;
+            _serviceTypeId = st?.id;
         } else {
              // Fallback to Dog Boarding if specific service not matched
-             const defaultService = sitterData.sitter_primary_services.find((s: any) => s.service_types.slug === 'dog-boarding');
-             if (defaultService) _baseRateCents = defaultService.price_cents;
+             const defaultService = sitterData.sitter_primary_services.find((s: any) => {
+                // @ts-ignore
+                const st = Array.isArray(s.service_types) ? s.service_types[0] : s.service_types;
+                return st?.slug === 'dog-boarding';
+             });
+             
+             if (defaultService) {
+                 _baseRateCents = defaultService.price_cents;
+                  // @ts-ignore
+                 const st = Array.isArray(defaultService.service_types) ? defaultService.service_types[0] : defaultService.service_types;
+                 _serviceTypeId = st?.id;
+             }
         }
     }
 
@@ -183,6 +201,7 @@ export default async function handler(
         end_date: endDate,
         county: locationName, // Approximate mapping
         status: "PENDING_SITTER_ACCEPTANCE",
+        service_type_id: _serviceTypeId,
         base_rate_at_booking_cents: _baseRateCents,
         // total_cost_cents: ... calculation logic could go here or DB function
       })

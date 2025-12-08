@@ -69,6 +69,10 @@ interface SitterFormProps {
     serviceTypes: any[];
     onSubmit: (data: SitterFormValues) => Promise<void>;
     isSubmitting: boolean;
+    endpoints?: {
+        gallery: string;
+        update: string;
+    };
 }
 
 // Helper for centering crop
@@ -88,7 +92,10 @@ function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: numbe
   )
 }
 
-export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmitting }: SitterFormProps) {
+export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmitting, endpoints }: SitterFormProps) {
+    const galleryApi = endpoints?.gallery || '/api/admin/gallery';
+    const updateApi = endpoints?.update || '/api/admin/update-sitter';
+
     const [activeTab, setActiveTab] = useState('profile');
     const [galleryImages, setGalleryImages] = useState<{name: string, url: string}[]>([]);
     const [isUploading, setIsUploading] = useState(false);
@@ -172,7 +179,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
     // Fetch Gallery
     useEffect(() => {
         if (activeTab === 'gallery' && currentSlug) {
-            fetch(`/api/admin/gallery?slug=${currentSlug}`)
+            fetch(`${galleryApi}?slug=${currentSlug}`)
                 .then(res => res.json())
                 .then(data => {
                     if(data.images) setGalleryImages(data.images);
@@ -397,7 +404,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                 formData.append('file', compressedFile, fileName); 
                 formData.append('type', type);
 
-                const res = await fetch('/api/admin/gallery', { method: 'POST', body: formData });
+                const res = await fetch(galleryApi, { method: 'POST', body: formData });
                 if (!res.ok) {
                     const err = await res.json();
                     throw new Error(err.message || 'Upload failed');
@@ -409,7 +416,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                         setValue('avatarUrl', data.url);
                         // Auto-save avatar URL
                         if (sitter?.id || sitter?.user_id) {
-                            fetch('/api/admin/update-sitter', {
+                            fetch(updateApi, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -424,7 +431,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                         setValue('heroImageUrl', data.url);
                          // Auto-save hero URL
                         if (sitter?.id || sitter?.user_id) {
-                            fetch('/api/admin/update-sitter', {
+                            fetch(updateApi, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -440,7 +447,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
 
             if (type === 'gallery') {
                  try {
-                    const galleryRes = await fetch(`/api/admin/gallery?slug=${currentSlug}`);
+                    const galleryRes = await fetch(`${galleryApi}?slug=${currentSlug}`);
                     const gData = await galleryRes.json();
                     if (gData.images) setGalleryImages(gData.images);
                  } catch (fetchErr) {
@@ -463,7 +470,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
     const handleDeleteImage = async (filename: string) => {
         if (!confirm('Are you sure you want to delete this image?')) return;
         try {
-            const res = await fetch('/api/admin/gallery', { 
+            const res = await fetch(galleryApi, { 
                 method: 'DELETE', 
                 body: JSON.stringify({ slug: currentSlug, filename }) 
             });

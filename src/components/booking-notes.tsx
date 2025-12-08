@@ -43,7 +43,7 @@ const BookingNotes = ({
           <div key={note.id} className="border-b pb-2">
             <p className="text-gray-800">{note.note}</p>
             <p className="text-sm text-gray-500">
-              {note.user.first_name} {note.user.last_name} -{" "}
+              {note.user ? `${note.user.first_name || 'Admin'} ${note.user.last_name || ''}` : 'System'} -{" "}
               {formatTimestamp(note.created_at)}
             </p>
           </div>
