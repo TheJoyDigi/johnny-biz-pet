@@ -150,7 +150,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
         }),
     };
 
-    const { control, register, handleSubmit, watch, setValue, formState: { errors } } = useForm<SitterFormValues>({
+    const { control, register, handleSubmit, watch, setValue, formState: { errors, isDirty } } = useForm<SitterFormValues>({
         resolver: zodResolver(sitterSchema),
         defaultValues
     });
@@ -576,7 +576,33 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Phone</label>
-                            <input {...register('phone')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" />
+                            <Controller
+                                name="phone"
+                                control={control}
+                                render={({ field: { onChange, value, ...field } }) => (
+                                    <input
+                                        {...field}
+                                        value={value || ''}
+                                        onChange={(e) => {
+                                            const rawValue = e.target.value.replace(/\D/g, '');
+                                            let formatted = rawValue;
+                                            if (rawValue.length > 0) {
+                                                if (rawValue.length <= 3) {
+                                                    formatted = `(${rawValue}`;
+                                                } else if (rawValue.length <= 6) {
+                                                    formatted = `(${rawValue.slice(0, 3)}) ${rawValue.slice(3)}`;
+                                                } else {
+                                                    formatted = `(${rawValue.slice(0, 3)}) ${rawValue.slice(3, 6)}-${rawValue.slice(6, 10)}`;
+                                                }
+                                            }
+                                            onChange(formatted);
+                                        }}
+                                        maxLength={14}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                        placeholder="(555) 555-5555"
+                                    />
+                                )}
+                            />
                         </div>
                         <div className="col-span-2">
                             <label className="block text-sm font-medium text-gray-700">Tagline</label>
@@ -861,6 +887,32 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                         {isSubmitting ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
+                {/* Unsaved Changes Floating Banner */}
+                {isDirty && (
+                    <div className="fixed bottom-6 w-[90%] md:w-auto left-1/2 transform -translate-x-1/2 bg-gray-900/90 backdrop-blur text-white shadow-2xl rounded-full px-8 py-3 flex items-center justify-between gap-6 z-50">
+                        <span className="font-medium text-sm flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+                            Unsaved changes
+                        </span>
+                        <div className="flex items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={() => window.location.reload()}
+                                className="px-3 py-1.5 text-xs text-gray-300 hover:text-white font-medium transition-colors"
+                            >
+                                Discard
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleSubmit(onSubmit)}
+                                disabled={isSubmitting}
+                                className="px-5 py-1.5 bg-white text-gray-900 rounded-full text-xs font-bold hover:bg-gray-100 shadow-sm transition-all transform hover:scale-105"
+                            >
+                                {isSubmitting ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    </div>
+                )}
             </form>
         </div>
     );
