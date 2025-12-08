@@ -1,0 +1,2 @@
+- [] sitter details image gallery on small screen please show more thumbnails on default views, add nice icons to show number of photos and indicate that user can click to view all photos, when user see all photo please show dot navigation at the bottom so that user knows that they can swipe to view all photos
+![alt text](image-2.png)

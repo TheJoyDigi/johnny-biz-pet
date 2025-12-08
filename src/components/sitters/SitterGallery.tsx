@@ -67,42 +67,39 @@ export default function SitterGallery({ photos, title }: SitterGalleryProps) {
     <div className="space-y-4">
         {title && <h2 className="text-xl font-semibold text-[#333333] mb-4">{title}</h2>}
         
-        {/* Mobile: Horizontal Swipeable List (Scroll Snap) */}
-        <div className="relative md:hidden group">
-            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
-                {photos.slice(0, 6).map((photo, index) => (
+        {/* Mobile: Grid Layout (First 4 items) */}
+        <div className="relative md:hidden">
+            <div className="grid grid-cols-2 gap-2 rounded-xl overflow-hidden">
+                {photos.slice(0, 4).map((photo, index) => (
                     <div 
                         key={photo.id} 
-                        className="flex-shrink-0 w-[85vw] h-64 relative rounded-xl overflow-hidden snap-center shadow-sm"
-                        onClick={() => setLightboxIndex(index)}
+                        className={`relative aspect-[4/3] bg-gray-100 ${index === 0 && photos.length % 2 !== 0 ? 'col-span-2 aspect-[16/9]' : ''}`}
+                        onClick={() => setShowGridModal(true)}
                     >
                         <Image
                             src={photo.src}
                             alt={photo.alt}
                             fill
                             className="object-cover"
-                            sizes="85vw"
+                            sizes="(max-width: 768px) 50vw, 33vw"
                         />
+                         {/* Overlay on the last visible item if there are more photos */}
+                        {index === 3 && photos.length > 4 && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-medium text-lg">
+                                +{photos.length - 4}
+                            </div>
+                        )}
+                        {/* Overlay on the last item if it's the 4th item but total is exactly 4, or generally just make the whole thing clickable to open grid/lightbox */}
                     </div>
                 ))}
-                {photos.length > 5 && (
-                    <div className="flex-shrink-0 w-[30vw] h-64 flex items-center justify-center snap-center">
-                         <button 
-                            onClick={() => setShowGridModal(true)}
-                            className="flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-[#1A9CB0]"
-                        >
-                            <span className="bg-gray-100 p-4 rounded-full">
-                                <FaTh className="w-6 h-6" />
-                            </span>
-                            <span className="text-sm font-medium">View All</span>
-                        </button>
-                    </div>
-                )}
             </div>
             
-            {/* Simple Indicator for Mobile */}
-            <div className="absolute top-4 right-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full pointer-events-none">
-                {photos.length} photos
+            {/* View All Button (Floating) */}
+            <div className="absolute bottom-4 right-4 pointer-events-none">
+                 <div className="bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 pointer-events-auto cursor-pointer" onClick={() => setShowGridModal(true)}>
+                    <FaImages className="w-3.5 h-3.5" />
+                    <span>{photos.length} photos</span>
+                </div>
             </div>
         </div>
 
@@ -247,19 +244,16 @@ export default function SitterGallery({ photos, title }: SitterGalleryProps) {
                         </button>
                     </div>
 
-                    {/* Thumbnails Strip (Desktop only) */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden md:flex gap-2 p-2 bg-black/40 rounded-xl overflow-x-auto max-w-[80vw]">
-                         {photos.map((photo, idx) => (
-                             <button
-                                key={photo.id}
-                                onClick={(e) => { e.stopPropagation(); setLightboxIndex(idx); }}
-                                className={`relative w-12 h-12 rounded-md overflow-hidden transition-all ${
-                                    idx === lightboxIndex ? 'ring-2 ring-white scale-110' : 'opacity-60 hover:opacity-100'
-                                }`}
-                             >
-                                <Image src={photo.src} alt="thumbnail" fill className="object-cover" />
-                             </button>
-                         ))}
+
+
+                     {/* Dot Navigation (Mobile) */}
+                    <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 md:hidden z-30">
+                        {photos.map((_, idx) => (
+                            <div 
+                                key={idx}
+                                className={`w-2 h-2 rounded-full transition-all ${idx === lightboxIndex ? 'bg-white scale-110' : 'bg-white/40'}`}
+                            />
+                        ))}
                     </div>
                 </motion.div>
             )}

@@ -235,13 +235,34 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
         }
     };
 
-    const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'hero') => {
+    const onSelectFile = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'hero') => {
         if (e.target.files && e.target.files.length > 0) {
             setCropType(type);
             setCrop(undefined); // Reset crop
+            
+            const file = e.target.files[0];
+            let blobToRead: Blob = file;
+
+            if (file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')) {
+                try {
+                    const heic2any = (await import('heic2any')).default;
+                    const convertedBlob = await heic2any({
+                        blob: file,
+                        toType: 'image/jpeg',
+                        quality: 0.8
+                    });
+                     // heic2any can return Blob or Blob[], we handle single file here
+                    blobToRead = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+                } catch (err) {
+                    console.error("Failed to convert HEIC for cropping", err);
+                    alert("Could not load HEIC image for cropping.");
+                    return;
+                }
+            }
+
             const reader = new FileReader();
             reader.addEventListener('load', () => setImgSrc(reader.result?.toString() || ''));
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(blobToRead);
             setShowCropModal(true);
             // Reset input value so same file can be selected again if needed
             e.target.value = '';
@@ -314,15 +335,68 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
         }
 
         setIsUploading(true);
-        const formData = new FormData();
-        formData.append('slug', currentSlug);
-        // Use a generic name for blob, the server/handler should rename it or we append type
-        // For avatars/heroes, we might want specific filenames like 'avatar.jpg' or 'hero.jpg'
-        // The API should handle this logic based on 'type'
-        formData.append('file', file, 'upload.jpg'); 
-        formData.append('type', type);
 
         try {
+            // 1. HEIC/HEIF Conversion
+            let fileToProcess = file;
+            if (file instanceof File && (file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif'))) {
+                try {
+                    const heic2any = (await import('heic2any')).default;
+                    const convertedBlob = await heic2any({
+                        blob: file,
+                        toType: 'image/jpeg',
+                        quality: 0.8
+                    });
+                    
+                    // heic2any can return Blob or Blob[], we handle single file here
+                    const finalBlob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+                    
+                    // Create a new File object from the Blob to preserve name (but with .jpg extension)
+                    const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+                    fileToProcess = new File([finalBlob], newName, { type: 'image/jpeg' });
+                    
+                } catch (e) {
+                    console.error("HEIC conversion failed:", e);
+                    alert("Failed to process HEIC image. Please try converting to JPEG first.");
+                    setIsUploading(false);
+                    return;
+                }
+            }
+
+            // 2. Image Compression
+            let compressedFile = fileToProcess;
+            // Only compress if it's an image file (skip if it's already a blob from cropper which is optimized-ish, but let's be safe)
+            // If it's a File object or Blob with image type
+            if ((fileToProcess instanceof File) || (fileToProcess.type.startsWith('image/'))) {
+                try {
+                    const imageCompression = (await import('browser-image-compression')).default;
+                    const options = {
+                        maxSizeMB: 1, // Max 1MB
+                        maxWidthOrHeight: 1920, // Max 1920px width/height
+                        useWebWorker: true,
+                        fileType: 'image/jpeg' // Force convert everything to JPEG for consistency
+                    };
+                    
+                    // browser-image-compression expects File, if Blob (from cropper), wrap it
+                    const fileForCompression = (fileToProcess instanceof File) 
+                        ? fileToProcess 
+                        : new File([fileToProcess], "image.jpg", { type: fileToProcess.type });
+
+                    compressedFile = await imageCompression(fileForCompression, options);
+                } catch (e) {
+                     console.warn("Image compression failed, uploading original:", e);
+                }
+            }
+
+            const formData = new FormData();
+            formData.append('slug', currentSlug);
+            
+            // Use the actual filename if possible to avoid overwriting 'upload.jpg' repeatedly
+            // If it was a generic Blob (from cropper), we give it a unique name
+            const fileName = (compressedFile instanceof File) ? compressedFile.name : `upload-${Date.now()}.jpg`;
+            formData.append('file', compressedFile, fileName); 
+            formData.append('type', type);
+
             const res = await fetch('/api/admin/gallery', { method: 'POST', body: formData });
             if (!res.ok) throw new Error('Upload failed');
             
@@ -486,7 +560,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                                 )}
                                 <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
                                     Change
-                                    <input type="file" className="hidden" onChange={(e) => onSelectFile(e, 'avatar')} accept="image/*" />
+                                    <input type="file" className="hidden" onChange={(e) => onSelectFile(e, 'avatar')} accept="image/*,.heic,.heif" />
                                 </label>
                             </div>
                         </div>
@@ -506,7 +580,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                                 )}
                                 <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
                                     Change
-                                    <input type="file" className="hidden" onChange={(e) => onSelectFile(e, 'hero')} accept="image/*" />
+                                    <input type="file" className="hidden" onChange={(e) => onSelectFile(e, 'hero')} accept="image/*,.heic,.heif" />
                                 </label>
                             </div>
                         </div>
@@ -723,7 +797,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                                     {isUploading ? 'Uploading...' : 'Drop files to Attach, or browse'}
                                 </span>
                             </span>
-                            <input type="file" name="file_upload" className="hidden" onChange={(e) => handleImageUpload(e, 'gallery')} disabled={isUploading} />
+                            <input type="file" name="file_upload" className="hidden" onChange={(e) => handleImageUpload(e, 'gallery')} disabled={isUploading} accept="image/*,.heic,.heif" />
                         </label>
                     </div>
 

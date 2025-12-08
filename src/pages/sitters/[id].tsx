@@ -105,7 +105,7 @@ export const getStaticProps: GetStaticProps<SitterPageProps> = async ({ params }
     props: {
       sitter,
     },
-    revalidate: 60,
+    revalidate: 10,
   };
 };
 

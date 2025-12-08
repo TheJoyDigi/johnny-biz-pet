@@ -65,7 +65,15 @@ export default async function handler(req: any, res: any) {
                 });
             
             if (error) return res.status(500).json({ error: error.message });
-            return res.json({ success: true });
+
+            // Revalidate the sitter page so the public sees changes immediately
+            try {
+                await res.revalidate(`/sitters/${slug}`);
+            } catch (revalError) {
+                console.warn(`Failed to revalidate /sitters/${slug}:`, revalError);
+            }
+
+            return res.json({ success: true, url: supabase.storage.from(bucket).getPublicUrl(`${folder}/gallery/${file.originalFilename}`).data.publicUrl });
 
         } catch (err: any) {
             return res.status(500).json({ error: err.message });
@@ -89,6 +97,14 @@ export default async function handler(req: any, res: any) {
             .remove([`${folder}/gallery/${filename}`]);
 
         if (error) return res.status(500).json({ error: error.message });
+
+        // Revalidate the sitter page
+        try {
+            await res.revalidate(`/sitters/${slug}`);
+        } catch (revalError) {
+            console.warn(`Failed to revalidate /sitters/${slug}:`, revalError);
+        }
+
         return res.json({ success: true });
     }
 
