@@ -51,15 +51,19 @@ export default async function handler(req: any, res: any) {
 
             const slug = fields.slug?.[0];
             const file = files.file?.[0];
+            const type = fields.type?.[0] || 'gallery';
             
             if (!slug || !file) return res.status(400).json({ error: 'Missing slug or file' });
 
             const folder = await getSitterId(slug);
             const fileContent = fs.readFileSync(file.filepath);
+
+            // Determine subfolder based on type
+            const subfolder = (type === 'avatar' || type === 'hero') ? type : 'gallery';
             
             const { error } = await supabase.storage
                 .from(bucket)
-                .upload(`${folder}/gallery/${file.originalFilename}`, fileContent, {
+                .upload(`${folder}/${subfolder}/${file.originalFilename}`, fileContent, {
                     contentType: file.mimetype || 'image/jpeg',
                     upsert: true
                 });
@@ -73,7 +77,7 @@ export default async function handler(req: any, res: any) {
                 console.warn(`Failed to revalidate /sitters/${slug}:`, revalError);
             }
 
-            return res.json({ success: true, url: supabase.storage.from(bucket).getPublicUrl(`${folder}/gallery/${file.originalFilename}`).data.publicUrl });
+            return res.json({ success: true, url: supabase.storage.from(bucket).getPublicUrl(`${folder}/${subfolder}/${file.originalFilename}`).data.publicUrl });
 
         } catch (err: any) {
             return res.status(500).json({ error: err.message });

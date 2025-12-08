@@ -174,8 +174,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (slug) {
             await res.revalidate(`/sitters/${slug}`);
         }
+        await res.revalidate('/sitters');
     } catch (revalError) {
-        console.warn(`Failed to revalidate /sitters/${slug}:`, revalError);
+        console.warn(`Failed to revalidate pages:`, revalError);
     }
 
     res.status(200).json({ message: 'Sitter updated successfully.' });
