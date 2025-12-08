@@ -166,6 +166,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (discountError) throw new Error(`Discounts update error: ${discountError.message}`);
     }
 
+    // Revalidate the sitter page
+    try {
+        if (slug) {
+            await res.revalidate(`/sitters/${slug}`);
+        }
+    } catch (revalError) {
+        console.warn(`Failed to revalidate /sitters/${slug}:`, revalError);
+    }
+
     res.status(200).json({ message: 'Sitter updated successfully.' });
 
   } catch (e: any) {
