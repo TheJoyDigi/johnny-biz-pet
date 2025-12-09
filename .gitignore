@@ -47,9 +47,10 @@ supabase/.temp
 public/sitters
 
 # images at root level
-*.jpg
-*.png
-*.webp
+/*.jpg
+/*.jpeg
+/*.png
+/*.webp
 
 # Playwright
 playwright-report/
