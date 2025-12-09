@@ -139,7 +139,7 @@ export function BlogPostMetaData({
   return (
     <Head>
       <title>{fullTitle}</title>
-      <meta name="description" content={description} />
+      <meta key="description" name="description" content={description} />
       <meta name="author" content={author} />
       <meta property="article:published_time" content={date} />
       <meta property="article:author" content={author} />

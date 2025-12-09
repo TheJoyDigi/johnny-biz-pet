@@ -1,2 +1,1 @@
-- [x] generate a new hero image for landing and social sharing that work best for lead, relaistic and still feel natural and friendly using nanobanana
-- [x] write 5 more new blog post
+- [x] enhace padding and spacing for admin pages, sitter dashboard pages on mobile devices, making sure the space is enough for user to interact with the page

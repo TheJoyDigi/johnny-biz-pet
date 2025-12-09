@@ -185,14 +185,14 @@ export default function SitterDashboard() {
                                 {/* <span className="flex items-center gap-1"><UserIcon className="w-4 h-4"/> 1 Pet</span> */}
                             </div>
                         </div>
-                        <div className="flex gap-3">
-                            <button onClick={() => router.push(`/sitter/bookings/${booking.id}`)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                            <button onClick={() => router.push(`/sitter/bookings/${booking.id}`)} className="w-full sm:w-auto px-4 py-3 sm:py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-center">
                                 View Details
                             </button>
-                            <button onClick={() => handleDecline(booking.id)} className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 flex items-center gap-2">
+                            <button onClick={() => handleDecline(booking.id)} className="w-full sm:w-auto px-4 py-3 sm:py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 flex justify-center items-center gap-2">
                                 <X className="w-4 h-4" /> Decline
                             </button>
-                            <button onClick={() => handleAccept(booking.id)} className="px-4 py-2 text-sm font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm flex items-center gap-2">
+                            <button onClick={() => handleAccept(booking.id)} className="w-full sm:w-auto px-4 py-3 sm:py-2 text-sm font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm flex justify-center items-center gap-2">
                                 <Check className="w-4 h-4" /> Accept
                             </button>
                         </div>
@@ -218,15 +218,15 @@ export default function SitterDashboard() {
                                 <span className="flex items-center gap-1"><CalendarCheck className="w-4 h-4"/> {new Date(booking.start_date).toLocaleDateString()} - {new Date(booking.end_date).toLocaleDateString()}</span>
                             </div>
                         </div>
-                         <div className="flex gap-3 items-center">
+                         <div className="flex flex-col sm:flex-row gap-3 items-center mt-4 sm:mt-0 w-full sm:w-auto">
                             <div className="text-right mr-4 hidden md:block">
                                 <p className="text-xs text-gray-500">Coordinate Meet & Greet</p>
                                 <p className="text-xs text-gray-500">Then finalize below</p>
                             </div>
-                            <button onClick={() => router.push(`/sitter/bookings/${booking.id}`)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                            <button onClick={() => router.push(`/sitter/bookings/${booking.id}`)} className="w-full sm:w-auto px-4 py-3 sm:py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-center">
                                 Details
                             </button>
-                            <button onClick={() => handleFinalize(booking.id)} className="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-sm flex items-center gap-2">
+                            <button onClick={() => handleFinalize(booking.id)} className="w-full sm:w-auto px-4 py-3 sm:py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-sm flex justify-center items-center gap-2">
                                 <Check className="w-4 h-4" /> Mark Booked
                             </button>
                         </div>
