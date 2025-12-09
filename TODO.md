@@ -1,1 +1,2 @@
-- [x] check if sitter badges is stored in DB, we need to allow admin to asgined sitter bages and sitter badges will reflex in sitter details page with the correct icons
+- [x] generate a new hero image for landing and social sharing that work best for lead, relaistic and still feel natural and friendly using nanobanana
+- [x] write 5 more new blog post

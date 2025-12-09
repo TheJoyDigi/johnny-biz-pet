@@ -21,7 +21,7 @@ const BlogPosts = ({ posts }: { posts: Post[] }) => {
       {/* Hero Post */}
       {heroPost && (
         <div className="mb-16 group cursor-pointer">
-           <Link href={`/blog/${heroPost.slug}`} className="block">
+           <Link href={`/blog/${heroPost.slug}`} className="block hover:no-underline">
             <div className="relative h-[500px] w-full rounded-3xl overflow-hidden shadow-xl mb-6">
               <Image
                 src={
@@ -62,7 +62,7 @@ const BlogPosts = ({ posts }: { posts: Post[] }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {otherPosts.map((post) => (
           <div key={post.id} className="flex flex-col h-full group">
-             <Link href={`/blog/${post.slug}`} className="block h-full">
+             <Link href={`/blog/${post.slug}`} className="block h-full hover:no-underline">
               <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-md mb-5">
                 <Image
                   src={

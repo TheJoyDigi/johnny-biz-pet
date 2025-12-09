@@ -10,11 +10,11 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **1** | Tue | [x] **Kennel vs. In-Home Boarding: Which is Right for Your Dog?** | In-home dog boarding vs kennels, private dog boarding | Comparison |
 | | Thu | [x] **What is "Boutique" Dog Boarding? Why It Matters.** | Boutique dog boarding Irvine, luxury dog sitting | Educational |
-| **2** | Tue | **5 Signs Your Dog Has Separation Anxiety (And How We Help)** | Anxiety-free dog boarding, dog separation anxiety | Problem/Solution |
-| | Thu | **The Importance of Routine: Why Structured Care Reduces Stress** | Structured dog boarding, dog routine importance | Educational |
-| **3** | Tue | **Sniffari Nature Walks: More Than Just a Walk in the Park** | Dog nature walks, Sniffari, dog enrichment | Service Highlight |
-| | Thu | **How to Choose the Safest Dog Sitter in Orange County** | Dog sitting Irvine CA, safe dog sitter | Guide |
-| **4** | Tue | **Packing List: Essentials for Your Dog's Luxury Staycation** | What to pack for dog boarding, dog vacation boarding | Checklist |
+| **2** | Tue | [x] **5 Signs Your Dog Has Separation Anxiety (And How We Help)** | Anxiety-free dog boarding, dog separation anxiety | Problem/Solution |
+| | Thu | [x] **The Importance of Routine: Why Structured Care Reduces Stress** | Structured dog boarding, dog routine importance | Educational |
+| **3** | Tue | [x] **Sniffari Nature Walks: More Than Just a Walk in the Park** | Dog nature walks, Sniffari, dog enrichment | Service Highlight |
+| | Thu | [x] **How to Choose the Safest Dog Sitter in Orange County** | Dog sitting Irvine CA, safe dog sitter | Guide |
+| **4** | Tue | [x] **Packing List: Essentials for Your Dog's Luxury Staycation** | What to pack for dog boarding, dog vacation boarding | Checklist |
 | | Thu | **Meet the "Ruh-Roh" Standard: Our 4 Pillars of Care** | Premium pet care services, Ruh-Roh Retreat | Brand Story |
 
 ## Month 2: Education & Deep Dives

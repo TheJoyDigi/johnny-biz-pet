@@ -21,7 +21,7 @@ function HeroSection() {
           className="absolute inset-0"
         >
           <Image
-            src="/hero/landing-hero.png"
+            src="/hero/landing-hero-v3.png"
             alt="Happy dog in a boutique home environment"
             layout="fill"
             objectFit="cover"

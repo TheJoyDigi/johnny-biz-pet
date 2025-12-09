@@ -1,1 +1,2 @@
-- [] booking API should associate with sitter primary service item, not service type id, Booking Form should update to provide data for this based on selected sitter uuid, update cost calculation account for this change
+- [] blog page enhance hover link style, all text is underline now, please fix
+  ![alt text](image-4.png)
