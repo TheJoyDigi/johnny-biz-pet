@@ -8,7 +8,7 @@ export default function Document() {
         <meta name="theme-color" content="#f9f5eb" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="text-size-adjust" content="100%" />
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="/favicon_dog.png" />
 
         {/* Analytics Scripts */}
         <script

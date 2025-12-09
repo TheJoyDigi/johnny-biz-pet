@@ -1,1 +1,1 @@
-- [x] comprehensive investigate on how booking record rate and caclulate cost work - See [INVESTIGATION_BOOKING_COST.md](./INVESTIGATION_BOOKING_COST.md)
+- [x] check if sitter badges is stored in DB, we need to allow admin to asgined sitter bages and sitter badges will reflex in sitter details page with the correct icons

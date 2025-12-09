@@ -7,6 +7,7 @@ import Image from 'next/image';
 import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+import { BADGE_DEFINITIONS } from '@/constants/badges';
 
 const libraries: ("places")[] = ["places"];
 
@@ -21,6 +22,7 @@ const sitterSchema = z.object({
   lat: z.number().optional(),
   lng: z.number().optional(),
   isActive: z.boolean(),
+  badges: z.array(z.string()),
   avatarUrl: z.string().optional(),
   heroImageUrl: z.string().optional(),
   bio: z.array(z.object({ text: z.string() })),
@@ -129,6 +131,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
         lat: sp.lat || 0,
         lng: sp.lng || 0,
         isActive: sp.is_active ?? false,
+        badges: (sp.badges || []).filter((b: any) => b.earned).map((b: any) => b.key),
         avatarUrl: sp.avatar_url || '',
         heroImageUrl: sp.hero_image_url || '',
         bio: (sp.bio || []).map((t: string) => ({ text: t })),
@@ -796,6 +799,32 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                                     </button>
                                 </div>
                             ))}
+                        </div>
+
+                        {/* Badges */}
+                        <div>
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">Badges</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {Object.values(BADGE_DEFINITIONS).map((badge) => (
+                                    <div key={badge.key} className="flex items-start p-3 border rounded-lg bg-gray-50">
+                                        <div className="flex items-center h-5 mt-1">
+                                            <input
+                                                id={`badge-${badge.key}`}
+                                                type="checkbox"
+                                                value={badge.key}
+                                                {...register('badges')}
+                                                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                            />
+                                        </div>
+                                        <div className="ml-3">
+                                            <label htmlFor={`badge-${badge.key}`} className="font-medium text-gray-700 block">
+                                                {badge.title}
+                                            </label>
+                                            <p className="text-xs text-gray-500">{badge.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         {/* Care Style */}

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
 import { isAdmin } from '@/utils/api/is-admin';
+import { BADGE_DEFINITIONS } from '@/constants/badges';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const isAdminUser = await isAdmin(req, res);
@@ -18,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     slug, tagline, address, lat, lng, isActive,
     bio, skills, homeEnvironment, careStyle, parentExpectations,
     addons, discounts, services, locationDetails,
-    avatarUrl, heroImageUrl
+    avatarUrl, heroImageUrl, badges
   } = req.body;
 
   if (!userId && !sitterId) {
@@ -73,9 +74,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         home_environment: homeEnvironment.map((h: any) => h.text),
         care_style: careStyle.map((c: any) => c.text),
         parent_expectations: parentExpectations.map((p: any) => p.text),
-        location_details: locationDetails, // Add this
+        location_details: locationDetails, 
         avatar_url: avatarUrl,
-        hero_image_url: heroImageUrl
+        hero_image_url: heroImageUrl,
+        badges: (() => {
+            let currentBadges: string[] = [...(badges || [])];
+            const REQUIRED_GOLD_BADGES = [
+                'calm-clean-environment', 
+                'structured-care', 
+                'personalized-care', 
+                'transparency', 
+                'client-loyalty', 
+                'five-star-consistency'
+            ];
+            
+            const hasAllRequired = REQUIRED_GOLD_BADGES.every(k => currentBadges.includes(k));
+
+            if (hasAllRequired) {
+                if (!currentBadges.includes('gold-standard')) {
+                    currentBadges.push('gold-standard');
+                }
+            } else {
+                currentBadges = currentBadges.filter(b => b !== 'gold-standard');
+            }
+
+            return currentBadges.map((key: string) => {
+                const def = BADGE_DEFINITIONS[key];
+                if (!def) return null;
+                return {
+                    key: def.key,
+                    title: def.title,
+                    description: def.description,
+                    earned: true
+                };
+            }).filter(Boolean);
+        })()
     };
 
     // If no user linked, update profile fields on sitter table
