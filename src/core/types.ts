@@ -11,6 +11,7 @@ export type Post = {
   content: string;
   author?: string;
   hasCoverImage: boolean;
+  coverImage?: string;
 };
 
 export type Customer = {

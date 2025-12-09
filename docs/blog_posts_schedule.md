@@ -9,7 +9,7 @@
 | Week | Day | Topic/Title Idea | Target Keywords | Content Type |
 | :--- | :--- | :--- | :--- | :--- |
 | **1** | Tue | [x] **Kennel vs. In-Home Boarding: Which is Right for Your Dog?** | In-home dog boarding vs kennels, private dog boarding | Comparison |
-| | Thu | **What is "Boutique" Dog Boarding? Why It Matters.** | Boutique dog boarding Irvine, luxury dog sitting | Educational |
+| | Thu | [x] **What is "Boutique" Dog Boarding? Why It Matters.** | Boutique dog boarding Irvine, luxury dog sitting | Educational |
 | **2** | Tue | **5 Signs Your Dog Has Separation Anxiety (And How We Help)** | Anxiety-free dog boarding, dog separation anxiety | Problem/Solution |
 | | Thu | **The Importance of Routine: Why Structured Care Reduces Stress** | Structured dog boarding, dog routine importance | Educational |
 | **3** | Tue | **Sniffari Nature Walks: More Than Just a Walk in the Park** | Dog nature walks, Sniffari, dog enrichment | Service Highlight |

@@ -50,3 +50,7 @@ public/sitters
 *.jpg
 *.png
 *.webp
+
+# Playwright
+playwright-report/
+test-results/

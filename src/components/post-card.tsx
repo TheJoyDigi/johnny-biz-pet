@@ -9,7 +9,9 @@ export const PostCardCompoent = ({ post }: { post: Post }) => {
         <div className="lg:h-auto lg:w-[50%] flex-none relative">
           <Image
             src={
-              post.hasCoverImage
+              post.coverImage
+                ? post.coverImage
+                : post.hasCoverImage
                 ? `/posts/${post.slug}/cover.jpg`
                 : `/about-image.jpeg`
             }

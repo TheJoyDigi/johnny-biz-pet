@@ -25,7 +25,9 @@ const BlogPosts = ({ posts }: { posts: Post[] }) => {
             <div className="relative h-[500px] w-full rounded-3xl overflow-hidden shadow-xl mb-6">
               <Image
                 src={
-                  heroPost.hasCoverImage
+                  heroPost.coverImage
+                    ? heroPost.coverImage
+                    : heroPost.hasCoverImage
                     ? `/posts/${heroPost.slug}/cover.jpg`
                     : `/about-image.jpeg`
                 }
@@ -64,7 +66,9 @@ const BlogPosts = ({ posts }: { posts: Post[] }) => {
               <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-md mb-5">
                 <Image
                   src={
-                    post.hasCoverImage
+                    post.coverImage
+                      ? post.coverImage
+                      : post.hasCoverImage
                       ? `/posts/${post.slug}/cover.jpg`
                       : `/about-image.jpeg`
                   }

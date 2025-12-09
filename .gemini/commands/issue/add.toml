@@ -1,7 +1,0 @@
-prompt = '''
-First, take the plan from the chat history and save it to a file named `plan.md`.
-
-Then, create a GitHub issue from the plan in `plan.md`.
-
-!{gh issue create --title "New Issue from Plan" --body-file plan.md --project "Ruh Roh Retreat"}
-'''

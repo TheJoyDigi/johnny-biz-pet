@@ -20,6 +20,12 @@ const nextConfig = {
         hostname: 'dsnjzdtfezcsctdjlsje.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.ruhrohretreat.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

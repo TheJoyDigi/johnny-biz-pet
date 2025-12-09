@@ -7,7 +7,9 @@ import BlogLayout from "./_layout";
 import { FaFacebook, FaTwitter, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
 export default function Post({ post }: { post: Post }) {
-  const imageUrl = post.hasCoverImage
+  const imageUrl = post.coverImage
+    ? post.coverImage
+    : post.hasCoverImage
     ? `/posts/${post.slug}/cover.jpg`
     : "https://www.ruhrohretreat.com/ruhrohretreat-social.jpg";
 

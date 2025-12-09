@@ -7,7 +7,7 @@ module.exports = {
     '^@/utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@/pages/(.*)$': '<rootDir>/src/pages/$1',
   },
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/tests/e2e/'],
   transform: {
     '^.+\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },

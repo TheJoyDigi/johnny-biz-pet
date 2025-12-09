@@ -29,6 +29,7 @@ export function getSortedPostsData(): Post[] {
       slug,
       ...matterResult.data,
       hasCoverImage,
+      coverImage: matterResult.data.coverImage,
     } as Post;
   });
   // Sort posts by date
@@ -60,5 +61,6 @@ export function getPostData(slug: string): Post {
     content,
     hasCoverImage,
     slug,
+    coverImage: data.coverImage,
   } as Post;
 }
