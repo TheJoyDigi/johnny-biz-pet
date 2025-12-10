@@ -55,3 +55,6 @@ public/sitters
 # Playwright
 playwright-report/
 test-results/
+
+*storybook.log
+storybook-static
