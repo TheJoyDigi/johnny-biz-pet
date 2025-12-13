@@ -59,6 +59,13 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     imageSrc: "/images/badges/image8.png",
     accent: "from-[#FFD700] to-[#FDB931]",
   },
+  "new-sitter": {
+    key: "new-sitter",
+    title: "New Sitter",
+    description: "Highly-rated sitter joining Ruh-Roh Retreat with proven track record. Platform achievement badges earned after first 10 stays.",
+    imageSrc: "/images/badges/new-sitter.png",
+    accent: "from-[#A1C4FD] to-[#C2E9FB]",
+  },
 };
 
-export const BADGES_LIST = Object.values(BADGE_DEFINITIONS);
+export const BADGES_LIST = Object.values(BADGE_DEFINITIONS).filter(b => b.key !== 'new-sitter');

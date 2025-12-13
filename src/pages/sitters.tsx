@@ -147,9 +147,15 @@ function SittersPage({ sitters: initialSitters }: SittersPageProps) {
               const reviewsCount = reviews.length;
               const averageRating = reviewsCount === 0 ? null : totalStars / reviewsCount;
 
-              const earnedBadgesCount = sitter.badges.filter((b) => b.earned).length;
-              const totalBadges = TOTAL_BADGES;
-              const isGoldStandard = earnedBadgesCount === totalBadges;
+              const isNewSitter = sitter.badges.some(b => b.key === 'new-sitter' && b.earned);
+              const newSitterBadge = sitter.badges.find(b => b.key === 'new-sitter');
+              const newSitterDef = newSitterBadge ? BADGE_DEFINITIONS['new-sitter'] : undefined;
+
+              // Filter out 'new-sitter' from counts
+              const earnedBadgesCount = sitter.badges.filter((b) => b.earned && b.key !== 'new-sitter').length;
+              const totalBadges = Object.keys(BADGE_DEFINITIONS).filter(k => k !== 'new-sitter').length;
+              
+              const isGoldStandard = sitter.badges.some(b => b.key === 'gold-standard' && b.earned);
               const goldStandardBadge = sitter.badges.find((b) => b.key === "gold-standard");
               const goldStandardDef = goldStandardBadge ? BADGE_DEFINITIONS[goldStandardBadge.key] : undefined;
 
@@ -205,7 +211,26 @@ function SittersPage({ sitters: initialSitters }: SittersPageProps) {
                         </Link>
                       </div>
                       <div className="mt-2">
-                        {isGoldStandard && goldStandardBadge && goldStandardDef ? (
+                        {isNewSitter && newSitterBadge && newSitterDef ? (
+                            <button
+                            type="button"
+                            onClick={() => setSelectedBadge({ ...newSitterBadge, definition: newSitterDef })}
+                            className="flex items-center gap-3 bg-gradient-to-r from-[#E0F2FE] to-[#F0F9FF] p-3 rounded-xl border border-[#BAE6FD] w-full hover:bg-[#E0F2FE]/80 transition-colors text-left"
+                          >
+                            <div className="relative h-12 w-12 flex-shrink-0">
+                              <Image
+                                src={newSitterDef.imageSrc}
+                                alt={newSitterBadge.title}
+                                fill
+                                className="object-contain"
+                              />
+                            </div>
+                            <div>
+                              <p className="font-bold text-[#0C4A6E] text-sm">New Sitter Profile</p>
+                              <p className="text-xs text-[#0284C7]">Full badges earned after 10 stays</p>
+                            </div>
+                          </button>
+                        ) : isGoldStandard && goldStandardBadge && goldStandardDef ? (
                           <button
                             type="button"
                             onClick={() => setSelectedBadge({ ...goldStandardBadge, definition: goldStandardDef })}
@@ -221,7 +246,7 @@ function SittersPage({ sitters: initialSitters }: SittersPageProps) {
                             </div>
                             <div>
                               <p className="font-bold text-[#333333] text-sm">Ruh-Roh Gold Standard</p>
-                              <p className="text-xs text-gray-600">All 8 badges earned!</p>
+                              <p className="text-xs text-gray-600">All badges earned!</p>
                             </div>
                           </button>
                         ) : (
