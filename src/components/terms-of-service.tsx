@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-const TERMS_PDF_PATH = "/legal/terms-of-service.pdf";
+const TERMS_PDF_PATH = "/legal/ruh-roh-terms-of-service.pdf";
 
 const TermsOfServiceComponent: React.FC = () => {
   return (

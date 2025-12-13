@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-const PRIVACY_PDF_PATH = "/legal/privacy-policy.pdf";
+const PRIVACY_PDF_PATH = "/legal/ruh-roh-privacy-policy.pdf";
 
 const PrivacyPolicyComponent: React.FC = () => {
   return (

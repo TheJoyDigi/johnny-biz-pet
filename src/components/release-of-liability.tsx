@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-const WAIVER_PDF_PATH = "/legal/waiver-and-release-of-liability.pdf";
+const WAIVER_PDF_PATH = "/legal/ruh-roh-liability-waiver.pdf";
 
 const ReleaseOfLiabilityComponent: React.FC = () => {
   return (
