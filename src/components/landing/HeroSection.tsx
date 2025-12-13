@@ -21,7 +21,7 @@ function HeroSection() {
           className="absolute inset-0"
         >
           <Image
-            src="/hero/landing-hero-v3.png"
+            src="/hero/landing-hero.png"
             alt="Happy dog in a boutique home environment"
             layout="fill"
             objectFit="cover"
@@ -50,7 +50,7 @@ function HeroSection() {
             transition={{ delay: 0.3, duration: 0.8 }}
           >
             Boutique In-Home <br />
-            Dog Sitting
+            <span className="text-[#F28C38]">Dog Sitting</span>
           </motion.h1>
 
           <motion.p
