@@ -1,32 +1,13 @@
+- [] add cancellation and late pickup policy content into sitter profile right under Pricing & Discounts; udpate database schema to support admin to update the content of it; make it simply markdown editor, or rich text format
 
-# Changes into landing page, please don't auto commit
-- [x] In Vacation Add-ons page, need to update pawcasso image and sniffari image
+this is the exmaple of the content:
 
-- [x] Please confirm “Johnny” is not author of any blogs. Instead say “Ruh-Roh Retreat
-- [x] Move the “How it Works” section Under Hero. Why choose Ruh-Roh should be last section
-- [x] For How it works section, remove steps 3 & 4
-- [x] update all CTA in siiter page to "Submit a Request" instead of "Request to Book"
-- [x] In HERO write the following: 
+## Cancellation Policy
+- **7+ days:** Free cancellation
+- **3-7 days:** 50% fee
+- **<3 days:** Full fee
 
-    Boutique In-Home Dog Sitting
-
-    — Irvine & Wildomar, CA
-
-    Feel at ease while you’re away 
-
-    “We felt completely at-ease throughout our entire trip, which is priceless as a pet parent.”
-
-    -Martha P.
-
-    CTA (“Find Your Perfect Sitter”)
-
-    **Leave google and yelp links as is**
-
-- [x] reorder landing sections follow orders, don't remove any sections:
-1. Hero
-2. How It Works
-3. Why Choose Ruh-Roh Retreat
-4. Safety and Trust
-5. How Pricing Works
-
-
+## Extended Care / Late Pickup
+- **Up to 1 hour late:** No charge (grace period for traffic, etc.)
+- **1-4 hours late:** $25 late pickup fee
+- **More than 4 hours late:** Full additional day rate ($50)

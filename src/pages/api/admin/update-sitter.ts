@@ -18,8 +18,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     firstName, lastName, phone, email,
     slug, tagline, address, lat, lng, isActive,
     bio, skills, homeEnvironment, careStyle, parentExpectations,
-    addons, discounts, services, locationDetails,
-    avatarUrl, heroImageUrl, badges
+    addons, discounts, services, reviews, locationDetails,
+    avatarUrl, heroImageUrl, badges,
+    cancellationPolicyMarkdown
   } = req.body;
 
   if (!userId && !sitterId) {
@@ -77,6 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         location_details: locationDetails, 
         avatar_url: avatarUrl,
         hero_image_url: heroImageUrl,
+        cancellation_policy_markdown: cancellationPolicyMarkdown,
         badges: (() => {
             let currentBadges: string[] = [...(badges || [])];
             const REQUIRED_GOLD_BADGES = [
@@ -200,6 +202,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (discountsToUpsert.length > 0) {
         const { error: discountError } = await supabaseAdmin.from('sitter_discounts').upsert(discountsToUpsert);
         if (discountError) throw new Error(`Discounts update error: ${discountError.message}`);
+    }
+
+    // 5. Manage Reviews
+    if (reviews) {
+        const { data: existingReviews } = await supabaseAdmin.from('sitter_reviews').select('id').eq('sitter_id', targetSitterId);
+        const existingReviewIds = existingReviews?.map(r => r.id) || [];
+        const payloadReviewIds = reviews.filter((r: any) => r.id).map((r: any) => r.id);
+
+        const reviewsToDelete = existingReviewIds.filter(id => !payloadReviewIds.includes(id));
+        if (reviewsToDelete.length > 0) {
+            await supabaseAdmin.from('sitter_reviews').delete().in('id', reviewsToDelete);
+        }
+
+        const reviewsToUpsert = reviews.map((r: any) => {
+            const item: any = {
+                sitter_id: targetSitterId,
+                client_name: r.client,
+                pet_name: r.pet,
+                rating: r.rating,
+                date: r.date,
+                text: r.text,
+                source: r.source,
+                image_url: r.imageUrl
+            };
+            if (r.id) item.id = r.id;
+            return item;
+        });
+
+        if (reviewsToUpsert.length > 0) {
+            const { error: reviewError } = await supabaseAdmin.from('sitter_reviews').upsert(reviewsToUpsert);
+            if (reviewError) throw new Error(`Reviews update error: ${reviewError.message}`);
+        }
     }
 
     // Revalidate the sitter page

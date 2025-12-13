@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { User, MapPin, DollarSign, Shield, Image as ImageIcon, Plus, Trash2, Upload } from 'lucide-react';
+import { User, MapPin, DollarSign, Shield, Image as ImageIcon, Plus, Trash2, Upload, Star } from 'lucide-react';
 import Image from 'next/image';
 import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -41,6 +41,16 @@ const sitterSchema = z.object({
     minDays: z.number().min(1),
     percentage: z.number().min(0).max(100)
   })),
+  reviews: z.array(z.object({
+    id: z.string().optional(),
+    client: z.string().min(1, "Client Name is required"),
+    pet: z.string().optional(),
+    rating: z.number().min(1).max(5),
+    date: z.string().min(1, "Date is required"),
+    text: z.string().min(1, "Review text is required"),
+    source: z.string().min(1, "Source is required"),
+    imageUrl: z.string().optional(),
+  })),
   locationDetails: z.object({
     city: z.string().optional(),
     state: z.string().optional(),
@@ -48,6 +58,7 @@ const sitterSchema = z.object({
     country: z.string().optional(),
     formattedAddress: z.string().optional()
   }).optional(),
+  cancellationPolicyMarkdown: z.string().optional(),
   services: z.array(z.object({
     serviceTypeId: z.string(),
     price: z.number().min(0),
@@ -150,7 +161,18 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
             minDays: d.min_days,
             percentage: d.percentage
         })),
+        reviews: (sp.sitter_reviews || []).map((r: any) => ({
+            id: r.id,
+            client: r.client_name,
+            pet: r.pet_name || '',
+            rating: r.rating,
+            date: r.date ? new Date(r.date).toISOString().split('T')[0] : '',
+            text: r.text,
+            source: r.source,
+            imageUrl: r.image_url || ''
+        })),
         locationDetails: sp.location_details || {},
+        cancellationPolicyMarkdown: sp.cancellation_policy_markdown || '',
         services: serviceTypes.map((st: any) => {
             const existing = (sp.sitter_primary_services || []).find((s: any) => s.service_types && s.service_types.id === st.id);
             return {
@@ -175,6 +197,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
     const addonFields = useFieldArray({ control, name: "addons" });
     const discountFields = useFieldArray({ control, name: "discounts" });
     const { fields: serviceFields } = useFieldArray({ control, name: "services" });
+    const { fields: reviewFields, append: appendReview, remove: removeReview } = useFieldArray({ control, name: "reviews" });
 
     const currentSlug = watch('slug');
     const avatarUrl = watch('avatarUrl');
@@ -490,6 +513,7 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
         { id: 'profile', label: 'Profile', icon: User },
         { id: 'services', label: 'Services & Rates', icon: DollarSign },
         { id: 'details', label: 'Details', icon: Shield }, 
+        { id: 'reviews', label: 'Reviews', icon: Star },
         { id: 'gallery', label: 'Gallery', icon: ImageIcon },
     ];
 
@@ -777,6 +801,18 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                                 </div>
                             ))}
                         </div>
+
+                        {/* Cancellation Policy Markdown */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Cancellation & Policy Content (Markdown)</label>
+                            <p className="text-xs text-gray-500 mb-2">Use markdown to format this section. It will appear below pricing.</p>
+                            <textarea 
+                                {...register('cancellationPolicyMarkdown')} 
+                                rows={10} 
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border font-mono text-sm"
+                                placeholder="## Cancellation Policy&#10;- **7+ days:** Free cancellation..."
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -897,6 +933,77 @@ export default function SitterForm({ sitter, serviceTypes, onSubmit, isSubmittin
                                     </button>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Reviews Tab */}
+                <div className={activeTab === 'reviews' ? 'block' : 'hidden'}>
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center mb-2">
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-lg font-medium text-gray-900">Client Reviews</h3>
+                                <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs font-medium text-gray-600">{reviewFields.length}</span>
+                            </div>
+                            <button type="button" onClick={() => appendReview({ client: '', rating: 5, date: new Date().toISOString().split('T')[0], text: '', source: 'Manual' })} className="text-sm text-indigo-600 hover:text-indigo-900 flex items-center">
+                                <Plus className="w-4 h-4 mr-1" /> Add Review
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            {reviewFields.map((field, index) => (
+                                <div key={field.id} className="p-4 bg-gray-50 border rounded-lg space-y-3 relative group transition-colors hover:border-gray-300">
+                                    <button type="button" onClick={() => removeReview(index)} className="absolute top-2 right-2 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity p-1">
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                        <div className="md:col-span-3">
+                                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Client</label>
+                                            <input {...register(`reviews.${index}.client`)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" placeholder="Name" />
+                                            {errors.reviews?.[index]?.client && <p className="text-red-500 text-xs mt-1">{errors.reviews[index]?.client?.message}</p>}
+                                        </div>
+                                        <div className="md:col-span-3">
+                                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Pet</label>
+                                            <input {...register(`reviews.${index}.pet`)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" placeholder="Pet Name" />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Rating</label>
+                                            <div className="relative">
+                                                <input type="number" {...register(`reviews.${index}.rating`, { valueAsNumber: true })} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border pl-8" min={1} max={5} step={0.1} />
+                                                <Star className="w-4 h-4 text-gray-400 absolute left-2 top-2.5" />
+                                            </div>
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Date</label>
+                                            <input type="date" {...register(`reviews.${index}.date`)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
+                                            {errors.reviews?.[index]?.date && <p className="text-red-500 text-xs mt-1">{errors.reviews[index]?.date?.message}</p>}
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Source</label>
+                                            <input {...register(`reviews.${index}.source`)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" placeholder="e.g. Google" />
+                                        </div>
+                                        <div className="md:col-span-12">
+                                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Review Text</label>
+                                            <textarea {...register(`reviews.${index}.text`)} rows={2} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" placeholder="What they said..." />
+                                            {errors.reviews?.[index]?.text && <p className="text-red-500 text-xs mt-1">{errors.reviews[index]?.text?.message}</p>}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {reviewFields.length === 0 && (
+                                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                                    <Star className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                    <h3 className="text-sm font-medium text-gray-900">No reviews</h3>
+                                    <p className="mt-1 text-sm text-gray-500">Get started by manually adding a review.</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => appendReview({ client: '', rating: 5, date: new Date().toISOString().split('T')[0], text: '', source: 'Manual' })}
+                                        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    >
+                                        <Plus className="-ml-1 mr-2 h-4 w-4" aria-hidden="true" />
+                                        Add Review
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

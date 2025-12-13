@@ -102,6 +102,7 @@ export type Sitter = {
   reviews: SitterReview[];
   availabilityNotes?: string;
   contactEmail?: string;
+  cancellationPolicyMarkdown?: string;
 };
 
 const parsedSitters = sitterData as any[];

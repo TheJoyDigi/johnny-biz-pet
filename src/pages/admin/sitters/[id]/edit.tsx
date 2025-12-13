@@ -30,6 +30,7 @@ interface SitterProfile {
     sitter_addons: any[];
     sitter_primary_services: any[];
     sitter_discounts: any[];
+    cancellation_policy_markdown: string | null;
   } | null;
 }
 
@@ -87,10 +88,12 @@ export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async
         ),
         sitter_addons(*),
         sitter_discounts(*),
+        sitter_reviews(*),
         sitter_primary_services(
             price_cents,
             service_types(*)
-        )
+        ),
+        cancellation_policy_markdown
       `);
 
   // We don't know if 'id' is sitter.id or user.id. 
@@ -116,10 +119,12 @@ export const getServerSideProps: GetServerSideProps<EditSitterPageProps> = async
             ),
             sitter_addons(*),
             sitter_discounts(*),
+            sitter_reviews(*),
             sitter_primary_services(
                 price_cents,
                 service_types(*)
-            )
+            ),
+            cancellation_policy_markdown
         `)
         .eq('user_id', id)
         .maybeSingle();

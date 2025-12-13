@@ -2,6 +2,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaChevronDown, FaStar, FaQuestionCircle } from "react-icons/fa";
+import ReactMarkdown from 'react-markdown';
 
 import { Sitter, SitterReview } from "@/data/sitters";
 import { Photo } from "../photo-gallery";
@@ -195,6 +196,25 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                                     </div>
                                 )}
                             </div>
+                        </div>
+                    )}
+
+                    {/* Cancellation & Policies */}
+                    {sitter.cancellationPolicyMarkdown && (
+                        <div className="bg-[#F4F4F9] rounded-2xl p-5 border border-gray-200">
+                            <ReactMarkdown
+                                components={{
+                                    h1: ({...props}) => <h3 className="text-sm font-semibold text-[#1A9CB0] uppercase tracking-wide mb-3 mt-5 first:mt-0" {...props} />,
+                                    h2: ({...props}) => <h3 className="text-sm font-semibold text-[#1A9CB0] uppercase tracking-wide mb-3 mt-5 first:mt-0" {...props} />,
+                                    h3: ({...props}) => <h3 className="text-sm font-semibold text-[#1A9CB0] uppercase tracking-wide mb-3 mt-5 first:mt-0" {...props} />,
+                                    ul: ({...props}) => <ul className="space-y-1 list-disc list-outside ml-4 text-sm text-gray-700 mt-2" {...props} />,
+                                    li: ({...props}) => <li className="pl-1" {...props} />,
+                                    p: ({...props}) => <p className="text-sm text-gray-700 mb-2" {...props} />,
+                                    strong: ({...props}) => <span className="font-semibold text-[#333333]" {...props} />,
+                                }}
+                            >
+                                {sitter.cancellationPolicyMarkdown}
+                            </ReactMarkdown>
                         </div>
                     )}
                 </div>

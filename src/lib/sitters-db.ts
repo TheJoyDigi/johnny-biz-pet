@@ -121,7 +121,8 @@ export async function fetchSittersFromDb(): Promise<Sitter[]> {
         discounts: discounts,
         reviews: reviews,
         gallery: gallery,
-        contactEmail: "bookings@ruhrohretreat.com"
+        contactEmail: "bookings@ruhrohretreat.com",
+        cancellationPolicyMarkdown: dbSitter.cancellation_policy_markdown
     } as Sitter;
   }));
 }
