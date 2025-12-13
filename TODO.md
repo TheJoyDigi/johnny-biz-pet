@@ -1,1 +1,32 @@
- - [x] database schema update to have a cost structure configuration so that booking request cost calculation is dynamic, currently the cost is calculate as, the platform charge pet owner 7% service fee on the total amount, platform charge pet sitter 15% primary services cost, pet sitter get 100% of addons; please use that at the starting point for the new cost structure, have a seed for the cost structure with value of current settings
+
+# Changes into landing page, please don't auto commit
+- [x] In Vacation Add-ons page, need to update pawcasso image and sniffari image
+
+- [x] Please confirm “Johnny” is not author of any blogs. Instead say “Ruh-Roh Retreat
+- [x] Move the “How it Works” section Under Hero. Why choose Ruh-Roh should be last section
+- [x] For How it works section, remove steps 3 & 4
+- [x] update all CTA in siiter page to "Submit a Request" instead of "Request to Book"
+- [x] In HERO write the following: 
+
+    Boutique In-Home Dog Sitting
+
+    — Irvine & Wildomar, CA
+
+    Feel at ease while you’re away 
+
+    “We felt completely at-ease throughout our entire trip, which is priceless as a pet parent.”
+
+    -Martha P.
+
+    CTA (“Find Your Perfect Sitter”)
+
+    **Leave google and yelp links as is**
+
+- [x] reorder landing sections follow orders, don't remove any sections:
+1. Hero
+2. How It Works
+3. Why Choose Ruh-Roh Retreat
+4. Safety and Trust
+5. How Pricing Works
+
+

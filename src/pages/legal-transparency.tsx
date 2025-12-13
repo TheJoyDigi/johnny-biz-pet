@@ -86,7 +86,7 @@ export default function LegalTransparencyPage() {
             <p>
               Please review our
               <Link
-                href="/terms-of-use"
+                href="/terms-of-service"
                 className="text-[#1A9CB0] font-semibold hover:text-[#136C7A] transition-colors duration-200 mx-1"
               >
                 Terms of Service

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const TERMS_PDF_PATH = "/legal/terms-of-service.pdf";
 
-const TermsOfUseComponent: React.FC = () => {
+const TermsOfServiceComponent: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-10">
@@ -51,4 +51,4 @@ const TermsOfUseComponent: React.FC = () => {
   );
 };
 
-export default TermsOfUseComponent;
+export default TermsOfServiceComponent;

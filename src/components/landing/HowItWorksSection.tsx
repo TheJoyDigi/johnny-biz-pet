@@ -14,18 +14,6 @@ const steps = [
       "Choose your sitter, enter dates, and share details about your pup.",
     color: "#F28C38",
   },
-  {
-    title: "Meet & Greet",
-    description:
-      "Your chosen sitter contacts you to schedule a meet-and-greet and confirm fit.",
-    color: "#6C63FF",
-  },
-  {
-    title: "Book & Relax",
-    description:
-      "Once booked, your sitter provides updates while your dog enjoys their boutique retreat.",
-    color: "#3A7CA5",
-  },
 ];
 
 function HowItWorksSection() {

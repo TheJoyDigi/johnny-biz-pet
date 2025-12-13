@@ -1,16 +1,19 @@
 import Link from "next/link";
-import { FaEnvelope, FaPaw } from "react-icons/fa";
+import { FaPaw } from "react-icons/fa";
 
 import MultiLocationMap from "../MultiLocationMap";
 import { Location } from "./types";
 
+import { RefObject } from "react";
+
 type CallToActionSectionProps = {
   locations: Location[];
+  sectionRef?: RefObject<HTMLElement>;
 };
 
-function CallToActionSection({ locations }: CallToActionSectionProps) {
+function CallToActionSection({ locations, sectionRef }: CallToActionSectionProps) {
   return (
-    <section id="contact" className="py-16 bg-[#1A9CB0]">
+    <section id="contact" className="py-16 bg-[#1A9CB0]" ref={sectionRef}>
       <div className="container mx-auto px-4 text-center text-white">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready for the Ruh-Roh Retreat experience?</h2>
         <p className="text-xl mb-8 max-w-2xl mx-auto">
@@ -22,15 +25,9 @@ function CallToActionSection({ locations }: CallToActionSectionProps) {
             className="bg-[#F28C38] hover:bg-[#e07a26] text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 inline-flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
             <FaPaw className="h-5 w-5" aria-hidden="true" />
-            Find a Sitter
+            Find Your Perfect Sitter
           </Link>
-          <Link
-            href="/book"
-            className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 border border-white/30 inline-flex items-center gap-2"
-          >
-            <FaEnvelope className="h-5 w-5" aria-hidden="true" />
-            Submit a Request
-          </Link>
+
         </div>
         <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
           <a href="tel:+17143294534" className="flex items-center text-xl hover:underline">

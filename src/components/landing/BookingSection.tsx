@@ -51,7 +51,7 @@ type BookingSectionProps = {
 function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
   const router = useRouter();
   const defaultSitter = sitters[0];
-  const termsPdfPath = "/legal/terms-of-service.pdf";
+
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [nightsCount, setNightsCount] = useState<number | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
@@ -618,8 +618,16 @@ function BookingSection({ sectionRef, sitters }: BookingSectionProps) {
                   />
                   <span className="text-sm text-gray-700 leading-relaxed">
                     I have reviewed and agree to the{" "}
-                    <Link href={termsPdfPath} target="_blank" rel="noopener noreferrer" className="text-[#1A9CB0] font-semibold hover:underline">
+                    <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#1A9CB0] font-semibold hover:underline">
+                      Privacy Policy
+                    </Link>
+                    ,{" "}
+                    <Link href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="text-[#1A9CB0] font-semibold hover:underline">
                       Terms of Service
+                    </Link>
+                    , and{" "}
+                    <Link href="/release-of-liability" target="_blank" rel="noopener noreferrer" className="text-[#1A9CB0] font-semibold hover:underline">
+                      Release of Liability
                     </Link>
                     .
                   </span>

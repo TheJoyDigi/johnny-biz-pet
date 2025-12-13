@@ -40,37 +40,49 @@ function HeroSection() {
           transition={{ duration: 1, ease: HERO_FADE_EASE }}
           className="max-w-3xl"
         >
-          {/* Trust Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium mb-8"
-          >
-            <span className="text-[#F28C38]">★★★★★</span>
-            <span>Founded by sitters with 150+ 5-star reviews from Rover</span>
-          </motion.div>
+
 
           {/* Main Headline */}
           <motion.h1
-            className="text-5xl md:text-7xl font-bold text-white leading-tight mb-4 drop-shadow-sm"
+            className="text-5xl md:text-7xl font-bold text-white leading-tight mb-2 drop-shadow-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
             Boutique In-Home <br />
-            <span className="text-[#F28C38]">Dog Sitting</span>
+            Dog Sitting
           </motion.h1>
+
+          <motion.p
+            className="text-2xl md:text-3xl font-light text-white/90 mb-6 drop-shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.8 }}
+          >
+            — Irvine & Wildomar, CA
+          </motion.p>
 
           {/* Subheadline & Description */}
           <motion.p
             className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-2xl drop-shadow-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.8 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
           >
-            Powered by Badge-Rated Sitters. Structured, comfortable, vacation-style care—designed for your dog.
+            Feel at ease while you’re away
           </motion.p>
+
+          <motion.blockquote
+            className="border-l-4 border-[#F28C38] pl-4 my-8 max-w-xl"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.45, duration: 0.8 }}
+          >
+            <p className="text-lg text-white/90 italic mb-2">
+              “We felt completely at-ease throughout our entire trip, which is priceless as a pet parent.”
+            </p>
+            <footer className="text-white/80 font-medium">— Martha P.</footer>
+          </motion.blockquote>
 
           {/* CTAs */}
           <motion.div
@@ -84,14 +96,7 @@ function HeroSection() {
               className="bg-[#F28C38] hover:bg-[#e07a26] text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 inline-flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <FaPaw className="h-5 w-5" aria-hidden="true" />
-              Find a Sitter
-            </Link>
-            <Link
-              href="/book"
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 border border-white/30 inline-flex items-center gap-2"
-            >
-              <FaEnvelope className="h-5 w-5" aria-hidden="true" />
-              Submit a Request
+              Find Your Perfect Sitter
             </Link>
           </motion.div>
 

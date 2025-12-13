@@ -338,7 +338,7 @@ const SitterDetail = ({ sitter }: SitterDetailProps) => {
                 }}
                 className="inline-flex items-center px-8 py-4 rounded-full bg-[#F28C38] text-white font-bold text-lg hover:bg-[#e07a26] transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-                Request to Book
+                Submit a Request
             </Link>
         </div>
 

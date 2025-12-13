@@ -1,26 +1,36 @@
 import { useEffect, useState, RefObject } from "react";
 import Link from "next/link";
-import { FaPaw, FaCalendarCheck } from "react-icons/fa";
+import { FaPaw } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 type FloatingCTAProps = {
   heroRef?: RefObject<HTMLElement>;
+  ctaRef?: RefObject<HTMLElement>;
 };
 
-export default function FloatingCTA({ heroRef }: FloatingCTAProps) {
+export default function FloatingCTA({ heroRef, ctaRef }: FloatingCTAProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       let shouldShow = true;
 
-      // Check if we are at the hero section (if heroRef is provided)
+      // 1. Check if we are past the hero section (if heroRef is provided)
       if (heroRef?.current) {
         const heroRect = heroRef.current.getBoundingClientRect();
         // If the bottom of the hero is still in the viewport (positive value), 
         // or we are very close to the top, don't show.
         // We want to show only after scrolling PAST the hero.
         if (heroRect.bottom > 100) {
+          shouldShow = false;
+        }
+      }
+
+      // 2. Check if we reached the CTA section (if ctaRef is provided)
+      if (ctaRef?.current) {
+        const ctaRect = ctaRef.current.getBoundingClientRect();
+        // If the top of the CTA section is visible in the viewport
+        if (ctaRect.top < window.innerHeight) {
           shouldShow = false;
         }
       }
@@ -33,7 +43,7 @@ export default function FloatingCTA({ heroRef }: FloatingCTAProps) {
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [heroRef]);
+  }, [heroRef, ctaRef]);
 
   return (
     <AnimatePresence>
@@ -48,48 +58,31 @@ export default function FloatingCTA({ heroRef }: FloatingCTAProps) {
             transition={{ duration: 0.3 }}
           >
             <Link
-              href="/book"
-              className="flex items-center justify-center w-14 h-14 bg-white text-[#1A9CB0] rounded-full shadow-lg hover:bg-gray-50 hover:scale-105 transition-all duration-300 border border-[#1A9CB0]/20 group relative"
-              aria-label="Submit a Request"
-            >
-              <FaCalendarCheck className="text-xl" />
-              <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Submit a Request
-              </span>
-            </Link>
-            <Link
               href="/sitters"
-              className="flex items-center justify-center w-14 h-14 bg-[#1A9CB0] text-white rounded-full shadow-lg hover:bg-[#147384] hover:scale-105 transition-all duration-300 group relative"
-              aria-label="Find Sitter"
+              className="flex items-center justify-center w-14 h-14 bg-[#F28C38] text-white rounded-full shadow-lg hover:bg-[#e07a26] hover:scale-105 transition-all duration-300 group relative"
+              aria-label="Find Your Perfect Sitter"
             >
               <FaPaw className="text-xl" />
               <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Find Sitter
+                Find Your Perfect Sitter
               </span>
             </Link>
           </motion.div>
 
           {/* Mobile View: Bottom Sticky Bar */}
           <motion.div
-            className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 px-4 py-3 flex gap-3"
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
+            className="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 w-auto"
+            initial={{ y: "150%", x: "-50%" }}
+            animate={{ y: 0, x: "-50%" }}
+            exit={{ y: "150%", x: "-50%" }}
             transition={{ duration: 0.3 }}
           >
             <Link
-              href="/book"
-              className="flex-1 flex items-center justify-center gap-2 bg-white border border-[#1A9CB0] text-[#1A9CB0] font-semibold py-3 rounded-full shadow-sm active:bg-gray-50"
-            >
-              <FaCalendarCheck />
-              Submit a Request
-            </Link>
-            <Link
               href="/sitters"
-              className="flex-1 flex items-center justify-center gap-2 bg-[#1A9CB0] text-white font-semibold py-3 rounded-full shadow-md active:bg-[#147384]"
+              className="flex items-center justify-center gap-2 bg-[#F28C38] text-white font-bold py-3 px-8 rounded-full shadow-xl hover:bg-[#e07a26] active:scale-95 transition-all whitespace-nowrap"
             >
               <FaPaw />
-              Find Sitter
+              Find Your Perfect Sitter
             </Link>
           </motion.div>
         </>

@@ -34,6 +34,7 @@ const locations: Location[] = [
 
 function LandingComponent() {
   const heroRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLElement>(null);
 
   const scrollToSection = (ref: RefObject<HTMLElement>) => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
@@ -46,15 +47,15 @@ function LandingComponent() {
       <div ref={heroRef}>
         <HeroSection />
       </div>
-      <BenefitsSection />
       <HowItWorksSection />
-      <RatesTransparencySection />
+      <BenefitsSection />
       <SafetyTrustSection />
+      <RatesTransparencySection />
 
 
 
-      <CallToActionSection locations={locations} />
-      <FloatingCTA heroRef={heroRef} />
+      <CallToActionSection locations={locations} sectionRef={ctaRef} />
+      <FloatingCTA heroRef={heroRef} ctaRef={ctaRef} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
